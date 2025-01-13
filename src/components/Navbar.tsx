@@ -25,7 +25,7 @@ export function Navbar() {
   const { setTheme } = useTheme();
 
   return (
-    <div className="top-0 sticky border-b flex justify-between w-full items-center">
+    <div className="bg-inherit top-0 sticky border-b flex justify-between w-full items-center h-16">
       <Button
         variant="ghost"
         size="icon"

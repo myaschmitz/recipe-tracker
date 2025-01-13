@@ -21,6 +21,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
+import { Hr } from "@/components/ui/separator";
 
 const { data, error } = await supabase.from("tag").select("name");
 
