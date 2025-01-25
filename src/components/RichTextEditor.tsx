@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -98,7 +98,7 @@ const RichTextEditorMenuBar = ({ editor }: MenuBarProps) => {
   );
 };
 
-const RichTextEditor: React.FC<RichTextEditorProps> = () => {
+const RichTextEditor: React.FC<RichTextEditorProps> = ({ onChange }) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -122,10 +122,21 @@ const RichTextEditor: React.FC<RichTextEditorProps> = () => {
           "min-h-[50px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
       },
     },
-    // onUpdate: ({ editor }) => {
-    //   onChange(editor.getHTML()); // Call the onChange callback with the updated HTML content
-    // },
   });
+
+  useEffect(() => {
+    if (editor) {
+      const updateContent = () => {
+        onChange(editor.getHTML()); // Pass the editor's HTML content to the parent component
+      };
+
+      editor.on("update", updateContent);
+
+      return () => {
+        editor.off("update", updateContent); // Cleanup listener on unmount
+      };
+    }
+  }, [editor, onChange]);
 
   if (!editor) {
     return null;

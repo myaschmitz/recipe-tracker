@@ -39,7 +39,16 @@ export function Navbar() {
         <NavigationMenuList>
           <div className="flex items-center gap-2 justify-between px-4 md:px-6">
             <NavigationMenuItem>
-              <Link href="/recipe/create" legacyBehavior passHref>
+              <Link href="/recipes" legacyBehavior passHref>
+                <NavigationMenuLink className="hover:font-bold">
+                  Recipes
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </div>
+          <div className="flex items-center gap-2 justify-between px-4 md:px-6">
+            <NavigationMenuItem>
+              <Link href="/recipes/create" legacyBehavior passHref>
                 <NavigationMenuLink className="hover:font-bold">
                   Create Recipe
                 </NavigationMenuLink>

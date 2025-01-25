@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { RecipeIngredientForm, Tag, Unit } from "@/types/view/models";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -17,60 +18,96 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
-import { Hr } from "@/components/ui/separator";
-
-const { data, error } = await supabase.from("tag").select("name");
-
-if (error) {
-  console.log(`Error fetching tags: ${error}`);
-}
-
-interface Ingredient {
-  name: string;
-  amount: number | null;
-  unit: string;
-  note: string;
-}
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const CreateRecipe = () => {
+  const [units, setUnits] = useState<Unit[]>([]);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [ingredients, setIngredients] = useState<Ingredient[]>([
+  const [ingredients, setIngredients] = useState<RecipeIngredientForm[]>([
     {
       name: "",
-      amount: null,
-      unit: "",
+      amount: undefined,
+      unit: { id: 0, name: "" } as Unit,
       note: "",
     },
   ]);
   const [instructions, setInstructions] = useState("");
 
-  // add tag if use selects it
-  const handleTagSelect = (tag: string) => {
-    if (!selectedTags.includes(tag)) {
-      setSelectedTags([...selectedTags, tag]);
-    }
+  useEffect(() => {
+    const fetchUnits = async () => {
+      const response = await fetch("/api/units");
+      const data = await response.json();
+
+      if (response.ok) {
+        const formattedUnits = data.map((d: Unit) => {
+          return { id: d.id, name: d.name };
+        });
+        setUnits(formattedUnits);
+      } else {
+        console.error(`Error fetching units: ${data.error}`);
+      }
+    };
+
+    const fetchTags = async () => {
+      const response = await fetch("/api/tags");
+      const data = await response.json();
+
+      if (response.ok) {
+        const formattedTags = data.map((d: Tag) => {
+          return { id: d.id, name: d.name };
+        });
+
+        setTags(formattedTags);
+      } else {
+        console.error(`Error fetching tags: ${data.error}`);
+      }
+    };
+
+    fetchUnits();
+    fetchTags();
+  }, []);
+
+  // add selected tags
+  const handleTagSelect = (tag: Tag) => {
+    setSelectedTags((curSelectedTags) => {
+      if (!curSelectedTags.some((t) => t.id === tag.id)) {
+        const updatedTags = [...curSelectedTags, tag];
+        return updatedTags;
+      }
+      return curSelectedTags;
+    });
+    console.log(selectedTags);
   };
 
-  const handleTagRemove = (tag: string) => {
-    setSelectedTags(selectedTags.filter((t) => t !== tag));
+  const handleTagRemove = (tag: Tag) => {
+    setSelectedTags((curSelectedTags) =>
+      curSelectedTags.filter((t) => t.id !== tag.id)
+    );
   };
 
-  const handleAddIngredient = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const handleAddIngredient = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     setIngredients([
       ...ingredients,
       {
         name: "",
-        amount: null,
-        unit: "",
+        amount: undefined,
+        unit: { id: 0, name: "" } as Unit,
         note: "",
       },
     ]);
@@ -78,21 +115,20 @@ const CreateRecipe = () => {
 
   const handleIngredientChange = (
     index: number,
-    field: keyof Ingredient,
+    field: string,
     value: string | number
   ) => {
     const newIngredients = [...ingredients];
-    if (field === "amount") {
-      const numValue = value === "" ? null : parseFloat(value as string);
-      newIngredients[index] = {
-        ...newIngredients[index],
-        [field]: numValue,
-      };
-    } else {
-      newIngredients[index] = {
-        ...newIngredients[index],
-        [field]: value,
-      };
+    if (field === "name") {
+      newIngredients[index].name = value as string;
+    } else if (field === "amount") {
+      newIngredients[index].amount = value as number;
+    } else if (field === "unit") {
+      newIngredients[index].unit = units.find(
+        (unit) => unit.name === value
+      ) || { id: 0, name: "" };
+    } else if (field === "note") {
+      newIngredients[index].note = value as string;
     }
     setIngredients(newIngredients);
   };
@@ -115,13 +151,14 @@ const CreateRecipe = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validate ingredients
+    // validate ingredients
     const isIngredientsValid = ingredients.every(
       (ingredient) =>
         ingredient.amount !== null &&
+        ingredient.amount !== undefined &&
         !isNaN(ingredient.amount) &&
         ingredient.name.trim() !== "" &&
-        ingredient.unit.trim() !== ""
+        ingredient.unit.name.trim() !== ""
     );
 
     if (!isIngredientsValid) {
@@ -129,37 +166,34 @@ const CreateRecipe = () => {
       return;
     }
 
-    // Validate instructions
+    // validate instructions
     if (!instructions.trim()) {
       alert("Please add instructions");
       return;
     }
 
-    // post to supabase
-    const { data, error } = await supabase
-      .from("recipe")
-      .insert([
-        {
-          name,
-          description,
-          ingredients: ingredients.map((ing) => ({
-            ...ing,
-            amount: Number(ing.amount), // Ensure amount is number
-            name: ing.name.trim(),
-            unit: ing.unit.trim(),
-            note: ing.note.trim(),
-          })),
-          instructions,
-        },
-      ])
-      .select()
-      .single();
+    const response = await fetch("/api/recipes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        description,
+        ingredients,
+        instructions,
+        tags: selectedTags.map((tag) => tag.id),
+      }),
+    });
 
-    if (error) {
-      console.error("Error creating recipe:", error);
-      alert("Error creating recipe");
-    } else {
+    const result = await response.json();
+
+    if (response.ok) {
       console.log("Recipe created successfully");
+      alert("Recipe created successfully");
+    } else {
+      console.log(`Error creating recipe: ${result.error}`);
+      alert(`Error creating recipe: ${result.error}`);
     }
   };
 
@@ -176,6 +210,7 @@ const CreateRecipe = () => {
               type="text"
               id="recipe-name"
               placeholder="Name"
+              onChange={(e) => setName(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
               required
             />
@@ -188,6 +223,7 @@ const CreateRecipe = () => {
               type="text"
               id="recipe-description"
               placeholder="Description"
+              onChange={(e) => setDescription(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
             />
           </div>
@@ -230,7 +266,25 @@ const CreateRecipe = () => {
                   >
                     Unit
                   </Label>
-                  <Input
+                  <Select
+                    onValueChange={(value) =>
+                      handleIngredientChange(index, "unit", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {units.map((unit) => (
+                          <SelectItem key={unit.id} value={unit.name}>
+                            {unit.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {/* <Input
                     id={`ingredient-unit-${index}`}
                     type="text"
                     value={ingredient.unit}
@@ -239,7 +293,7 @@ const CreateRecipe = () => {
                     }
                     className="w-24"
                     required
-                  />
+                  /> */}
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
                   <Label
@@ -312,9 +366,7 @@ const CreateRecipe = () => {
                   aria-expanded={open}
                   className="max-w-fit"
                 >
-                  {value
-                    ? data?.find((tag) => tag.name === value)?.name
-                    : "Select tags..."}
+                  Select tags...
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
@@ -323,18 +375,18 @@ const CreateRecipe = () => {
                   <CommandList>
                     <CommandEmpty>No tags found.</CommandEmpty>
                     <CommandGroup>
-                      {data
+                      {tags
                         ?.sort((a, b) => a.name.localeCompare(b.name))
                         .map((tag) => (
                           <CommandItem
-                            key={tag.name}
+                            key={tag.id}
                             value={tag.name}
                             onSelect={(currentValue: string) => {
                               setValue(
                                 currentValue === value ? "" : currentValue
                               );
                               setOpen(false);
-                              handleTagSelect(tag.name);
+                              handleTagSelect(tag);
                             }}
                           >
                             {tag.name}
@@ -347,11 +399,11 @@ const CreateRecipe = () => {
             </Popover>
             <div className="mt-2 flex flex-row">
               {selectedTags.map((tag) => (
-                <Badge key={tag} className="mr-2 mb-2">
-                  {tag}
+                <Badge key={tag.id} className="mr-2 mb-2">
+                  {tag.name}
                   <Button
                     onClick={() => handleTagRemove(tag)}
-                    className="outline-none bg-transparent hover:bg-transparent hover:outline-none hover:text-green-700"
+                    className="outline-none shadow-none bg-transparent hover:bg-transparent hover:outline-none hover:text-green-700"
                   >
                     <X className="m-1" />
                   </Button>
