@@ -1,3 +1,5 @@
+"use client";
+
 import { Recipe, RecipeIngredient, Tag } from "@/types/view/models";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
