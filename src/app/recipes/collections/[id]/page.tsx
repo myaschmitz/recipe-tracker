@@ -1,3 +1,5 @@
+"use client";
+
 import { Collection } from "@/types/view/models";
 import { useParams } from "next/navigation";
 import { useState } from "react";
