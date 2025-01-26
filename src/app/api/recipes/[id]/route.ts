@@ -3,9 +3,9 @@ import { supabase } from "@/lib/supabaseClient";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = await context.params;
 
   if (!id) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
@@ -13,12 +13,12 @@ export async function GET(
 
   const { data, error } = await supabase
     .from("recipe")
-    .select("*")
+    .select("id, name, description, instructions")
     .eq("id", id)
     .single();
 
   if (error) {
-    console.log(`Error fetching recipe: ${error}`);
+    console.error(`Error fetching recipe: ${error}`);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

@@ -3,8 +3,15 @@ import { supabase } from "@/lib/supabaseClient";
 import { RecipeSchema } from "@/types/database/models";
 import { PostgrestError } from "@supabase/supabase-js";
 
-export async function GET() {
-  const { data, error } = await supabase.from("recipe").select("*");
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const limit = searchParams.get("limit");
+
+  const { data, error } = await supabase
+    .from("recipe")
+    .select("id, name, description")
+    .order("created_at", { ascending: false })
+    .limit(limit ? parseInt(limit) : 100000000);
 
   if (error) {
     console.log(`Error fetching recipes: ${error}`);
@@ -36,13 +43,11 @@ export async function POST(request: Request) {
     }: { data: RecipeSchema | null; error: PostgrestError | null } =
       await supabase
         .from("recipe")
-        .insert([
-          {
-            name: body.name,
-            description: body.description,
-            instructions: body.instructions,
-          },
-        ])
+        .insert({
+          name: body.name,
+          description: body.description,
+          instructions: body.instructions,
+        })
         .select()
         .single();
 
@@ -59,13 +64,15 @@ export async function POST(request: Request) {
     }
 
     if (body.ingredients?.length > 0) {
+      console.log("Adding ingredients");
+      console.log(body.ingredients);
       const { error: ingredientError } = await supabase
         .from("recipe_ingredient")
         .insert(
           body.ingredients.map((ingredient) => ({
             recipe_id: recipe.id,
             name: ingredient.name,
-            amount: ingredient.amount,
+            amount: parseFloat(ingredient.amount.toString()),
             unit_id: ingredient.unitId,
             note: ingredient.note,
           }))
@@ -81,6 +88,8 @@ export async function POST(request: Request) {
     }
 
     if (body.tags?.length > 0) {
+      console.log("Adding tags");
+      console.log(body.tags);
       const { error: tagError } = await supabase.from("recipe_tag").insert(
         body.tags.map((tag) => ({
           recipe_id: recipe.id,

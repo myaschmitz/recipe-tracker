@@ -14,33 +14,46 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UserRound, Settings2, Bell, Lock } from "lucide-react";
 import { useState, useEffect } from "react";
+import AccountSettings from "./AccountSettings";
+import PreferencesSettings from "./PreferencesSettings";
+import NotificationsSettings from "./NotificationsSettings";
+import PrivacySettings from "./PrivacySettings";
 
 const sidebarItems = [
   {
     title: "Account",
     url: "#",
     icon: UserRound,
-    content: "Test1",
+    content: <AccountSettings />,
   },
   {
     title: "Preferences",
     url: "#",
     icon: Settings2,
-    content: "Test2",
+    content: <PreferencesSettings />,
   },
   {
     title: "Notifications",
     url: "#",
     icon: Bell,
-    content: "Test3",
+    content: <NotificationsSettings />,
   },
   {
     title: "Privacy",
     url: "#",
     icon: Lock,
-    content: "Test4",
+    content: <PrivacySettings />,
   },
 ];
 
@@ -73,47 +86,21 @@ const Settings = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Settings</h1>
-      <SidebarProvider className="max-w-fit">
-        {/* <Sidebar> */}
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Settings</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {sidebarItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a
-                        // href={item.url}
-                        onClick={() => setActiveTab(item.title)}
-                      >
-                        <item.icon />
-                        <span
-                          className={`${
-                            activeTab === item.title ? "font-bold" : ""
-                          }`}
-                        >
-                          {item.title}
-                        </span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <Separator className="py-4 h-full" orientation="vertical" />
-        <div className="p-4">{renderContent()}</div>
-        {/* </Sidebar> */}
-      </SidebarProvider>
-      {/* <Tabs defaultValue="account">
+      <Tabs value={activeTab}>
         <TabsList>
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          {sidebarItems.map((item) => (
+            <TabsTrigger
+              key={item.title}
+              value={item.title}
+              onClick={() => setActiveTab(item.title)}
+            >
+              {item.title}
+            </TabsTrigger>
+          ))}
         </TabsList>
-        <TabsContent value="account">
+        <div className="p-4">{renderContent()}</div>
+
+        {/* <TabsContent value="account">
           <div>
             <h1>Name</h1>
             <h1>Username</h1>
@@ -131,8 +118,8 @@ const Settings = () => {
             <h1>Default measurements units</h1>
           </div>
         </TabsContent>
-        <TabsContent value="notifications">Notifications</TabsContent>
-      </Tabs> */}
+        <TabsContent value="notifications">Notifications</TabsContent> */}
+      </Tabs>
     </div>
   );
 };

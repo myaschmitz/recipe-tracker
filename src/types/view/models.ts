@@ -61,6 +61,8 @@ export type RecipeForm = Omit<Recipe, "id" | "created_at" | "updated_at">;
 export type RecipeIngredientForm = Omit<RecipeIngredient, "id" | "recipeId">;
 export type CollectionForm = Omit<Collection, "id" | "createdAt" | "recipes">;
 
+export type RecipeBasicCard = Omit<Recipe, "instructions" | "ingredients">;
+
 // export type CreateUnit = Omit<Unit, "id">;
 // export type CreateRecipe = Omit<Recipe, "id">;
 // export type CreateIngredient = Omit<Ingredient, "id">;

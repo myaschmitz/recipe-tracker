@@ -3,12 +3,12 @@ import { supabase } from "@/lib/supabaseClient";
 
 export async function GET() {
   const { data, error } = await supabase
-    .from("tag")
+    .from("ingredient")
     .select("*")
     .order("name", { ascending: true });
 
   if (error) {
-    console.log(`Error fetching tags: ${error}`);
+    console.log(`Error fetching ingredients: ${error}`);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

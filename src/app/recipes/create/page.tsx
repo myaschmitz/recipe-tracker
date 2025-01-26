@@ -29,6 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateRecipe = () => {
   const [units, setUnits] = useState<Unit[]>([]);
@@ -47,6 +50,9 @@ const CreateRecipe = () => {
     },
   ]);
   const [instructions, setInstructions] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchUnits = async () => {
@@ -149,7 +155,7 @@ const CreateRecipe = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    setIsSubmitting(true);
 
     // validate ingredients
     const isIngredientsValid = ingredients.every(
@@ -158,17 +164,29 @@ const CreateRecipe = () => {
         ingredient.amount !== undefined &&
         !isNaN(ingredient.amount) &&
         ingredient.name.trim() !== "" &&
-        ingredient.unit.name.trim() !== ""
+        ingredient.unit.name.trim() !== "" &&
+        ingredient.unit.id !== null
     );
 
     if (!isIngredientsValid) {
-      alert("Please fill in all required ingredient fields with valid values");
+      toast({
+        title:
+          "Please fill in all required ingredient fields with valid values",
+        duration: 3000,
+      });
+      e.preventDefault();
+      setIsSubmitting(false);
       return;
     }
 
     // validate instructions
     if (!instructions.trim()) {
-      alert("Please add instructions");
+      toast({
+        title: "Please add instructions to your recipe",
+        duration: 3000,
+      });
+      e.preventDefault();
+      setIsSubmitting(false);
       return;
     }
 
@@ -180,8 +198,13 @@ const CreateRecipe = () => {
       body: JSON.stringify({
         name,
         description,
-        ingredients,
         instructions,
+        ingredients: ingredients.map((ingredient) => ({
+          name: ingredient.name,
+          amount: ingredient.amount,
+          unitId: ingredient.unit.id,
+          note: ingredient.note,
+        })),
         tags: selectedTags.map((tag) => tag.id),
       }),
     });
@@ -190,10 +213,21 @@ const CreateRecipe = () => {
 
     if (response.ok) {
       console.log("Recipe created successfully");
-      alert("Recipe created successfully");
+
+      // reset fields
+      // setName("");
+      // setDescription("");
+      // setInstructions("");
+      // setIngredients([]);
+      // setSelectedTags([]);
+      toast({
+        title: "Recipe added successfully",
+      });
+      router.push(`/recipes/${result.id}`);
     } else {
       console.log(`Error creating recipe: ${result.error}`);
-      alert(`Error creating recipe: ${result.error}`);
+      // alert(`Error creating recipe: ${result.error}`);
+      toast({ title: "Error creating recipe", description: result.error });
     }
   };
 
@@ -219,8 +253,8 @@ const CreateRecipe = () => {
             <Label htmlFor="recipe-description" className="text-lg font-bold">
               Description
             </Label>
-            <Input
-              type="text"
+            <Textarea
+              // type="text"
               id="recipe-description"
               placeholder="Description"
               onChange={(e) => setDescription(e.target.value)}
@@ -253,6 +287,7 @@ const CreateRecipe = () => {
                     onChange={(e) =>
                       handleIngredientChange(index, "amount", e.target.value)
                     }
+                    onKeyDown={handleKeyDown}
                     min="0"
                     step="any"
                     className="w-20"
@@ -270,6 +305,7 @@ const CreateRecipe = () => {
                     onValueChange={(value) =>
                       handleIngredientChange(index, "unit", value)
                     }
+                    onKeyDown={handleKeyDown}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Unit" />
@@ -309,7 +345,8 @@ const CreateRecipe = () => {
                     onChange={(e) =>
                       handleIngredientChange(index, "name", e.target.value)
                     }
-                    className="w-24"
+                    onKeyDown={handleKeyDown}
+                    className="w-48"
                     required
                   />
                 </div>
@@ -330,7 +367,6 @@ const CreateRecipe = () => {
                       }
                       onKeyDown={handleKeyDown}
                       className="w-full"
-                      required
                     />
                     <Button
                       onClick={() => handleRemoveIngredient(index)}
@@ -415,8 +451,9 @@ const CreateRecipe = () => {
         <Button
           type="submit"
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          disabled={isSubmitting}
         >
-          Submit
+          {isSubmitting ? "Submitting..." : "Create Recipe"}
         </Button>
       </form>
     </div>
