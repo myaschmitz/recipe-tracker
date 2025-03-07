@@ -1,20 +1,22 @@
 "use client";
 
 import { Recipe } from "@/types/view/models";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RecipeIngredient, Tag } from "@/types/view/models";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Link, Pencil } from "lucide-react";
+import { Link, Pencil, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import parse from "html-react-parser";
 
 const RecipePage = () => {
   const params = useParams();
+  const router = useRouter();
   const id = params.id?.toString();
   const [recipe, setRecipe] = useState<Recipe>();
   const [ingredients, setIngredients] = useState<RecipeIngredient[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -67,6 +69,34 @@ const RecipePage = () => {
     }
   }, [id]);
 
+  const handleDeleteRecipe = async () => {
+    if (
+      !id ||
+      !window.confirm("Are you sure you want to delete this recipe?")
+    ) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`/api/recipes/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error deleting recipe: ${response.statusText}`);
+      }
+
+      // Redirect to the recipes page after deletion
+      router.push("/recipes");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete recipe. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (!recipe) {
     return (
       <div className="container mx-auto p-4 text-lg font-bold">Loading...</div>
@@ -83,6 +113,14 @@ const RecipePage = () => {
         >
           <Pencil className="p-1" size={24} />
         </a>
+        <button
+          className="hover:text-red-700 transition-all"
+          onClick={handleDeleteRecipe}
+          disabled={isDeleting}
+          // TODO: Add are you sure? modal and also a loading spinner
+        >
+          <X className="" size={24} />
+        </button>
       </div>
       <div className="my-4">
         {tags.map((tag) => (
