@@ -1,52 +1,67 @@
 "use client";
 
-import { Recipe, Tag } from "@/types/view/models";
-import { RecipeSchema } from "@/types/database/models";
+import { Recipe, RecipeTag, Tag } from "@/types/view/models";
+import { RecipeSchema, RecipeTagSchema } from "@/types/database/models";
 import React, { useState, useEffect } from "react";
 import RecipeCard from "@/components/RecipeCard";
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
-    const fetchRecipes = async () => {
-      const response = await fetch("/api/recipes");
-      const data = await response.json();
+    // TODO: create structure that's based off of tags in database
+    // so it doesn't need to make a request to the database every time
 
-      if (!response.ok) {
+    const fetchRecipes = async () => {
+      const recipeResponse = await fetch("/api/recipes");
+      const recipeData = await recipeResponse.json();
+      const recipeTagResponse = await fetch("/api/recipe-tags");
+      const recipeTagData = await recipeTagResponse.json();
+      const tagResponse = await fetch("/api/tags");
+      const tagData = await tagResponse.json();
+      const formattedTags = tagData.map((d: Tag) => {
+        return { id: d.id, name: d.name };
+      });
+
+      if (!tagResponse.ok) {
+        console.error(`Error fetching tags: ${tagData.error}`);
+      }
+
+      if (!recipeResponse.ok) {
         console.error("Error fetching /api/recipes.");
       }
 
+      if (!recipeTagResponse.ok) {
+        console.error(`Error fetching tags: ${recipeTagData.error}`);
+      }
+
+      const recipeTagsMap = recipeTagData.map((d: RecipeTagSchema) => {
+        return { tag_id: d.tag_id, recipe_id: d.recipe_id };
+      });
+
       setRecipes(
-        data.map((recipe: RecipeSchema) => ({
-          id: recipe.id,
-          name: recipe.name,
-          description: recipe.description,
-          tags: [],
-        }))
+        recipeData.map((recipe: RecipeSchema) => {
+          const recipeTagRelations = recipeTagsMap.filter(
+            (relation: RecipeTagSchema) => relation.recipe_id === recipe.id
+          );
+
+          const recipeTags = recipeTagRelations
+            .map((relation: RecipeTagSchema) => {
+              // Find the full tag object using the tag_id from the relation
+              return formattedTags.find((tag) => tag.id === relation.tag_id);
+            })
+            .filter(Boolean);
+          return {
+            id: recipe.id,
+            name: recipe.name,
+            description: recipe.description,
+            tags: recipeTags,
+          };
+        })
       );
     };
 
-    const fetchTags = async () => {
-      // TODO: create structure that's based off of tags in database
-      // so it doesn't need to make a request to the database every time
-      const response = await fetch("/api/tags");
-      const data = await response.json();
-
-      if (response.ok) {
-        const formattedTags = data.map((d: Tag) => {
-          return { id: d.id, name: d.name };
-        });
-
-        setTags(formattedTags);
-      } else {
-        console.error(`Error fetching tags: ${data.error}`);
-      }
-    };
-
     fetchRecipes();
-    fetchTags();
   }, []);
 
   return (

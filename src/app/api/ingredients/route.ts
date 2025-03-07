@@ -8,7 +8,7 @@ export async function GET() {
     .order("name", { ascending: true });
 
   if (error) {
-    console.log(`Error fetching ingredients: ${error}`);
+    console.error(`Error fetching ingredients: ${error}`);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

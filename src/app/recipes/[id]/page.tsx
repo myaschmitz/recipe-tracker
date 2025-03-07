@@ -76,7 +76,7 @@ const RecipePage = () => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">{recipe.name}</h1>
       <div className="my-4">
-        {tags.map((tag, index) => (
+        {tags.map((tag) => (
           <Badge key={tag.id}>{tag.name}</Badge>
         ))}
       </div>

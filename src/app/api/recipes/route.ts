@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     .limit(limit ? parseInt(limit) : 100000000);
 
   if (error) {
-    console.log(`Error fetching recipes: ${error}`);
+    console.error(`Error fetching recipes: ${error}`);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         .single();
 
     if (recipeError) {
-      console.log(`Error creating recipe: ${recipeError}`);
+      console.error(`Error creating recipe: ${recipeError}`);
       return NextResponse.json({ error: recipeError.message }, { status: 500 });
     }
 
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(recipe, { status: 201 });
   } catch (error: unknown) {
-    console.log(`Error creating recipe: ${error}`);
+    console.error(`Error creating recipe: ${error}`);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

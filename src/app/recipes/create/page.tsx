@@ -225,7 +225,7 @@ const CreateRecipe = () => {
       });
       router.push(`/recipes/${result.id}`);
     } else {
-      console.log(`Error creating recipe: ${result.error}`);
+      console.error(`Error creating recipe: ${result.error}`);
       // alert(`Error creating recipe: ${result.error}`);
       toast({ title: "Error creating recipe", description: result.error });
     }

@@ -197,7 +197,7 @@ export function Navbar() {
       },
       {
         title: "Collections",
-        href: "/recipes/collections",
+        href: "/collections",
         icon: SquareLibrary,
       },
       {

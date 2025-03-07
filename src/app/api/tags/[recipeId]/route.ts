@@ -16,7 +16,6 @@ export async function GET(
     .from("recipe_tag")
     .select("tag_id")
     .eq("recipe_id", recipeId);
-  console.log(tagIds);
   if (tagIdsError) {
     console.error(`Error fetching tags: ${tagIdsError.message}`);
     return NextResponse.json({ error: tagIdsError.message }, { status: 500 });
@@ -26,14 +25,13 @@ export async function GET(
     return NextResponse.json([], { status: 200 });
   }
 
+  const tagIdValues = tagIds
+    .map((t) => t.tag_id)
+    .filter((id) => id !== null && id !== undefined);
   const { data: tags, error: tagsError } = await supabase
     .from("tag")
     .select("id, name")
-    .eq(
-      "id",
-      tagIds.map((t) => t.tag_id)
-    );
-  console.log(tags);
+    .in("id", tagIdValues);
 
   if (tagsError) {
     console.error(`Error fetching tags: ${tagsError.message}`);
