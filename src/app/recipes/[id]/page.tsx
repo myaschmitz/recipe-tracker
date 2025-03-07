@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RecipeIngredient, Tag } from "@/types/view/models";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Link, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import parse from "html-react-parser";
 
@@ -74,7 +75,15 @@ const RecipePage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{recipe.name}</h1>
+      <div className="flex items-center gap-2 mb-4">
+        <h1 className="text-2xl font-bold">{recipe.name}</h1>
+        <a
+          href={`/recipes/${id}/edit`}
+          className="hover:text-primary transition-all"
+        >
+          <Pencil className="p-1" size={24} />
+        </a>
+      </div>
       <div className="my-4">
         {tags.map((tag) => (
           <Badge key={tag.id}>{tag.name}</Badge>
