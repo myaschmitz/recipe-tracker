@@ -104,7 +104,7 @@ const RecipePage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto px-12">
       <div className="flex items-center gap-2 mb-4">
         <h1 className="text-2xl font-bold">{recipe.name}</h1>
         <a
@@ -142,7 +142,7 @@ const RecipePage = () => {
         </ul>
       </div>
       <h2 className="font-bold text-lg">Instructions</h2>
-      <div>{parse(recipe.instructions)}</div>
+      <div className="text-lg">{parse(recipe.instructions)}</div>
     </div>
   );
 };
