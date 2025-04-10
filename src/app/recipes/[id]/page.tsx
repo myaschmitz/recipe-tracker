@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Link, Pencil, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import parse from "html-react-parser";
+import { CollectionRecipeSchema } from "@/types/database/models";
 
 const RecipePage = () => {
   const params = useParams();
@@ -61,6 +62,21 @@ const RecipePage = () => {
         });
 
         setTags(formattedTags);
+      };
+
+      const fetchCollectionRecipes = async (recipeId: string) => {
+        const response = await fetch(`/api/collection-recipes/${recipeId}`);
+
+        if (!response.ok) {
+          throw new Error(
+            `Error fetching collection recipes: ${response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+        const collectionRecipesMap = data.map((d: CollectionRecipeSchema) => {
+          return { tag_id: d.collection_id, recipe_id: d.recipe_id };
+        });
       };
 
       fetchRecipe();
@@ -143,6 +159,10 @@ const RecipePage = () => {
       </div>
       <h2 className="font-bold text-lg">Instructions</h2>
       <div className="text-lg">{parse(recipe.instructions)}</div>
+      <div className="my-4">
+        <h2 className="font-bold text-lg">Add to collection</h2>
+        {/* <div className="text-lg">{parse(recipe.notes)}</div> */}
+      </div>
     </div>
   );
 };

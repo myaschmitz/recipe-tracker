@@ -12,7 +12,7 @@ const Recipes = () => {
     // TODO: create structure that's based off of tags in database
     // so it doesn't need to make a request to the database every time
 
-    const fetchRecipes = async () => {
+    const fetchData = async () => {
       const recipeResponse = await fetch("/api/recipes");
       const recipeData = await recipeResponse.json();
       const recipeTagResponse = await fetch("/api/recipe-tags");
@@ -28,11 +28,11 @@ const Recipes = () => {
       }
 
       if (!recipeResponse.ok) {
-        console.error("Error fetching /api/recipes.");
+        console.error("Error fetching recipes.");
       }
 
       if (!recipeTagResponse.ok) {
-        console.error(`Error fetching tags: ${recipeTagData.error}`);
+        console.error(`Error fetching recipe tags: ${recipeTagData.error}`);
       }
 
       const recipeTagsMap = recipeTagData.map((d: RecipeTagSchema) => {
@@ -61,7 +61,7 @@ const Recipes = () => {
       );
     };
 
-    fetchRecipes();
+    fetchData();
   }, []);
 
   return (
