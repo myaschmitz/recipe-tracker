@@ -64,6 +64,12 @@ const Recipes = () => {
     fetchData();
   }, []);
 
+  if (!recipes) {
+    return (
+      <div className="container mx-auto p-4 text-lg font-bold">Loading...</div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Recipes</h1>

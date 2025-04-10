@@ -1,7 +1,9 @@
 "use client";
 
 import { Collection } from "@/types/view/models";
+import { ArrowLeft } from "lucide-react";
 import { useParams } from "next/navigation";
+import router from "next/router";
 import { useEffect, useState } from "react";
 
 const CollectionPage = () => {
@@ -34,6 +36,15 @@ const CollectionPage = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <div className="mb-4">
+        <button
+          onClick={() => router.push("/collections")}
+          className="flex items-center gap-2 hover:text-primary transition-all"
+        >
+          <ArrowLeft />
+          Back to recipes
+        </button>
+      </div>
       <h1 className="text-2xl font-bold">{formatName(collection?.name)}</h1>
     </div>
   );

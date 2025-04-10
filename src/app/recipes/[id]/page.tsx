@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RecipeIngredient, Tag } from "@/types/view/models";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Link, Pencil, X } from "lucide-react";
+import { Link, Pencil, X, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import parse from "html-react-parser";
 import { CollectionRecipeSchema } from "@/types/database/models";
@@ -121,6 +121,15 @@ const RecipePage = () => {
 
   return (
     <div className="container mx-auto px-12">
+      <div className="mb-4">
+        <button
+          onClick={() => router.push("/recipes")}
+          className="flex items-center gap-2 hover:text-primary transition-all"
+        >
+          <ArrowLeft />
+          Back to recipes
+        </button>
+      </div>
       <div className="flex items-center gap-2 mb-4">
         <h1 className="text-2xl font-bold">{recipe.name}</h1>
         <a
