@@ -1,27 +1,31 @@
-import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import {
+  handleApiError,
+  createSuccessResponse,
+  validateRequired,
+} from "@/lib/api";
 
 export async function GET() {
-  const { data, error } = await supabase.from("collection_recipe").select("*");
+  try {
+    const { data, error } = await supabase
+      .from("collection_recipe")
+      .select("*");
 
-  if (error) {
-    console.error(`Error fetching collection recipes: ${error}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      throw error;
+    }
+
+    return createSuccessResponse(data);
+  } catch (error) {
+    return handleApiError(error, "fetching collection recipes");
   }
-  return NextResponse.json(data, { status: 200 });
 }
 
 export async function POST(request: Request) {
   try {
     const { collection_id, recipe_id } = await request.json();
 
-    // Validate the required fields
-    if (!recipe_id || !collection_id) {
-      return NextResponse.json(
-        { error: "recipe_id and collection_id are required" },
-        { status: 400 }
-      );
-    }
+    validateRequired({ collection_id, recipe_id });
 
     const { data, error } = await supabase
       .from("collection_recipe")
@@ -29,16 +33,11 @@ export async function POST(request: Request) {
       .select("*");
 
     if (error) {
-      console.error(`Error adding recipe to collection: ${error}`);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      throw error;
     }
 
-    return NextResponse.json(data, { status: 201 });
-  } catch (err) {
-    console.error(`Unexpected error: ${err}`);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return createSuccessResponse(data, 201);
+  } catch (error) {
+    return handleApiError(error, "adding recipe to collection");
   }
 }

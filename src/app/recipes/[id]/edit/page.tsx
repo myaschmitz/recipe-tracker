@@ -50,6 +50,9 @@ const EditRecipePage = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [name, setName] = useState("");
+  const [prepTime, setPrepTime] = useState<number | undefined>(undefined);
+  const [cookTime, setCookTime] = useState<number | undefined>(undefined);
+  const [totalTime, setTotalTime] = useState<number | undefined>(undefined);
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState<RecipeIngredientForm[]>([]);
   const [instructions, setInstructions] = useState("");
@@ -176,7 +179,7 @@ const EditRecipePage = () => {
     if (field === "name") {
       newIngredients[index].name = value as string;
     } else if (field === "amount") {
-      newIngredients[index].amount = value as number;
+      newIngredients[index].amount = parseFloat(value as string) || 0;
     } else if (field === "unit") {
       newIngredients[index].unit = units.find(
         (unit) => unit.name === value
@@ -203,6 +206,7 @@ const EditRecipePage = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
     // validate ingredients
@@ -249,11 +253,14 @@ const EditRecipePage = () => {
         instructions,
         ingredients: ingredients.map((ingredient) => ({
           name: ingredient.name,
-          amount: ingredient.amount,
+          amount: Number(ingredient.amount),
           unitId: ingredient.unit.id,
           note: ingredient.note,
         })),
         tags: selectedTags.map((tag) => tag.id),
+        prepTime: prepTime ? Number(prepTime) : undefined,
+        cookTime: cookTime ? Number(cookTime) : undefined,
+        totalTime: totalTime ? Number(totalTime) : undefined,
       }),
     });
 

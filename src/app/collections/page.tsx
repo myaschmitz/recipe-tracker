@@ -12,8 +12,7 @@ const CollectionsPage = () => {
     const fetchCollections = async () => {
       try {
         const response = await fetch("/api/collections");
-        console.log("here");
-        console.log(response);
+
         if (!response.ok) {
           throw new Error("Failed to fetch collections");
         }

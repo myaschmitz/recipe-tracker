@@ -1,47 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { handleApiError, createSuccessResponse } from "@/lib/api";
 
 export async function GET(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  try {
+    const { id } = await context.params;
 
-  if (!id) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
+    }
+
+    const { data, error } = await supabase
+      .from("recipe")
+      .select("id, name, description, instructions")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return createSuccessResponse(data);
+  } catch (error) {
+    return handleApiError(error, "fetching recipe");
   }
-
-  const { data, error } = await supabase
-    .from("recipe")
-    .select("id, name, description, instructions")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    console.error(`Error fetching recipe: ${error}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json(data, { status: 200 });
 }
 
 export async function DELETE(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
-  console.log(id);
+  try {
+    const { id } = await context.params;
 
-  if (!id) {
-    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
+    }
+
+    const { error } = await supabase.from("recipe").delete().eq("id", id);
+
+    if (error) {
+      throw error;
+    }
+
+    return createSuccessResponse({ success: true });
+  } catch (error) {
+    return handleApiError(error, "deleting recipe");
   }
-
-  const { error } = await supabase.from("recipe").delete().eq("id", id);
-
-  if (error) {
-    console.error(`Error deleting recipe: ${error}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ success: true }, { status: 200 });
 }

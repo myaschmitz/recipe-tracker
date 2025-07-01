@@ -40,6 +40,9 @@ const CreateRecipe = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [name, setName] = useState("");
+  const [prepTime, setPrepTime] = useState<number | undefined>(undefined);
+  const [cookTime, setCookTime] = useState<number | undefined>(undefined);
+  const [totalTime, setTotalTime] = useState<number | undefined>(undefined);
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState<RecipeIngredientForm[]>([
     {
@@ -128,7 +131,7 @@ const CreateRecipe = () => {
     if (field === "name") {
       newIngredients[index].name = value as string;
     } else if (field === "amount") {
-      newIngredients[index].amount = value as number;
+      newIngredients[index].amount = parseFloat(value as string) || 0;
     } else if (field === "unit") {
       newIngredients[index].unit = units.find(
         (unit) => unit.name === value
@@ -155,10 +158,11 @@ const CreateRecipe = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
     // validate ingredients
-    const isIngredientsValid = ingredients.every(
+    const areIngredientsValid = ingredients.every(
       (ingredient) =>
         ingredient.amount !== null &&
         ingredient.amount !== undefined &&
@@ -168,7 +172,7 @@ const CreateRecipe = () => {
         ingredient.unit.id !== null
     );
 
-    if (!isIngredientsValid) {
+    if (!areIngredientsValid) {
       toast({
         title:
           "Please fill in all required ingredient fields with valid values",
@@ -201,34 +205,33 @@ const CreateRecipe = () => {
         instructions,
         ingredients: ingredients.map((ingredient) => ({
           name: ingredient.name,
-          amount: ingredient.amount,
+          amount: Number(ingredient.amount),
           unitId: ingredient.unit.id,
           note: ingredient.note,
         })),
         tags: selectedTags.map((tag) => tag.id),
+        prepTime: prepTime ? Number(prepTime) : undefined,
+        cookTime: cookTime ? Number(cookTime) : undefined,
+        totalTime: totalTime ? Number(totalTime) : undefined,
       }),
     });
 
     const result = await response.json();
 
     if (response.ok) {
-      console.log("Recipe created successfully");
-
-      // reset fields
-      // setName("");
-      // setDescription("");
-      // setInstructions("");
-      // setIngredients([]);
-      // setSelectedTags([]);
       toast({
         title: "Recipe added successfully",
       });
       router.push(`/recipes/${result.id}`);
     } else {
       console.error(`Error creating recipe: ${result.error}`);
-      // alert(`Error creating recipe: ${result.error}`);
-      toast({ title: "Error creating recipe", description: result.error });
+      toast({
+        title: "Error creating recipe",
+        description: result.error || "Unkown error",
+      });
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -236,8 +239,8 @@ const CreateRecipe = () => {
       <h1 className="text-2xl font-bold mb-4">Create Recipe</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <div className="mb-4 flex flex-col max-w-sm">
-            <Label htmlFor="recipe-name" className="text-lg font-bold">
+          <div className="mb-6 flex flex-col max-w-sm">
+            <Label htmlFor="recipe-name" className="text-md font-bold">
               Name<span className="text-red-700">*</span>
             </Label>
             <Input
@@ -245,12 +248,69 @@ const CreateRecipe = () => {
               id="recipe-name"
               placeholder="Name"
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md shadow-sm sm:text-sm"
               required
             />
           </div>
-          <div className="mb-4 flex flex-col max-w-sm">
-            <Label htmlFor="recipe-description" className="text-lg font-bold">
+          <div className="mb-6 flex flex-row gap-6">
+            <div className="flex flex-col max-w-sm">
+              <Label htmlFor="recipe-name" className="text-sm font-bold">
+                Prep Time
+              </Label>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  type="number"
+                  id="prep-time"
+                  placeholder=""
+                  // value={ingredient.amount ?? ""}
+                  //   onChange={(e) =>
+                  //     handleIngredientChange(index, "amount", e.target.value)
+                  //   }
+                  //   onKeyDown={handleKeyDown}
+                  min="0"
+                  step="any"
+                  className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
+                />
+                <span>min</span>
+              </div>
+            </div>
+            <div className="flex flex-col max-w-sm">
+              <Label htmlFor="recipe-name" className="text-sm font-bold">
+                Cook Time
+              </Label>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  type="number"
+                  id="prep-time"
+                  placeholder=""
+                  onChange={(e) => setName(e.target.value)}
+                  min="0"
+                  step="any"
+                  className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
+                />
+                <span>min</span>
+              </div>
+            </div>
+            <div className="flex flex-col max-w-sm">
+              <Label htmlFor="recipe-name" className="text-sm font-bold">
+                Total Time
+              </Label>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  type="number"
+                  id="prep-time"
+                  placeholder=""
+                  onChange={(e) => setName(e.target.value)}
+                  min="0"
+                  step="any"
+                  className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
+                />
+                <span>min</span>
+              </div>
+            </div>
+          </div>
+          <div className="mb-6 flex flex-col max-w-md">
+            <Label htmlFor="recipe-description" className="text-md font-bold">
               Description
             </Label>
             <Textarea
@@ -258,14 +318,18 @@ const CreateRecipe = () => {
               id="recipe-description"
               placeholder="Description"
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md shadow-sm sm:text-sm"
             />
           </div>
-          <div className="mb-4 flex flex-col">
-            <Label htmlFor="ingredients" className="text-lg font-bold">
+          <div className="mb-6 flex flex-col">
+            <Label htmlFor="ingredients" className="text-md font-bold">
               Ingredients<span className="text-red-700">*</span>
             </Label>
-            <Button className="max-w-fit" onClick={handleAddIngredient}>
+            <Button
+              size="sm"
+              className="max-w-fit mt-1"
+              onClick={handleAddIngredient}
+            >
               + Add ingredient
             </Button>
             {ingredients.map((ingredient, index) => (
@@ -274,12 +338,14 @@ const CreateRecipe = () => {
                 className="flex sm:items-center items-start sm:flex-row flex-col mt-4"
               >
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
-                  <Label
-                    htmlFor={`ingredient-amount-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Amount
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-amount-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Amount
+                    </Label>
+                  )}
                   <Input
                     id={`ingredient-amount-${index}`}
                     type="number"
@@ -290,17 +356,19 @@ const CreateRecipe = () => {
                     onKeyDown={handleKeyDown}
                     min="0"
                     step="any"
-                    className="w-20"
+                    className="w-20 bg-secondary"
                     required
                   />
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
-                  <Label
-                    htmlFor={`ingredient-unit-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Unit
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-unit-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Unit
+                    </Label>
+                  )}
                   <Select
                     onValueChange={(value) =>
                       handleIngredientChange(index, "unit", value)
@@ -332,12 +400,14 @@ const CreateRecipe = () => {
                   /> */}
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
-                  <Label
-                    htmlFor={`ingredient-name-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Name
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-name-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Name
+                    </Label>
+                  )}
                   <Input
                     id={`ingredient-name-${index}`}
                     type="text"
@@ -351,12 +421,14 @@ const CreateRecipe = () => {
                   />
                 </div>
                 <div className="flex flex-col mr-2 w-full">
-                  <Label
-                    htmlFor={`ingredient-note-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Note
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-note-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Note
+                    </Label>
+                  )}
                   <div className="flex flex-row items-center">
                     <Input
                       id={`ingredient-note-${index}`}
@@ -370,7 +442,7 @@ const CreateRecipe = () => {
                     />
                     <Button
                       onClick={() => handleRemoveIngredient(index)}
-                      className="ml-2"
+                      className="ml-2 hover:text-red-700"
                       variant="ghost"
                     >
                       <X />
@@ -380,8 +452,8 @@ const CreateRecipe = () => {
               </div>
             ))}
           </div>
-          <div className="mb-4 flex flex-col">
-            <Label htmlFor="instructions" className="text-lg font-bold">
+          <div className="mb-6 flex flex-col w-full">
+            <Label htmlFor="instructions" className="text-md font-bold">
               Instructions<span className="text-red-700">*</span>
             </Label>
             <RichTextEditor
@@ -390,9 +462,9 @@ const CreateRecipe = () => {
               required
             />
           </div>
-          <div className="mb-4 flex flex-col max-w-sm">
-            <Label htmlFor="recipe-tag" className="text-lg font-bold max-w-sm">
-              Tag
+          <div className="mb-6 flex flex-col max-w-sm">
+            <Label htmlFor="recipe-tag" className="text-md font-bold max-w-sm">
+              Tags
             </Label>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
@@ -400,14 +472,14 @@ const CreateRecipe = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="max-w-fit"
+                  className="max-w-fit my-1"
                 >
                   Select tags...
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
                 <Command>
-                  <CommandInput placeholder="Search tags..." />
+                  <CommandInput placeholder="Search tags" />
                   <CommandList>
                     <CommandEmpty>No tags found.</CommandEmpty>
                     <CommandGroup>
@@ -438,10 +510,11 @@ const CreateRecipe = () => {
                 <Badge key={tag.id} className="mr-2 mb-2">
                   {tag.name}
                   <Button
+                    size="sm"
                     onClick={() => handleTagRemove(tag)}
-                    className="outline-none shadow-none bg-transparent hover:bg-transparent hover:outline-none hover:text-green-700"
+                    className="outline-none shadow-none bg-transparent p-0 ml-2 mr-1 hover:bg-transparent hover:outline-none hover:text-red-700"
                   >
-                    <X className="m-1" />
+                    <X />
                   </Button>
                 </Badge>
               ))}

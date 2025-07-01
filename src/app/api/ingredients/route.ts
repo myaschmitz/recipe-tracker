@@ -1,16 +1,19 @@
-import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { handleApiError, createSuccessResponse } from "@/lib/api";
 
 export async function GET() {
-  const { data, error } = await supabase
-    .from("ingredient")
-    .select("*")
-    .order("name", { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from("ingredient")
+      .select("*")
+      .order("name", { ascending: true });
 
-  if (error) {
-    console.error(`Error fetching ingredients: ${error}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      throw error;
+    }
+
+    return createSuccessResponse(data);
+  } catch (error) {
+    return handleApiError(error, "fetching ingredients");
   }
-
-  return NextResponse.json(data, { status: 200 });
 }

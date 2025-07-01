@@ -1,12 +1,16 @@
-import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { handleApiError, createSuccessResponse } from "@/lib/api";
 
 export async function GET() {
-  const { data, error } = await supabase.from("recipe_tag").select("*");
+  try {
+    const { data, error } = await supabase.from("recipe_tag").select("*");
 
-  if (error) {
-    console.error(`Error fetching recipe tags: ${error}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      throw error;
+    }
+
+    return createSuccessResponse(data);
+  } catch (error) {
+    return handleApiError(error, "fetching recipe tags");
   }
-  return NextResponse.json(data, { status: 200 });
 }

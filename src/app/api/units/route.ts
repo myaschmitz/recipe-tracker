@@ -1,16 +1,19 @@
-import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { handleApiError, createSuccessResponse } from "@/lib/api";
 
 export async function GET() {
-  const { data, error } = await supabase
-    .from("unit")
-    .select("*")
-    .order("name", { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from("unit")
+      .select("*")
+      .order("name", { ascending: true });
 
-  if (error) {
-    console.error(`Error fetching tags: ${error}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      throw error;
+    }
+
+    return createSuccessResponse(data);
+  } catch (error) {
+    return handleApiError(error, "fetching units");
   }
-
-  return NextResponse.json(data, { status: 200 });
 }

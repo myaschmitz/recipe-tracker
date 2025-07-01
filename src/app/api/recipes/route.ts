@@ -2,39 +2,40 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { RecipeSchema } from "@/types/database/models";
 import { PostgrestError } from "@supabase/supabase-js";
+import {
+  handleApiError,
+  createSuccessResponse,
+  DEFAULT_RECIPE_LIMIT,
+} from "@/lib/api";
+import { recipeSchema } from "@/lib/schemas";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const limit = searchParams.get("limit");
+  try {
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get("limit");
 
-  const { data, error } = await supabase
-    .from("recipe")
-    .select("id, name, description")
-    .order("created_at", { ascending: false })
-    .limit(limit ? parseInt(limit) : 100000000);
+    const { data, error } = await supabase
+      .from("recipe")
+      .select("id, name, description")
+      .order("created_at", { ascending: false })
+      .limit(limit ? parseInt(limit) : DEFAULT_RECIPE_LIMIT);
 
-  if (error) {
-    console.error(`Error fetching recipes: ${error}`);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      throw error;
+    }
+
+    return createSuccessResponse(data);
+  } catch (error) {
+    return handleApiError(error, "fetching recipes");
   }
-
-  return NextResponse.json(data, { status: 200 });
 }
 
 export async function POST(request: Request) {
   try {
-    const body: {
-      name: string;
-      description: string;
-      instructions: string;
-      ingredients: {
-        name: string;
-        amount: number;
-        unitId: number;
-        note?: string;
-      }[];
-      tags: number[]; // Array of tag IDs
-    } = await request.json();
+    const body = await request.json();
+
+    // Validate with Zod schema - add this right after getting the body
+    const validatedData = recipeSchema.parse(body);
 
     // insert recipe into db
     const {
@@ -44,16 +45,16 @@ export async function POST(request: Request) {
       await supabase
         .from("recipe")
         .insert({
-          name: body.name,
-          description: body.description,
-          instructions: body.instructions,
+          name: validatedData.name,
+          description: validatedData.description,
+          instructions: validatedData.instructions,
         })
         .select()
         .single();
 
     if (recipeError) {
-      console.error(`Error creating recipe: ${recipeError}`);
-      return NextResponse.json({ error: recipeError.message }, { status: 500 });
+      console.error("Recipe creation error:", recipeError);
+      return handleApiError(recipeError, "creating recipe");
     }
 
     if (!recipe) {
@@ -63,52 +64,56 @@ export async function POST(request: Request) {
       );
     }
 
-    if (body.ingredients?.length > 0) {
-      console.log("Adding ingredients");
-      console.log(body.ingredients);
+    if (validatedData.ingredients && validatedData.ingredients.length > 0) {
       const { error: ingredientError } = await supabase
         .from("recipe_ingredient")
         .insert(
-          body.ingredients.map((ingredient) => ({
+          validatedData.ingredients.map((ingredient) => ({
             recipe_id: recipe.id,
             name: ingredient.name,
-            amount: parseFloat(ingredient.amount.toString()),
+            amount: ingredient.amount,
             unit_id: ingredient.unitId,
             note: ingredient.note,
           }))
         );
 
       if (ingredientError) {
-        console.error(`Error adding ingredients: ${ingredientError}`);
-        return NextResponse.json(
-          { error: ingredientError.message },
-          { status: 500 }
-        );
+        return handleApiError(ingredientError, "adding ingredients");
       }
     }
 
-    if (body.tags?.length > 0) {
-      console.log("Adding tags");
-      console.log(body.tags);
+    if (validatedData.tags && validatedData.tags.length > 0) {
       const { error: tagError } = await supabase.from("recipe_tag").insert(
-        body.tags.map((tag) => ({
+        validatedData.tags.map((tag) => ({
           recipe_id: recipe.id,
           tag_id: tag,
         }))
       );
 
       if (tagError) {
-        console.error(`Error adding tags: ${tagError}`);
-        return NextResponse.json({ error: tagError.message }, { status: 500 });
+        console.error("Tag adding error:", tagError);
+        return handleApiError(tagError, "adding tags");
       }
     }
 
-    return NextResponse.json(recipe, { status: 201 });
+    return createSuccessResponse(recipe, 201);
   } catch (error: unknown) {
-    console.error(`Error creating recipe: ${error}`);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Full error:", error);
+    // Handle Zod validation errors specifically
+    if (
+      error &&
+      typeof error === "object" &&
+      "name" in error &&
+      error.name === "ZodError"
+    ) {
+      return NextResponse.json(
+        {
+          error: "Validation failed",
+          details: "errors" in error ? error.errors : [],
+        },
+        { status: 400 }
+      );
+    }
+    return handleApiError(error, "creating recipe");
   }
 }
