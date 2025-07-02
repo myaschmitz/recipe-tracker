@@ -10,23 +10,9 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
-  moduleNameMapper: {
-    // Handle module aliases
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  // Override the default transform to ensure proper module resolution
-  transform: {
-    // Use babel-jest to transform JS/TS files
-    '^.+\\.(js|jsx|ts|tsx)$': [
-      'babel-jest',
-      {
-        presets: [
-          ['next/babel'],
-          ['@babel/preset-typescript', { allowNamespaces: true }]
-        ],
-      },
-    ],
-  },
+  // Removed moduleNameMapper to avoid @/ alias issues with Turbopack
+  // Tests should use relative imports for maximum compatibility
+  
   // Explicitly handle TS files
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   collectCoverageFrom: [

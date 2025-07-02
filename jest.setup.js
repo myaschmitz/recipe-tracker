@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 
-// Global mocks for @/ imports
-jest.mock('@/lib/supabaseClient', () => ({
+// Mock Supabase client (used by some tests that need it)
+jest.mock('./src/lib/supabaseClient', () => ({
   supabase: {
     from: jest.fn(() => ({
       select: jest.fn().mockResolvedValue({ data: [], error: null }),
@@ -10,21 +10,15 @@ jest.mock('@/lib/supabaseClient', () => ({
   },
 }))
 
-jest.mock('@/lib/api', () => ({
-  handleApiError: jest.fn(),
-  createSuccessResponse: jest.fn(),
-  validateRequired: jest.fn(),
-  DEFAULT_RECIPE_LIMIT: 10,
+// Mock Next.js Response for API tests
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: jest.fn().mockReturnValue({ json: 'mocked response' }),
+  },
 }))
 
-jest.mock('@/lib/schemas', () => ({
-  recipeSchema: { parse: jest.fn() },
-  collectionSchema: { parse: jest.fn() },
-  tagSchema: { parse: jest.fn() },
-  unitSchema: { parse: jest.fn() },
-}))
-
-jest.mock('@/types/view/models', () => ({
+// Mock view model types
+jest.mock('./src/types/view/models', () => ({
   RecipeIngredientForm: {},
   Tag: {},
   Unit: {},
@@ -33,25 +27,25 @@ jest.mock('@/types/view/models', () => ({
   RecipeIngredient: {},
 }))
 
-// Mock all UI components
-jest.mock('@/components/ui/input', () => ({
+// Mock all UI components using relative paths
+jest.mock('./src/components/ui/input', () => ({
   Input: (props) => React.createElement('input', props),
 }))
 
-jest.mock('@/components/ui/label', () => ({
+jest.mock('./src/components/ui/label', () => ({
   Label: ({ children, ...props }) => React.createElement('label', props, children),
 }))
 
-jest.mock('@/components/ui/button', () => ({
+jest.mock('./src/components/ui/button', () => ({
   Button: ({ children, onClick, ...props }) => 
     React.createElement('button', { onClick, ...props }, children),
 }))
 
-jest.mock('@/components/ui/badge', () => ({
+jest.mock('./src/components/ui/badge', () => ({
   Badge: ({ children }) => React.createElement('span', { className: 'badge' }, children),
 }))
 
-jest.mock('@/components/ui/command', () => ({
+jest.mock('./src/components/ui/command', () => ({
   Command: ({ children }) => React.createElement('div', {}, children),
   CommandEmpty: ({ children }) => React.createElement('div', {}, children),
   CommandGroup: ({ children }) => React.createElement('div', {}, children),
@@ -61,13 +55,13 @@ jest.mock('@/components/ui/command', () => ({
   CommandList: ({ children }) => React.createElement('div', {}, children),
 }))
 
-jest.mock('@/components/ui/popover', () => ({
+jest.mock('./src/components/ui/popover', () => ({
   Popover: ({ children }) => React.createElement('div', {}, children),
   PopoverContent: ({ children }) => React.createElement('div', {}, children),
   PopoverTrigger: ({ children }) => React.createElement('div', {}, children),
 }))
 
-jest.mock('@/components/ui/select', () => ({
+jest.mock('./src/components/ui/select', () => ({
   Select: ({ children }) => React.createElement('div', {}, children),
   SelectContent: ({ children }) => React.createElement('div', {}, children),
   SelectGroup: ({ children }) => React.createElement('div', {}, children),
@@ -76,11 +70,11 @@ jest.mock('@/components/ui/select', () => ({
   SelectValue: ({ placeholder }) => React.createElement('span', {}, placeholder),
 }))
 
-jest.mock('@/components/ui/textarea', () => ({
+jest.mock('./src/components/ui/textarea', () => ({
   Textarea: (props) => React.createElement('textarea', props),
 }))
 
-jest.mock('@/components/ui/card', () => ({
+jest.mock('./src/components/ui/card', () => ({
   Card: ({ children, className }) => React.createElement('div', { className }, children),
   CardHeader: ({ children }) => React.createElement('div', {}, children),
   CardTitle: ({ children }) => React.createElement('h3', {}, children),
@@ -88,11 +82,11 @@ jest.mock('@/components/ui/card', () => ({
   CardContent: ({ children }) => React.createElement('div', {}, children),
 }))
 
-jest.mock('@/hooks/use-toast', () => ({
+jest.mock('./src/hooks/use-toast', () => ({
   useToast: () => ({ toast: jest.fn() }),
 }))
 
-jest.mock('@/components/RichTextEditor', () => {
+jest.mock('./src/components/RichTextEditor', () => {
   return function MockRichTextEditor({ onChange, ...props }) {
     return React.createElement('textarea', {
       onChange: (e) => onChange && onChange(e.target.value),
@@ -101,7 +95,7 @@ jest.mock('@/components/RichTextEditor', () => {
   }
 })
 
-jest.mock('@/components/CollectionMultiSelect', () => {
+jest.mock('./src/components/CollectionMultiSelect', () => {
   return function MockCollectionMultiSelect(props) {
     return React.createElement('div', { 'data-testid': 'collection-multiselect' }, 'Collection Select')
   }
