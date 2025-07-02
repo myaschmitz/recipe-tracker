@@ -42,8 +42,13 @@ export default function Home() {
         return { collection_id: d.collection_id, recipe_id: d.recipe_id };
       });
 
-      setRecipes(
-        data.map((recipe: RecipeBasicCard) => {
+      // Fetch tags for each recipe
+      const recipesWithTagsAndCollections = await Promise.all(
+        data.map(async (recipe: RecipeBasicCard) => {
+          // Fetch tags for this recipe
+          const tagsResponse = await fetch(`/api/tags/${recipe.id}`);
+          const tagsData = tagsResponse.ok ? await tagsResponse.json() : [];
+
           // Find collections for this recipe
           const recipeCollectionRelations = collectionRecipesMap.filter(
             (relation: CollectionRecipeSchema) => relation.recipe_id === recipe.id
@@ -59,7 +64,7 @@ export default function Home() {
             id: recipe.id,
             name: recipe.name,
             description: recipe.description,
-            tags: recipe.tags || [],
+            tags: tagsData || [],
             ingredients: [], // Empty for basic card
             collections: recipeCollections,
             // Required fields for Recipe type
@@ -69,6 +74,8 @@ export default function Home() {
           };
         })
       );
+
+      setRecipes(recipesWithTagsAndCollections);
     };
 
     fetchRecipes();
