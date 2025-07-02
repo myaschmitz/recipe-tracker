@@ -55,6 +55,7 @@ export const recipeSchema = z.object({
         .transform((val) => (val ? parseInt(val) : undefined))
         .optional()
     ),
+  link: z.string().url().optional().or(z.literal("")),
   ingredients: z
     .array(recipeIngredientSchema)
     .min(1, "At least one ingredient is required"),

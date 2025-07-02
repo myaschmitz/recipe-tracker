@@ -5,6 +5,10 @@ export type RecipeSchema = {
   created_at: string;
   updated_at: string;
   instructions: string;
+  prep_time?: number;
+  cook_time?: number;
+  total_time?: number;
+  link?: string;
 };
 
 export type RecipeIngredientSchema = {

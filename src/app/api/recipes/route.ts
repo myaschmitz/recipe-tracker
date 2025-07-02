@@ -48,6 +48,10 @@ export async function POST(request: Request) {
           name: validatedData.name,
           description: validatedData.description,
           instructions: validatedData.instructions,
+          prep_time: validatedData.prepTime,
+          cook_time: validatedData.cookTime,
+          total_time: validatedData.totalTime,
+          link: validatedData.link,
         })
         .select()
         .single();
