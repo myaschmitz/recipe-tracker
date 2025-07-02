@@ -15,11 +15,26 @@ const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
         <CardHeader>
           <CardTitle>
             <span>{recipe.name}</span>
-            <div className="mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {recipe.tags.map((tag, index) => (
                 <Badge key={index}>{tag.name}</Badge>
               ))}
             </div>
+            {recipe.collections && recipe.collections.length > 0 && (
+              <div className="mt-2">
+                <div className="text-xs text-gray-600 mb-1">Collections:</div>
+                <div className="flex flex-wrap gap-1">
+                  {recipe.collections.map((collection) => (
+                    <span
+                      key={collection.id}
+                      className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    >
+                      {collection.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardTitle>
           {/* <CardDescription>{recipe.description}</CardDescription> */}
           <CardContent></CardContent>

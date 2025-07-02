@@ -3,7 +3,7 @@
 import { Recipe } from "@/types/view/models";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { RecipeIngredient, Tag } from "@/types/view/models";
+import { RecipeIngredient, Tag, Collection } from "@/types/view/models";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Link, Pencil, X, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ const RecipePage = () => {
   const [recipe, setRecipe] = useState<Recipe>();
   const [ingredients, setIngredients] = useState<RecipeIngredient[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -65,23 +66,55 @@ const RecipePage = () => {
       };
 
       const fetchCollectionRecipes = async (recipeId: string) => {
-        const response = await fetch(`/api/collection-recipes/${recipeId}`);
+        try {
+          // First get all collection-recipe relationships
+          const collectionRecipeResponse = await fetch(`/api/collection-recipes`);
+          
+          if (!collectionRecipeResponse.ok) {
+            throw new Error(
+              `Error fetching collection recipes: ${collectionRecipeResponse.statusText}`
+            );
+          }
 
-        if (!response.ok) {
-          throw new Error(
-            `Error fetching collection recipes: ${response.statusText}`
+          const allCollectionRecipes = await collectionRecipeResponse.json();
+          
+          // Filter for this specific recipe
+          const recipeCollectionIds = allCollectionRecipes
+            .filter((cr: CollectionRecipeSchema) => cr.recipe_id === parseInt(recipeId))
+            .map((cr: CollectionRecipeSchema) => cr.collection_id);
+
+          if (recipeCollectionIds.length === 0) {
+            setCollections([]);
+            return;
+          }
+
+          // Get all collections
+          const collectionsResponse = await fetch(`/api/collections`);
+          
+          if (!collectionsResponse.ok) {
+            throw new Error(
+              `Error fetching collections: ${collectionsResponse.statusText}`
+            );
+          }
+
+          const allCollections = await collectionsResponse.json();
+          
+          // Filter to only collections this recipe belongs to
+          const recipeCollections = allCollections.filter((collection: Collection) => 
+            recipeCollectionIds.includes(collection.id)
           );
-        }
 
-        const data = await response.json();
-        const collectionRecipesMap = data.map((d: CollectionRecipeSchema) => {
-          return { tag_id: d.collection_id, recipe_id: d.recipe_id };
-        });
+          setCollections(recipeCollections);
+        } catch (error) {
+          console.error("Error fetching recipe collections:", error);
+          setCollections([]);
+        }
       };
 
       fetchRecipe();
       fetchIngredients(id);
       fetchTags(id);
+      fetchCollectionRecipes(id);
     }
   }, [id]);
 
@@ -147,11 +180,28 @@ const RecipePage = () => {
           <X className="" size={24} />
         </button>
       </div>
-      <div className="my-4">
+      <div className="my-4 flex flex-wrap gap-2">
         {tags.map((tag) => (
           <Badge key={tag.id}>{tag.name}</Badge>
         ))}
       </div>
+      
+      {collections.length > 0 && (
+        <div className="my-4">
+          <h3 className="font-semibold text-sm text-gray-600 mb-2">Collections:</h3>
+          <div className="flex flex-wrap gap-2">
+            {collections.map((collection) => (
+              <button
+                key={collection.id}
+                onClick={() => router.push(`/collections/${collection.id}`)}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
+              >
+                {collection.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <Card>
         <CardHeader>{recipe.description}</CardHeader>
         {/* <CardContent></CardContent> */}
@@ -169,7 +219,6 @@ const RecipePage = () => {
       <h2 className="font-bold text-lg">Instructions</h2>
       <div className="text-lg">{parse(recipe.instructions)}</div>
       <div className="my-4">
-        <h2 className="font-bold text-lg">Add to collection</h2>
         {/* <div className="text-lg">{parse(recipe.notes)}</div> */}
       </div>
     </div>

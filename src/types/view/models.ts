@@ -7,6 +7,7 @@ export type Recipe = {
   instructions: string;
   ingredients: RecipeIngredient[];
   tags: Tag[];
+  collections?: Collection[];
 };
 
 export type RecipeIngredient = {

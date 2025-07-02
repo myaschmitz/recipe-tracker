@@ -490,7 +490,8 @@ const CreateRecipe = () => {
                     <CommandEmpty>No tags found.</CommandEmpty>
                     <CommandGroup>
                       {tags
-                        ?.sort((a, b) => a.name.localeCompare(b.name))
+                        ?.filter((tag) => !selectedTags.some((selectedTag) => selectedTag.id === tag.id))
+                        .sort((a, b) => a.name.localeCompare(b.name))
                         .map((tag) => (
                           <CommandItem
                             key={tag.id}

@@ -1,7 +1,7 @@
 "use client";
 
-import { Recipe, RecipeTag, Tag } from "@/types/view/models";
-import { RecipeSchema, RecipeTagSchema } from "@/types/database/models";
+import { Recipe, RecipeTag, Tag, Collection } from "@/types/view/models";
+import { RecipeSchema, RecipeTagSchema, CollectionRecipeSchema } from "@/types/database/models";
 import React, { useState, useEffect } from "react";
 import RecipeCard from "@/components/RecipeCard";
 
@@ -19,8 +19,17 @@ const Recipes = () => {
       const recipeTagData = await recipeTagResponse.json();
       const tagResponse = await fetch("/api/tags");
       const tagData = await tagResponse.json();
+      const collectionRecipeResponse = await fetch("/api/collection-recipes");
+      const collectionRecipeData = await collectionRecipeResponse.json();
+      const collectionResponse = await fetch("/api/collections");
+      const collectionData = await collectionResponse.json();
+
       const formattedTags = tagData.map((d: Tag) => {
         return { id: d.id, name: d.name };
+      });
+
+      const formattedCollections = collectionData.map((d: Collection) => {
+        return { id: d.id, name: d.name, description: d.description, createdAt: d.createdAt, updatedAt: d.updatedAt };
       });
 
       if (!tagResponse.ok) {
@@ -35,8 +44,20 @@ const Recipes = () => {
         console.error(`Error fetching recipe tags: ${recipeTagData.error}`);
       }
 
+      if (!collectionRecipeResponse.ok) {
+        console.error(`Error fetching collection recipes: ${collectionRecipeData.error}`);
+      }
+
+      if (!collectionResponse.ok) {
+        console.error(`Error fetching collections: ${collectionData.error}`);
+      }
+
       const recipeTagsMap = recipeTagData.map((d: RecipeTagSchema) => {
         return { tag_id: d.tag_id, recipe_id: d.recipe_id };
+      });
+
+      const collectionRecipesMap = collectionRecipeData.map((d: CollectionRecipeSchema) => {
+        return { collection_id: d.collection_id, recipe_id: d.recipe_id };
       });
 
       setRecipes(
@@ -48,14 +69,26 @@ const Recipes = () => {
           const recipeTags = recipeTagRelations
             .map((relation: RecipeTagSchema) => {
               // Find the full tag object using the tag_id from the relation
-              return formattedTags.find((tag) => tag.id === relation.tag_id);
+              return formattedTags.find((tag: Tag) => tag.id === relation.tag_id);
             })
             .filter(Boolean);
+
+          const recipeCollectionRelations = collectionRecipesMap.filter(
+            (relation: CollectionRecipeSchema) => relation.recipe_id === recipe.id
+          );
+
+          const recipeCollections = recipeCollectionRelations
+            .map((relation: CollectionRecipeSchema) => {
+              return formattedCollections.find((collection: Collection) => collection.id === relation.collection_id);
+            })
+            .filter(Boolean);
+
           return {
             id: recipe.id,
             name: recipe.name,
             description: recipe.description,
             tags: recipeTags,
+            collections: recipeCollections,
           };
         })
       );
