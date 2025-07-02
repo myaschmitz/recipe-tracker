@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { RecipeIngredientForm, Tag, Unit } from "@/types/view/models";
+import { RecipeIngredientForm, Tag, Unit, Collection } from "@/types/view/models";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
+import CollectionMultiSelect from "@/components/CollectionMultiSelect";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ const CreateRecipe = () => {
   const [value, setValue] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]);
   const [name, setName] = useState("");
   const [prepTime, setPrepTime] = useState<number | undefined>(undefined);
   const [cookTime, setCookTime] = useState<number | undefined>(undefined);
@@ -107,6 +109,10 @@ const CreateRecipe = () => {
     setSelectedTags((curSelectedTags) =>
       curSelectedTags.filter((t) => t.id !== tag.id)
     );
+  };
+
+  const handleCollectionChange = (collections: Collection[]) => {
+    setSelectedCollections(collections);
   };
 
   const handleAddIngredient = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -210,6 +216,7 @@ const CreateRecipe = () => {
           note: ingredient.note,
         })),
         tags: selectedTags.map((tag) => tag.id),
+        collections: selectedCollections.map((collection) => collection.id),
         prepTime: prepTime ? Number(prepTime) : undefined,
         cookTime: cookTime ? Number(cookTime) : undefined,
         totalTime: totalTime ? Number(totalTime) : undefined,
@@ -373,7 +380,6 @@ const CreateRecipe = () => {
                     onValueChange={(value) =>
                       handleIngredientChange(index, "unit", value)
                     }
-                    onKeyDown={handleKeyDown}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Unit" />
@@ -519,6 +525,15 @@ const CreateRecipe = () => {
                 </Badge>
               ))}
             </div>
+          </div>
+          <div className="mb-6 flex flex-col max-w-sm">
+            <Label htmlFor="recipe-collections" className="text-md font-bold max-w-sm">
+              Collections
+            </Label>
+            <CollectionMultiSelect
+              selectedCollections={selectedCollections}
+              onCollectionChange={handleCollectionChange}
+            />
           </div>
         </div>
         <Button

@@ -59,6 +59,7 @@ export const recipeSchema = z.object({
     .array(recipeIngredientSchema)
     .min(1, "At least one ingredient is required"),
   tags: z.array(z.number().int()).optional(),
+  collections: z.array(z.number().int()).optional(),
 });
 
 export const tagSchema = z.object({

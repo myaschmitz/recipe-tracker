@@ -96,6 +96,20 @@ export async function POST(request: Request) {
       }
     }
 
+    if (validatedData.collections && validatedData.collections.length > 0) {
+      const { error: collectionError } = await supabase.from("collection_recipe").insert(
+        validatedData.collections.map((collectionId) => ({
+          recipe_id: recipe.id,
+          collection_id: collectionId,
+        }))
+      );
+
+      if (collectionError) {
+        console.error("Collection adding error:", collectionError);
+        return handleApiError(collectionError, "adding collections");
+      }
+    }
+
     return createSuccessResponse(recipe, 201);
   } catch (error: unknown) {
     console.error("Full error:", error);
