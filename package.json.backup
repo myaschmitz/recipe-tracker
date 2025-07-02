@@ -6,12 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test": "npx jest src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts",
-    "test:all": "npx jest",
-    "test:working": "npx jest src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts",
-    "test:watch": "npx jest --watch src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts",
-    "test:coverage": "npx jest --coverage src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -41,7 +36,6 @@
     "cmdk": "^1.0.0",
     "html-react-parser": "^5.2.2",
     "lucide-react": "^0.471.1",
-    "next": "^15.1.4",
     "next-cloudinary": "^6.16.0",
     "next-themes": "^0.4.4",
     "react": "^18.3.1",
@@ -56,6 +50,10 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19.0.6",
     "@types/react-beautiful-dnd": "^13.1.8",
@@ -63,8 +61,13 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
+    "jest": "^30.0.3",
+    "jest-environment-jsdom": "^30.0.2",
+    "jest-extended": "^6.0.0",
+    "next": "^15.3.4",
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
+    "ts-jest": "^29.4.0",
     "typescript": "^5"
   }
 }
