@@ -145,6 +145,7 @@ import {
   Moon,
   Sun,
   SquareLibrary,
+  UserCog
 } from "lucide-react";
 
 import {
@@ -204,13 +205,18 @@ export function Navbar() {
         title: "Create Recipe",
         href: "/recipes/create",
         icon: Calendar,
-      },
+      }
     ],
     []
   );
 
   const footerItems = useMemo(
     () => [
+      {
+        title: "Admin",
+        href: "/admin",
+        icon: UserCog,
+      },
       {
         title: "Profile",
         href: "",

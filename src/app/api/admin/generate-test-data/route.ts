@@ -1,0 +1,134 @@
+import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabaseClient";
+import testData from "../../../../../test-data.json";
+
+export async function POST() {
+  try {
+    console.log("Starting test data generation...");
+    
+    // Check environment variables
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      throw new Error("Supabase URL is not configured. Please set NEXT_PUBLIC_SUPABASE_URL in your .env.local file.");
+    }
+    
+    if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error("Supabase anonymous key is not configured. Please set NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file.");
+    }
+    
+    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "Present" : "Missing");
+    console.log("Supabase Key:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Present" : "Missing");
+    console.log("Test data loaded:", !!testData);
+    console.log("Test data units count:", testData?.units?.length || 0);
+
+    // Clear existing data in reverse dependency order
+    await supabase.from("collection_recipe").delete().neq("collection_id", 0);
+    await supabase.from("recipe_tag").delete().neq("recipe_id", 0);
+    await supabase.from("recipe_ingredient").delete().neq("id", 0);
+    await supabase.from("recipe").delete().neq("id", 0);
+    await supabase.from("collection").delete().neq("id", 0);
+    await supabase.from("tag").delete().neq("id", 0);
+    await supabase.from("unit").delete().neq("id", 0);
+    // Note: Skipping profiles as they're linked to Supabase auth users
+
+    console.log("Cleared existing data");
+
+    // Insert units
+    const { error: unitsError } = await supabase
+      .from("unit")
+      .insert(testData.units);
+    
+    if (unitsError) {
+      throw new Error(`Error inserting units: ${unitsError.message}`);
+    }
+    console.log("Inserted units");
+
+    // Insert tags
+    const { error: tagsError } = await supabase
+      .from("tag")
+      .insert(testData.tags);
+    
+    if (tagsError) {
+      throw new Error(`Error inserting tags: ${tagsError.message}`);
+    }
+    console.log("Inserted tags");
+
+    // Note: Skipping profiles insertion as they're managed by Supabase auth
+
+    // Insert collections
+    const { error: collectionsError } = await supabase
+      .from("collection")
+      .insert(testData.collections);
+    
+    if (collectionsError) {
+      throw new Error(`Error inserting collections: ${collectionsError.message}`);
+    }
+    console.log("Inserted collections");
+
+    // Insert recipes
+    const { error: recipesError } = await supabase
+      .from("recipe")
+      .insert(testData.recipes);
+    
+    if (recipesError) {
+      throw new Error(`Error inserting recipes: ${recipesError.message}`);
+    }
+    console.log("Inserted recipes");
+
+    // Insert recipe ingredients
+    const { error: ingredientsError } = await supabase
+      .from("recipe_ingredient")
+      .insert(testData.recipe_ingredients);
+    
+    if (ingredientsError) {
+      throw new Error(`Error inserting recipe ingredients: ${ingredientsError.message}`);
+    }
+    console.log("Inserted recipe ingredients");
+
+    // Insert recipe tags
+    const { error: recipeTagsError } = await supabase
+      .from("recipe_tag")
+      .insert(testData.recipe_tags);
+    
+    if (recipeTagsError) {
+      throw new Error(`Error inserting recipe tags: ${recipeTagsError.message}`);
+    }
+    console.log("Inserted recipe tags");
+
+    // Insert collection recipes
+    const { error: collectionRecipesError } = await supabase
+      .from("collection_recipe")
+      .insert(testData.collection_recipes);
+    
+    if (collectionRecipesError) {
+      throw new Error(`Error inserting collection recipes: ${collectionRecipesError.message}`);
+    }
+    console.log("Inserted collection recipes");
+
+    console.log("Test data generation completed successfully!");
+
+    return NextResponse.json({
+      success: true,
+      message: "Test data generated successfully",
+      data: {
+        units: testData.units.length,
+        tags: testData.tags.length,
+        recipes: testData.recipes.length,
+        collections: testData.collections.length,
+        ingredients: testData.recipe_ingredients.length,
+        recipe_tags: testData.recipe_tags.length,
+        collection_recipes: testData.collection_recipes.length,
+      }
+    });
+
+  } catch (error: any) {
+    console.error("Error generating test data:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to generate test data",
+        details: error.message
+      },
+      { status: 500 }
+    );
+  }
+}
