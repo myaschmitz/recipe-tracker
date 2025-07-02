@@ -139,6 +139,48 @@
       "description": "Plant-based recipes that are full of flavor",
       "created_at": "2024-08-15T09:15:00Z",
       "updated_at": "2024-12-20T16:45:00Z"
+    },
+    {
+      "id": 9,
+      "name": "BBQ & Grilling",
+      "description": "Perfect recipes for outdoor cooking and summer gatherings",
+      "created_at": "2024-04-20T12:30:00Z",
+      "updated_at": "2024-12-22T15:00:00Z"
+    },
+    {
+      "id": 10,
+      "name": "Breakfast & Brunch",
+      "description": "Start your day right with these delicious morning recipes",
+      "created_at": "2024-05-05T08:45:00Z",
+      "updated_at": "2024-12-23T10:15:00Z"
+    },
+    {
+      "id": 11,
+      "name": "Soups & Stews",
+      "description": "Warming bowls of comfort for every season",
+      "created_at": "2024-06-12T14:20:00Z",
+      "updated_at": "2024-12-24T16:30:00Z"
+    },
+    {
+      "id": 12,
+      "name": "Appetizers & Snacks",
+      "description": "Perfect starters and small bites for entertaining",
+      "created_at": "2024-07-08T11:00:00Z",
+      "updated_at": "2024-12-25T12:45:00Z"
+    },
+    {
+      "id": 13,
+      "name": "Bread & Baking",
+      "description": "Fresh baked goods from simple loaves to artisan breads",
+      "created_at": "2024-08-25T09:30:00Z",
+      "updated_at": "2024-12-26T14:20:00Z"
+    },
+    {
+      "id": 14,
+      "name": "One-Pot Wonders",
+      "description": "Complete meals made in a single pot or pan for easy cleanup",
+      "created_at": "2024-09-15T16:15:00Z",
+      "updated_at": "2024-12-27T18:00:00Z"
     }
   ],
   "recipes": [
@@ -333,6 +375,174 @@
       "link": "https://www.justonecookbook.com/homemade-chashu-miso-ramen/",
       "created_at": "2024-08-01T18:15:00Z",
       "updated_at": "2024-08-01T18:15:00Z"
+    },
+    {
+      "id": 17,
+      "name": "BBQ Pulled Pork",
+      "description": "Slow-cooked pork shoulder with tangy barbecue sauce, perfect for sandwiches.",
+      "instructions": "<ol><li>Mix brown sugar, paprika, salt, pepper, garlic powder, and onion powder for dry rub.</li><li>Rub spice mixture all over pork shoulder. Let sit for 2 hours or overnight.</li><li>Preheat smoker or oven to 225°F (107°C).</li><li>Cook pork for 12-14 hours until internal temperature reaches 195°F (90°C).</li><li>Wrap in foil and rest for 1 hour.</li><li>Shred meat and mix with barbecue sauce.</li><li>Serve on brioche buns with coleslaw.</li></ol>",
+      "prep_time": 30,
+      "cook_time": 840,
+      "total_time": 870,
+      "link": "https://www.smokingmeatforums.com/threads/pulled-pork-recipe.12345/",
+      "created_at": "2024-08-10T09:00:00Z",
+      "updated_at": "2024-08-10T09:00:00Z"
+    },
+    {
+      "id": 18,
+      "name": "Avocado Toast",
+      "description": "Trendy and nutritious breakfast with perfectly ripe avocado on artisan bread.",
+      "instructions": "<ol><li>Toast bread slices until golden brown.</li><li>Mash ripe avocado with lime juice, salt, and pepper.</li><li>Spread avocado mixture on toast.</li><li>Top with sliced tomatoes, red pepper flakes, and sea salt.</li><li>Optional: add fried egg, hemp seeds, or everything bagel seasoning.</li><li>Serve immediately.</li></ol>",
+      "prep_time": 5,
+      "cook_time": 3,
+      "total_time": 8,
+      "link": "https://www.loveandlemons.com/avocado-toast-recipe/",
+      "created_at": "2024-08-15T07:30:00Z",
+      "updated_at": "2024-08-15T07:30:00Z"
+    },
+    {
+      "id": 19,
+      "name": "Tom Yum Soup",
+      "description": "Spicy and sour Thai soup with shrimp, mushrooms, and aromatic herbs.",
+      "instructions": "<ol><li>Heat chicken stock in a large pot. Add lemongrass, galangal, and kaffir lime leaves.</li><li>Simmer for 10 minutes to infuse flavors.</li><li>Add mushrooms and cook for 3 minutes.</li><li>Add shrimp and cook until pink, about 2 minutes.</li><li>Stir in fish sauce, lime juice, and Thai chilies.</li><li>Add tomatoes and cook for 1 minute.</li><li>Garnish with cilantro and serve hot.</li></ol>",
+      "prep_time": 15,
+      "cook_time": 20,
+      "total_time": 35,
+      "link": "https://hot-thai-kitchen.com/tom-yum-goong/",
+      "created_at": "2024-08-20T12:45:00Z",
+      "updated_at": "2024-08-20T12:45:00Z"
+    },
+    {
+      "id": 20,
+      "name": "Spinach and Artichoke Dip",
+      "description": "Creamy, cheesy dip that's perfect for parties and gatherings.",
+      "instructions": "<ol><li>Preheat oven to 375°F (190°C).</li><li>Sauté minced garlic in olive oil until fragrant.</li><li>Mix cream cheese, mayonnaise, sour cream, and Parmesan cheese.</li><li>Fold in chopped spinach, artichoke hearts, and garlic.</li><li>Season with salt, pepper, and red pepper flakes.</li><li>Transfer to baking dish and top with mozzarella.</li><li>Bake for 25-30 minutes until bubbly and golden.</li><li>Serve hot with tortilla chips or baguette slices.</li></ol>",
+      "prep_time": 15,
+      "cook_time": 30,
+      "total_time": 45,
+      "link": "https://www.foodnetwork.com/recipes/tyler-florence/spinach-and-artichoke-dip-recipe-1946801",
+      "created_at": "2024-08-25T15:20:00Z",
+      "updated_at": "2024-08-25T15:20:00Z"
+    },
+    {
+      "id": 21,
+      "name": "Sourdough Bread",
+      "description": "Artisan sourdough bread with a tangy flavor and perfect crust.",
+      "instructions": "<ol><li>Feed sourdough starter 8-12 hours before baking.</li><li>Mix flour, water, and active starter. Let autolyse for 30 minutes.</li><li>Add salt and knead until smooth and elastic.</li><li>Bulk ferment for 4-6 hours with folds every 30 minutes for first 2 hours.</li><li>Pre-shape and rest for 30 minutes.</li><li>Final shape and proof in banneton for 2-4 hours or overnight in fridge.</li><li>Preheat Dutch oven to 500°F (260°C).</li><li>Score dough and bake covered for 20 minutes, then uncovered for 20-25 minutes.</li></ol>",
+      "prep_time": 60,
+      "cook_time": 45,
+      "total_time": 480,
+      "link": "https://www.kingarthurbaking.com/recipes/extra-tangy-sourdough-bread-recipe",
+      "created_at": "2024-09-01T08:00:00Z",
+      "updated_at": "2024-09-01T08:00:00Z"
+    },
+    {
+      "id": 22,
+      "name": "Chicken and Rice Skillet",
+      "description": "One-pan meal with seasoned chicken, rice, and vegetables.",
+      "instructions": "<ol><li>Season chicken thighs with salt, pepper, and paprika.</li><li>Heat oil in large skillet and brown chicken on both sides. Remove and set aside.</li><li>Sauté onion, bell pepper, and garlic in same skillet.</li><li>Add rice and stir for 2 minutes until lightly toasted.</li><li>Pour in chicken broth and diced tomatoes.</li><li>Return chicken to skillet, bring to boil, then reduce heat.</li><li>Cover and simmer for 20-25 minutes until rice is tender.</li><li>Let stand 5 minutes before serving.</li></ol>",
+      "prep_time": 15,
+      "cook_time": 35,
+      "total_time": 50,
+      "link": "https://www.tasteofhome.com/recipes/chicken-and-rice-skillet/",
+      "created_at": "2024-09-05T17:30:00Z",
+      "updated_at": "2024-09-05T17:30:00Z"
+    },
+    {
+      "id": 23,
+      "name": "Blueberry Muffins",
+      "description": "Fluffy, tender muffins bursting with fresh blueberries.",
+      "instructions": "<ol><li>Preheat oven to 375°F (190°C). Line muffin tin with paper liners.</li><li>Whisk together flour, sugar, baking powder, and salt.</li><li>In separate bowl, mix melted butter, egg, milk, and vanilla.</li><li>Fold wet ingredients into dry ingredients until just combined.</li><li>Gently fold in blueberries tossed with a little flour.</li><li>Divide batter among muffin cups, filling 2/3 full.</li><li>Bake 20-25 minutes until golden and toothpick comes out clean.</li><li>Cool in pan 5 minutes before transferring to wire rack.</li></ol>",
+      "prep_time": 15,
+      "cook_time": 25,
+      "total_time": 40,
+      "link": "https://sallysbakingaddiction.com/bakery-style-blueberry-muffins/",
+      "created_at": "2024-09-10T09:15:00Z",
+      "updated_at": "2024-09-10T09:15:00Z"
+    },
+    {
+      "id": 24,
+      "name": "Fish Tacos",
+      "description": "Light and fresh tacos with grilled fish and tangy slaw.",
+      "instructions": "<ol><li>Season fish fillets with cumin, chili powder, salt, and pepper.</li><li>Grill fish for 3-4 minutes per side until flaky.</li><li>Make slaw by mixing cabbage, cilantro, lime juice, and mayo.</li><li>Warm tortillas on grill or in dry skillet.</li><li>Flake fish into bite-sized pieces.</li><li>Assemble tacos with fish, slaw, avocado, and lime wedges.</li><li>Serve with hot sauce on the side.</li></ol>",
+      "prep_time": 20,
+      "cook_time": 10,
+      "total_time": 30,
+      "link": "https://www.foodandwine.com/recipes/fish-tacos-with-cabbage-slaw",
+      "created_at": "2024-09-15T13:00:00Z",
+      "updated_at": "2024-09-15T13:00:00Z"
+    },
+    {
+      "id": 25,
+      "name": "Mushroom Risotto",
+      "description": "Creamy Italian rice dish with earthy mushrooms and Parmesan cheese.",
+      "instructions": "<ol><li>Heat chicken stock and keep warm on low heat.</li><li>Sauté sliced mushrooms in butter until golden. Set aside.</li><li>In same pan, cook minced onion until translucent.</li><li>Add Arborio rice and stir for 2 minutes until lightly toasted.</li><li>Add white wine and stir until absorbed.</li><li>Add warm stock one ladle at a time, stirring constantly until absorbed.</li><li>Continue for 18-20 minutes until rice is creamy and al dente.</li><li>Stir in mushrooms, Parmesan, butter, and fresh herbs.</li></ol>",
+      "prep_time": 20,
+      "cook_time": 30,
+      "total_time": 50,
+      "link": "https://www.bonappetit.com/recipe/mushroom-risotto",
+      "created_at": "2024-09-20T18:45:00Z",
+      "updated_at": "2024-09-20T18:45:00Z"
+    },
+    {
+      "id": 26,
+      "name": "Beef Stew",
+      "description": "Hearty, slow-cooked stew with tender beef and root vegetables.",
+      "instructions": "<ol><li>Cut beef chuck into 2-inch pieces and season with salt and pepper.</li><li>Brown beef in batches in Dutch oven with oil. Remove and set aside.</li><li>Sauté onions, carrots, and celery until softened.</li><li>Add tomato paste and cook for 1 minute.</li><li>Return beef to pot with beef broth, wine, and herbs.</li><li>Bring to boil, then cover and simmer for 1.5 hours.</li><li>Add potatoes and cook 30 minutes more until tender.</li><li>Thicken with flour slurry if desired.</li></ol>",
+      "prep_time": 30,
+      "cook_time": 150,
+      "total_time": 180,
+      "link": "https://www.simplyrecipes.com/recipes/beef_stew/",
+      "created_at": "2024-09-25T14:30:00Z",
+      "updated_at": "2024-09-25T14:30:00Z"
+    },
+    {
+      "id": 27,
+      "name": "Caprese Salad",
+      "description": "Simple Italian salad with fresh mozzarella, tomatoes, and basil.",
+      "instructions": "<ol><li>Slice fresh mozzarella and ripe tomatoes into 1/4-inch thick rounds.</li><li>Arrange alternating slices of tomato and mozzarella on platter.</li><li>Tuck fresh basil leaves between slices.</li><li>Drizzle with extra virgin olive oil and balsamic glaze.</li><li>Season with flaky sea salt and freshly ground black pepper.</li><li>Let stand 10 minutes before serving to allow flavors to meld.</li></ol>",
+      "prep_time": 15,
+      "cook_time": 0,
+      "total_time": 15,
+      "link": "https://www.foodnetwork.com/recipes/ina-garten/caprese-salad-recipe-1944016",
+      "created_at": "2024-09-30T11:20:00Z",
+      "updated_at": "2024-09-30T11:20:00Z"
+    },
+    {
+      "id": 28,
+      "name": "Chocolate Lava Cake",
+      "description": "Decadent individual cakes with molten chocolate centers.",
+      "instructions": "<ol><li>Preheat oven to 425°F (220°C). Butter and flour 4 ramekins.</li><li>Melt chocolate and butter in double boiler until smooth.</li><li>Whisk in powdered sugar until combined.</li><li>Beat in eggs and egg yolks one at a time.</li><li>Fold in flour until just combined.</li><li>Divide batter among ramekins.</li><li>Bake 12-14 minutes until edges are firm but centers still jiggle.</li><li>Let cool 1 minute, then invert onto plates and serve immediately.</li></ol>",
+      "prep_time": 20,
+      "cook_time": 14,
+      "total_time": 34,
+      "link": "https://www.foodnetwork.com/recipes/emeril-lagasse/molten-chocolate-cake-recipe-1916797",
+      "created_at": "2024-10-05T16:00:00Z",
+      "updated_at": "2024-10-05T16:00:00Z"
+    },
+    {
+      "id": 29,
+      "name": "Quinoa Buddha Bowl",
+      "description": "Nutritious bowl packed with quinoa, roasted vegetables, and tahini dressing.",
+      "instructions": "<ol><li>Cook quinoa according to package directions and let cool.</li><li>Roast sweet potato, broccoli, and chickpeas with olive oil and spices.</li><li>Make tahini dressing with tahini, lemon juice, garlic, and water.</li><li>Massage kale with lemon juice and olive oil until softened.</li><li>Assemble bowls with quinoa, kale, roasted vegetables, and avocado.</li><li>Top with pumpkin seeds and hemp hearts.</li><li>Drizzle with tahini dressing before serving.</li></ol>",
+      "prep_time": 25,
+      "cook_time": 30,
+      "total_time": 55,
+      "link": "https://minimalistbaker.com/the-buddha-bowl/",
+      "created_at": "2024-10-10T12:30:00Z",
+      "updated_at": "2024-10-10T12:30:00Z"
+    },
+    {
+      "id": 30,
+      "name": "Beef Bolognese",
+      "description": "Rich, slow-simmered meat sauce perfect for pasta.",
+      "instructions": "<ol><li>Heat oil in heavy-bottomed pot and sauté diced onion, carrot, and celery.</li><li>Add ground beef and cook until browned, breaking up lumps.</li><li>Pour in wine and cook until mostly evaporated.</li><li>Add crushed tomatoes, tomato paste, and herbs.</li><li>Simmer on lowest heat for 2-3 hours, stirring occasionally.</li><li>Season with salt and pepper to taste.</li><li>Serve over fresh pasta with Parmesan cheese.</li><li>Can be made ahead and reheated.</li></ol>",
+      "prep_time": 20,
+      "cook_time": 180,
+      "total_time": 200,
+      "link": "https://www.seriouseats.com/the-best-slow-cooked-bolognese-sauce-recipe",
+      "created_at": "2024-10-15T10:45:00Z",
+      "updated_at": "2024-10-15T10:45:00Z"
     }
   ],
   "recipe_ingredients": [
@@ -475,7 +685,117 @@
     { "id": 122, "recipe_id": 16, "name": "soft-boiled eggs", "amount": 4, "unit_id": 23, "note": "marinated" },
     { "id": 123, "recipe_id": 16, "name": "green onions", "amount": 4, "unit_id": 25, "note": "chopped" },
     { "id": 124, "recipe_id": 16, "name": "nori sheets", "amount": 2, "unit_id": 25, "note": "cut into strips" },
-    { "id": 125, "recipe_id": 16, "name": "bamboo shoots", "amount": 0.5, "unit_id": 6, "note": "sliced" }
+    { "id": 125, "recipe_id": 16, "name": "bamboo shoots", "amount": 0.5, "unit_id": 6, "note": "sliced" },
+
+    { "id": 126, "recipe_id": 17, "name": "pork shoulder", "amount": 5, "unit_id": 13, "note": "bone-in" },
+    { "id": 127, "recipe_id": 17, "name": "brown sugar", "amount": 0.5, "unit_id": 6, "note": null },
+    { "id": 128, "recipe_id": 17, "name": "paprika", "amount": 2, "unit_id": 4, "note": null },
+    { "id": 129, "recipe_id": 17, "name": "garlic powder", "amount": 1, "unit_id": 4, "note": null },
+    { "id": 130, "recipe_id": 17, "name": "onion powder", "amount": 1, "unit_id": 4, "note": null },
+    { "id": 131, "recipe_id": 17, "name": "barbecue sauce", "amount": 2, "unit_id": 6, "note": null },
+    { "id": 132, "recipe_id": 17, "name": "brioche buns", "amount": 8, "unit_id": 25, "note": null },
+
+    { "id": 133, "recipe_id": 18, "name": "ripe avocados", "amount": 2, "unit_id": 25, "note": null },
+    { "id": 134, "recipe_id": 18, "name": "artisan bread", "amount": 4, "unit_id": 25, "note": "slices" },
+    { "id": 135, "recipe_id": 18, "name": "lime", "amount": 1, "unit_id": 25, "note": "juiced" },
+    { "id": 136, "recipe_id": 18, "name": "cherry tomatoes", "amount": 0.5, "unit_id": 6, "note": "sliced" },
+    { "id": 137, "recipe_id": 18, "name": "red pepper flakes", "amount": 0.25, "unit_id": 3, "note": null },
+    { "id": 138, "recipe_id": 18, "name": "sea salt", "amount": 0.5, "unit_id": 3, "note": "flaky" },
+
+    { "id": 139, "recipe_id": 19, "name": "chicken stock", "amount": 4, "unit_id": 6, "note": null },
+    { "id": 140, "recipe_id": 19, "name": "lemongrass", "amount": 3, "unit_id": 25, "note": "stalks, bruised" },
+    { "id": 141, "recipe_id": 19, "name": "galangal", "amount": 2, "unit_id": 25, "note": "slices" },
+    { "id": 142, "recipe_id": 19, "name": "kaffir lime leaves", "amount": 6, "unit_id": 25, "note": null },
+    { "id": 143, "recipe_id": 19, "name": "shiitake mushrooms", "amount": 8, "unit_id": 25, "note": "sliced" },
+    { "id": 144, "recipe_id": 19, "name": "shrimp", "amount": 1, "unit_id": 13, "note": "peeled and deveined" },
+    { "id": 145, "recipe_id": 19, "name": "fish sauce", "amount": 3, "unit_id": 4, "note": null },
+    { "id": 146, "recipe_id": 19, "name": "lime juice", "amount": 3, "unit_id": 4, "note": "fresh" },
+    { "id": 147, "recipe_id": 19, "name": "Thai chilies", "amount": 3, "unit_id": 25, "note": "sliced" },
+
+    { "id": 148, "recipe_id": 20, "name": "cream cheese", "amount": 8, "unit_id": 14, "note": "softened" },
+    { "id": 149, "recipe_id": 20, "name": "mayonnaise", "amount": 0.5, "unit_id": 6, "note": null },
+    { "id": 150, "recipe_id": 20, "name": "sour cream", "amount": 0.5, "unit_id": 6, "note": null },
+    { "id": 151, "recipe_id": 20, "name": "Parmesan cheese", "amount": 0.75, "unit_id": 6, "note": "grated" },
+    { "id": 152, "recipe_id": 20, "name": "frozen spinach", "amount": 10, "unit_id": 14, "note": "thawed and drained" },
+    { "id": 153, "recipe_id": 20, "name": "artichoke hearts", "amount": 1, "unit_id": 25, "note": "can, drained and chopped" },
+    { "id": 154, "recipe_id": 20, "name": "mozzarella cheese", "amount": 1, "unit_id": 6, "note": "shredded" },
+
+    { "id": 155, "recipe_id": 21, "name": "bread flour", "amount": 4, "unit_id": 6, "note": null },
+    { "id": 156, "recipe_id": 21, "name": "water", "amount": 1.5, "unit_id": 6, "note": "lukewarm" },
+    { "id": 157, "recipe_id": 21, "name": "sourdough starter", "amount": 1, "unit_id": 6, "note": "active" },
+    { "id": 158, "recipe_id": 21, "name": "salt", "amount": 2, "unit_id": 3, "note": null },
+
+    { "id": 159, "recipe_id": 22, "name": "chicken thighs", "amount": 8, "unit_id": 25, "note": "bone-in, skin-on" },
+    { "id": 160, "recipe_id": 22, "name": "long-grain rice", "amount": 1.5, "unit_id": 6, "note": null },
+    { "id": 161, "recipe_id": 22, "name": "onion", "amount": 1, "unit_id": 25, "note": "diced" },
+    { "id": 162, "recipe_id": 22, "name": "bell pepper", "amount": 1, "unit_id": 25, "note": "diced" },
+    { "id": 163, "recipe_id": 22, "name": "chicken broth", "amount": 2.5, "unit_id": 6, "note": null },
+    { "id": 164, "recipe_id": 22, "name": "diced tomatoes", "amount": 1, "unit_id": 25, "note": "can" },
+
+    { "id": 165, "recipe_id": 23, "name": "all-purpose flour", "amount": 2, "unit_id": 6, "note": null },
+    { "id": 166, "recipe_id": 23, "name": "sugar", "amount": 0.75, "unit_id": 6, "note": null },
+    { "id": 167, "recipe_id": 23, "name": "baking powder", "amount": 2, "unit_id": 3, "note": null },
+    { "id": 168, "recipe_id": 23, "name": "salt", "amount": 0.5, "unit_id": 3, "note": null },
+    { "id": 169, "recipe_id": 23, "name": "butter", "amount": 0.5, "unit_id": 6, "note": "melted" },
+    { "id": 170, "recipe_id": 23, "name": "large egg", "amount": 1, "unit_id": 23, "note": null },
+    { "id": 171, "recipe_id": 23, "name": "milk", "amount": 1, "unit_id": 6, "note": null },
+    { "id": 172, "recipe_id": 23, "name": "fresh blueberries", "amount": 1.5, "unit_id": 6, "note": null },
+
+    { "id": 173, "recipe_id": 24, "name": "white fish fillets", "amount": 1.5, "unit_id": 13, "note": "mahi-mahi or cod" },
+    { "id": 174, "recipe_id": 24, "name": "cumin", "amount": 1, "unit_id": 3, "note": "ground" },
+    { "id": 175, "recipe_id": 24, "name": "chili powder", "amount": 1, "unit_id": 3, "note": null },
+    { "id": 176, "recipe_id": 24, "name": "cabbage", "amount": 3, "unit_id": 6, "note": "shredded" },
+    { "id": 177, "recipe_id": 24, "name": "cilantro", "amount": 0.5, "unit_id": 6, "note": "chopped" },
+    { "id": 178, "recipe_id": 24, "name": "corn tortillas", "amount": 8, "unit_id": 25, "note": "small" },
+    { "id": 179, "recipe_id": 24, "name": "avocado", "amount": 1, "unit_id": 25, "note": "sliced" },
+
+    { "id": 180, "recipe_id": 25, "name": "Arborio rice", "amount": 1.5, "unit_id": 6, "note": null },
+    { "id": 181, "recipe_id": 25, "name": "chicken stock", "amount": 6, "unit_id": 6, "note": "warm" },
+    { "id": 182, "recipe_id": 25, "name": "mixed mushrooms", "amount": 1, "unit_id": 13, "note": "sliced" },
+    { "id": 183, "recipe_id": 25, "name": "onion", "amount": 1, "unit_id": 25, "note": "finely diced" },
+    { "id": 184, "recipe_id": 25, "name": "white wine", "amount": 0.5, "unit_id": 6, "note": "dry" },
+    { "id": 185, "recipe_id": 25, "name": "Parmesan cheese", "amount": 1, "unit_id": 6, "note": "grated" },
+    { "id": 186, "recipe_id": 25, "name": "butter", "amount": 4, "unit_id": 4, "note": null },
+
+    { "id": 187, "recipe_id": 26, "name": "beef chuck", "amount": 3, "unit_id": 13, "note": "cut into 2-inch pieces" },
+    { "id": 188, "recipe_id": 26, "name": "onions", "amount": 2, "unit_id": 25, "note": "large, diced" },
+    { "id": 189, "recipe_id": 26, "name": "carrots", "amount": 4, "unit_id": 25, "note": "sliced" },
+    { "id": 190, "recipe_id": 26, "name": "celery stalks", "amount": 3, "unit_id": 25, "note": "sliced" },
+    { "id": 191, "recipe_id": 26, "name": "potatoes", "amount": 2, "unit_id": 13, "note": "peeled and cubed" },
+    { "id": 192, "recipe_id": 26, "name": "beef broth", "amount": 4, "unit_id": 6, "note": null },
+    { "id": 193, "recipe_id": 26, "name": "red wine", "amount": 1, "unit_id": 6, "note": null },
+    { "id": 194, "recipe_id": 26, "name": "tomato paste", "amount": 2, "unit_id": 4, "note": null },
+
+    { "id": 195, "recipe_id": 27, "name": "fresh mozzarella", "amount": 8, "unit_id": 14, "note": "ball" },
+    { "id": 196, "recipe_id": 27, "name": "ripe tomatoes", "amount": 3, "unit_id": 25, "note": "large" },
+    { "id": 197, "recipe_id": 27, "name": "fresh basil", "amount": 0.5, "unit_id": 6, "note": "leaves" },
+    { "id": 198, "recipe_id": 27, "name": "olive oil", "amount": 3, "unit_id": 4, "note": "extra virgin" },
+    { "id": 199, "recipe_id": 27, "name": "balsamic glaze", "amount": 2, "unit_id": 4, "note": null },
+
+    { "id": 200, "recipe_id": 28, "name": "dark chocolate", "amount": 4, "unit_id": 14, "note": "70% cocoa" },
+    { "id": 201, "recipe_id": 28, "name": "butter", "amount": 4, "unit_id": 4, "note": null },
+    { "id": 202, "recipe_id": 28, "name": "powdered sugar", "amount": 0.5, "unit_id": 6, "note": null },
+    { "id": 203, "recipe_id": 28, "name": "large eggs", "amount": 2, "unit_id": 23, "note": null },
+    { "id": 204, "recipe_id": 28, "name": "egg yolks", "amount": 2, "unit_id": 25, "note": null },
+    { "id": 205, "recipe_id": 28, "name": "all-purpose flour", "amount": 2, "unit_id": 4, "note": null },
+
+    { "id": 206, "recipe_id": 29, "name": "quinoa", "amount": 1, "unit_id": 6, "note": null },
+    { "id": 207, "recipe_id": 29, "name": "sweet potato", "amount": 1, "unit_id": 25, "note": "large, cubed" },
+    { "id": 208, "recipe_id": 29, "name": "broccoli", "amount": 1, "unit_id": 25, "note": "head, florets" },
+    { "id": 209, "recipe_id": 29, "name": "chickpeas", "amount": 1, "unit_id": 25, "note": "can, drained" },
+    { "id": 210, "recipe_id": 29, "name": "kale", "amount": 4, "unit_id": 6, "note": "chopped" },
+    { "id": 211, "recipe_id": 29, "name": "tahini", "amount": 0.25, "unit_id": 6, "note": null },
+    { "id": 212, "recipe_id": 29, "name": "avocado", "amount": 1, "unit_id": 25, "note": "sliced" },
+    { "id": 213, "recipe_id": 29, "name": "pumpkin seeds", "amount": 0.25, "unit_id": 6, "note": null },
+
+    { "id": 214, "recipe_id": 30, "name": "ground beef", "amount": 1, "unit_id": 13, "note": "80/20" },
+    { "id": 215, "recipe_id": 30, "name": "onion", "amount": 1, "unit_id": 25, "note": "large, diced" },
+    { "id": 216, "recipe_id": 30, "name": "carrot", "amount": 1, "unit_id": 25, "note": "large, diced" },
+    { "id": 217, "recipe_id": 30, "name": "celery stalks", "amount": 2, "unit_id": 25, "note": "diced" },
+    { "id": 218, "recipe_id": 30, "name": "crushed tomatoes", "amount": 1, "unit_id": 25, "note": "28 oz can" },
+    { "id": 219, "recipe_id": 30, "name": "tomato paste", "amount": 2, "unit_id": 4, "note": null },
+    { "id": 220, "recipe_id": 30, "name": "red wine", "amount": 1, "unit_id": 6, "note": "dry" },
+    { "id": 221, "recipe_id": 30, "name": "fresh herbs", "amount": 2, "unit_id": 4, "note": "basil and oregano" }
   ],
   "recipe_tags": [
     { "recipe_id": 1, "tag_id": 5 },
@@ -536,30 +856,91 @@
 
     { "recipe_id": 16, "tag_id": 2 },
     { "recipe_id": 16, "tag_id": 3 },
-    { "recipe_id": 16, "tag_id": 7 }
+    { "recipe_id": 16, "tag_id": 7 },
+
+    { "recipe_id": 17, "tag_id": 3 },
+    { "recipe_id": 17, "tag_id": 13 },
+
+    { "recipe_id": 18, "tag_id": 1 },
+    { "recipe_id": 18, "tag_id": 53 },
+    { "recipe_id": 18, "tag_id": 13 },
+
+    { "recipe_id": 19, "tag_id": 2 },
+    { "recipe_id": 19, "tag_id": 3 },
+    { "recipe_id": 19, "tag_id": 8 },
+
+    { "recipe_id": 20, "tag_id": 3 },
+    { "recipe_id": 20, "tag_id": 18 },
+
+    { "recipe_id": 21, "tag_id": 5 },
+    { "recipe_id": 21, "tag_id": 13 },
+
+    { "recipe_id": 22, "tag_id": 3 },
+    { "recipe_id": 22, "tag_id": 13 },
+
+    { "recipe_id": 23, "tag_id": 2 },
+    { "recipe_id": 23, "tag_id": 3 },
+    { "recipe_id": 23, "tag_id": 8 },
+
+    { "recipe_id": 24, "tag_id": 3 },
+    { "recipe_id": 24, "tag_id": 8 },
+
+    { "recipe_id": 25, "tag_id": 1 },
+    { "recipe_id": 25, "tag_id": 13 },
+
+    { "recipe_id": 26, "tag_id": 3 },
+    { "recipe_id": 26, "tag_id": 14 },
+
+    { "recipe_id": 27, "tag_id": 3 },
+    { "recipe_id": 27, "tag_id": 18 },
+
+    { "recipe_id": 28, "tag_id": 5 },
+    { "recipe_id": 28, "tag_id": 12 },
+
+    { "recipe_id": 29, "tag_id": 2 },
+    { "recipe_id": 29, "tag_id": 53 },
+    { "recipe_id": 29, "tag_id": 54 },
+
+    { "recipe_id": 30, "tag_id": 3 },
+    { "recipe_id": 30, "tag_id": 10 }
   ],
   "collection_recipes": [
     { "collection_id": 1, "recipe_id": 1 },
     { "collection_id": 1, "recipe_id": 6 },
     { "collection_id": 1, "recipe_id": 9 },
     { "collection_id": 1, "recipe_id": 10 },
+    { "collection_id": 1, "recipe_id": 17 },
+    { "collection_id": 1, "recipe_id": 21 },
+    { "collection_id": 1, "recipe_id": 22 },
+    { "collection_id": 1, "recipe_id": 25 },
 
     { "collection_id": 2, "recipe_id": 2 },
     { "collection_id": 2, "recipe_id": 5 },
     { "collection_id": 2, "recipe_id": 7 },
     { "collection_id": 2, "recipe_id": 8 },
+    { "collection_id": 2, "recipe_id": 14 },
+    { "collection_id": 2, "recipe_id": 16 },
+    { "collection_id": 2, "recipe_id": 19 },
+    { "collection_id": 2, "recipe_id": 23 },
 
     { "collection_id": 3, "recipe_id": 1 },
     { "collection_id": 3, "recipe_id": 9 },
+    { "collection_id": 3, "recipe_id": 21 },
+    { "collection_id": 3, "recipe_id": 25 },
 
     { "collection_id": 4, "recipe_id": 4 },
     { "collection_id": 4, "recipe_id": 7 },
     { "collection_id": 4, "recipe_id": 8 },
     { "collection_id": 4, "recipe_id": 12 },
+    { "collection_id": 4, "recipe_id": 18 },
+    { "collection_id": 4, "recipe_id": 29 },
 
     { "collection_id": 5, "recipe_id": 3 },
     { "collection_id": 5, "recipe_id": 10 },
     { "collection_id": 5, "recipe_id": 6 },
+    { "collection_id": 5, "recipe_id": 17 },
+    { "collection_id": 5, "recipe_id": 22 },
+    { "collection_id": 5, "recipe_id": 30 },
 
     { "collection_id": 6, "recipe_id": 2 },
     { "collection_id": 6, "recipe_id": 3 },
@@ -569,11 +950,19 @@
     { "collection_id": 6, "recipe_id": 14 },
     { "collection_id": 6, "recipe_id": 15 },
     { "collection_id": 6, "recipe_id": 16 },
+    { "collection_id": 6, "recipe_id": 20 },
+    { "collection_id": 6, "recipe_id": 24 },
+    { "collection_id": 6, "recipe_id": 26 },
+    { "collection_id": 6, "recipe_id": 27 },
+    { "collection_id": 6, "recipe_id": 28 },
 
     { "collection_id": 7, "recipe_id": 13 },
     { "collection_id": 7, "recipe_id": 14 },
     { "collection_id": 7, "recipe_id": 16 },
     { "collection_id": 7, "recipe_id": 8 },
+    { "collection_id": 7, "recipe_id": 26 },
+    { "collection_id": 7, "recipe_id": 20 },
+    { "collection_id": 7, "recipe_id": 27 },
 
     { "collection_id": 8, "recipe_id": 4 },
     { "collection_id": 8, "recipe_id": 6 },
@@ -581,6 +970,37 @@
     { "collection_id": 8, "recipe_id": 9 },
     { "collection_id": 8, "recipe_id": 11 },
     { "collection_id": 8, "recipe_id": 12 },
-    { "collection_id": 8, "recipe_id": 15    }
+    { "collection_id": 8, "recipe_id": 15 },
+    { "collection_id": 8, "recipe_id": 18 },
+    { "collection_id": 8, "recipe_id": 29 },
+
+    { "collection_id": 9, "recipe_id": 17 },
+    { "collection_id": 9, "recipe_id": 22 },
+    { "collection_id": 9, "recipe_id": 19 },
+    { "collection_id": 9, "recipe_id": 23 },
+
+    { "collection_id": 10, "recipe_id": 6 },
+    { "collection_id": 10, "recipe_id": 9 },
+    { "collection_id": 10, "recipe_id": 18 },
+    { "collection_id": 10, "recipe_id": 25 },
+
+    { "collection_id": 11, "recipe_id": 10 },
+    { "collection_id": 11, "recipe_id": 22 },
+    { "collection_id": 11, "recipe_id": 30 },
+
+    { "collection_id": 12, "recipe_id": 4 },
+    { "collection_id": 12, "recipe_id": 1 },
+    { "collection_id": 12, "recipe_id": 21 },
+
+    { "collection_id": 13, "recipe_id": 9 },
+    { "collection_id": 13, "recipe_id": 18 },
+    { "collection_id": 13, "recipe_id": 25 },
+
+    { "collection_id": 14, "recipe_id": 2 },
+    { "collection_id": 14, "recipe_id": 5 },
+    { "collection_id": 14, "recipe_id": 7 },
+    { "collection_id": 14, "recipe_id": 8 },
+    { "collection_id": 14, "recipe_id": 14 },
+    { "collection_id": 14, "recipe_id": 30 }
   ]
 }

@@ -16,7 +16,7 @@ const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
           <CardTitle>
             <span>{recipe.name}</span>
             <div className="mt-2 flex flex-wrap gap-2">
-              {recipe.tags.map((tag, index) => (
+              {recipe.tags?.map((tag, index) => (
                 <Badge key={index}>{tag.name}</Badge>
               ))}
             </div>

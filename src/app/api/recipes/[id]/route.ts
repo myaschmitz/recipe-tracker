@@ -15,7 +15,7 @@ export async function GET(
 
     const { data, error } = await supabase
       .from("recipe")
-      .select("id, name, description, instructions")
+      .select("id, name, description, instructions, prep_time, cook_time, total_time, link")
       .eq("id", id)
       .single();
 
@@ -25,7 +25,7 @@ export async function GET(
 
     return createSuccessResponse(data);
   } catch (error) {
-    return handleApiError(error, "fetching recipe");
+    return handleApiError(error, "fetching recipe(s)");
   }
 }
 
