@@ -7,6 +7,16 @@ import { RecipeIngredient, Tag, Collection } from "@/types/view/models";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Link, Pencil, X, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import parse from "html-react-parser";
 import { CollectionRecipeSchema } from "@/types/database/models";
 
@@ -19,6 +29,7 @@ const RecipePage = () => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -119,10 +130,7 @@ const RecipePage = () => {
   }, [id]);
 
   const handleDeleteRecipe = async () => {
-    if (
-      !id ||
-      !window.confirm("Are you sure you want to delete this recipe?")
-    ) {
+    if (!id) {
       return;
     }
 
@@ -136,7 +144,8 @@ const RecipePage = () => {
         throw new Error(`Error deleting recipe: ${response.statusText}`);
       }
 
-      // Redirect to the recipes page after deletion
+      // Close the dialog and redirect to the recipes page after deletion
+      setIsDeleteDialogOpen(false);
       router.push("/recipes");
     } catch (error) {
       console.error(error);
@@ -171,14 +180,40 @@ const RecipePage = () => {
         >
           <Pencil className="p-1" size={24} />
         </a>
-        <button
-          className="hover:text-red-700 transition-all"
-          onClick={handleDeleteRecipe}
-          disabled={isDeleting}
-          // TODO: Add are you sure? modal and also a loading spinner
-        >
-          <X className="" size={24} />
-        </button>
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogTrigger asChild>
+            <button
+              className="hover:text-red-700 transition-all"
+              disabled={isDeleting}
+            >
+              <X className="" size={24} />
+            </button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Recipe</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{recipe.name}"? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteDialogOpen(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteRecipe}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete Recipe"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="my-4 flex flex-wrap gap-2">
         {tags.map((tag) => (

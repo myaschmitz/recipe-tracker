@@ -261,7 +261,7 @@ const CreateRecipe = () => {
           </div>
           <div className="mb-6 flex flex-row gap-6">
             <div className="flex flex-col max-w-sm">
-              <Label htmlFor="recipe-name" className="text-sm font-bold">
+              <Label htmlFor="prep-time" className="text-sm font-bold">
                 Prep Time
               </Label>
               <div className="flex flex-row gap-2 items-center">
@@ -269,11 +269,7 @@ const CreateRecipe = () => {
                   type="number"
                   id="prep-time"
                   placeholder=""
-                  // value={ingredient.amount ?? ""}
-                  //   onChange={(e) =>
-                  //     handleIngredientChange(index, "amount", e.target.value)
-                  //   }
-                  //   onKeyDown={handleKeyDown}
+                  onChange={(e) => setPrepTime(parseInt(e.target.value) || undefined)}
                   min="0"
                   step="any"
                   className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
@@ -282,15 +278,15 @@ const CreateRecipe = () => {
               </div>
             </div>
             <div className="flex flex-col max-w-sm">
-              <Label htmlFor="recipe-name" className="text-sm font-bold">
+              <Label htmlFor="cook-time" className="text-sm font-bold">
                 Cook Time
               </Label>
               <div className="flex flex-row gap-2 items-center">
                 <Input
                   type="number"
-                  id="prep-time"
+                  id="cook-time"
                   placeholder=""
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setCookTime(parseInt(e.target.value) || undefined)}
                   min="0"
                   step="any"
                   className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
@@ -299,15 +295,15 @@ const CreateRecipe = () => {
               </div>
             </div>
             <div className="flex flex-col max-w-sm">
-              <Label htmlFor="recipe-name" className="text-sm font-bold">
+              <Label htmlFor="total-time" className="text-sm font-bold">
                 Total Time
               </Label>
               <div className="flex flex-row gap-2 items-center">
                 <Input
                   type="number"
-                  id="prep-time"
+                  id="total-time"
                   placeholder=""
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setTotalTime(parseInt(e.target.value) || undefined)}
                   min="0"
                   step="any"
                   className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
