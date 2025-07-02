@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import parse from "html-react-parser";
 import { CollectionRecipeSchema } from "@/types/database/models";
+import { safeParseHtml } from "@/lib/htmlSanitizer";
 
 const RecipePage = () => {
   const params = useParams();
@@ -252,7 +253,9 @@ const RecipePage = () => {
         </ul>
       </div>
       <h2 className="font-bold text-lg">Instructions</h2>
-      <div className="text-lg">{parse(recipe.instructions)}</div>
+      <div className="text-lg [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:space-y-2 [&_li]:mb-1 [&_p]:mb-2 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:text-base [&_h3]:font-medium [&_strong]:font-bold [&_em]:italic [&_u]:underline [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800">
+        {safeParseHtml(recipe.instructions)}
+      </div>
       <div className="my-4">
         {/* <div className="text-lg">{parse(recipe.notes)}</div> */}
       </div>
