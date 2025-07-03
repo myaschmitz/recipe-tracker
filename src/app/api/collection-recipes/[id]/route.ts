@@ -28,7 +28,13 @@ export async function GET(
           prep_time,
           cook_time,
           total_time,
-          link
+          link,
+          recipe_tag (
+            tag:tag_id (
+              id,
+              name
+            )
+          )
         )
       `)
       .eq("collection_id", id);
@@ -37,7 +43,16 @@ export async function GET(
       throw error;
     }
 
-    const recipes = data.map(item => item.recipe).filter(Boolean);
+    const recipes = data.map(item => {
+      if (!item.recipe) return null;
+      
+      const recipe = item.recipe as any;
+      return {
+        ...recipe,
+        tags: recipe.recipe_tag?.map((rt: any) => rt.tag) || []
+      };
+    }).filter(Boolean);
+    
     return createSuccessResponse(recipes);
   } catch (error) {
     return handleApiError(error, "fetching collection recipe");
