@@ -18,10 +18,10 @@ export default function LandingPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <CookingPot className="h-12 w-12 text-primary" />
+            <CookingPot className="h-12 w-12 text-primary dark:text-[hsl(199,35%,56%)]" />
             <span className="font-bold text-4xl">recipehub</span>
           </div>
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent dark:from-[hsl(199,35%,56%)] dark:to-[hsl(199,36%,69%)]">
             Welcome to Recipe Hub!
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">

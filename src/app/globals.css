@@ -8,75 +8,103 @@ body {
 
 @layer base {
   :root {
-    --background: 196.1 48% 90%;
-    --foreground: 196.1 2.4% 5%;
-    --card: 196.1 24% 90%;
-    --card-foreground: 196.1 2.4% 10%;
-    --popover: 196.1 48% 95%;
-    --popover-foreground: 196.1 97.4% 0%;
-    --primary: 196.1 73.2% 19%;
+    /* Hippie Blue Color Palette */
+    --hippie-blue-50: 199 51% 95%;
+    --hippie-blue-100: 199 38% 91%;
+    --hippie-blue-200: 199 40% 81%;
+    --hippie-blue-300: 199 36% 69%;
+    --hippie-blue-400: 199 35% 56%;
+    --hippie-blue-500: 199 41% 42%;
+    --hippie-blue-600: 199 41% 33%;
+    --hippie-blue-700: 199 36% 30%;
+    --hippie-blue-800: 199 32% 27%;
+    --hippie-blue-900: 199 25% 24%;
+    --hippie-blue-950: 199 30% 16%;
+
+    /* Neutral grays with subtle blue tint */
+    --neutral-50: 199 20% 98%;
+    --neutral-100: 199 18% 96%;
+    --neutral-200: 199 16% 89%;
+    --neutral-300: 199 14% 83%;
+    --neutral-400: 199 12% 64%;
+    --neutral-500: 199 10% 45%;
+    --neutral-600: 199 12% 32%;
+    --neutral-700: 199 14% 25%;
+    --neutral-800: 199 16% 15%;
+    --neutral-900: 199 18% 9%;
+    --neutral-950: 199 20% 4%;
+
+    /* Light theme - mix of blue and neutral */
+    --background: var(--neutral-50);
+    --foreground: var(--neutral-900);
+    --card: var(--neutral-100);
+    --card-foreground: var(--neutral-900);
+    --popover: var(--neutral-50);
+    --popover-foreground: var(--neutral-900);
+    --primary: var(--hippie-blue-600);
     --primary-foreground: 0 0% 100%;
-    --secondary: 196.1 19.6% 70%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 234.1 19.6% 85%;
-    --muted-foreground: 196.1 2.4% 35%;
-    --accent: 234.1 19.6% 80%;
-    --accent-foreground: 196.1 2.4% 10%;
+    --secondary: var(--neutral-200);
+    --secondary-foreground: var(--neutral-900);
+    --muted: var(--neutral-100);
+    --muted-foreground: var(--neutral-600);
+    --accent: var(--hippie-blue-200);
+    --accent-foreground: var(--neutral-900);
     --destructive: 0 74% 30%;
-    --destructive-foreground: 196.1 2.4% 90%;
-    --border: 196.1 24.8% 50%;
-    --input: 196.1 24.8% 18%;
-    --ring: 196.1 88.7% 45.3%;
+    --destructive-foreground: var(--neutral-50);
+    --border: var(--neutral-300);
+    --input: var(--neutral-300);
+    --ring: var(--hippie-blue-600);
     --radius: 0.5rem;
-    --chart-1: 196.9 53% 33%;
-    --chart-2: 268.9 53% 33%;
-    --chart-3: 340.9 53% 33%;
-    --chart-4: 52.9 53% 33%;
-    --chart-5: 124.9 53% 33%;
-    --sidebar-background: 196, 48%, 86%;
-    --sidebar-foreground: 196, 2%, 5%;
-    --sidebar-primary: 196, 73%, 17%;
-    --sidebar-primary-foreground: 0, 0%, 100%;
-    --sidebar-accent: 234, 20%, 76%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 196, 25%, 48%;
-    --sidebar-ring: 186, 98%, 45%;
+    --chart-1: var(--hippie-blue-600);
+    --chart-2: var(--hippie-blue-500);
+    --chart-3: var(--hippie-blue-400);
+    --chart-4: var(--hippie-blue-700);
+    --chart-5: var(--hippie-blue-800);
+    --sidebar-background: var(--neutral-100);
+    --sidebar-foreground: var(--neutral-900);
+    --sidebar-primary: var(--hippie-blue-600);
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: var(--neutral-200);
+    --sidebar-accent-foreground: var(--neutral-900);
+    --sidebar-border: var(--neutral-300);
+    --sidebar-ring: var(--hippie-blue-600);
   }
 
   .dark {
-    --background: 196.1 29.2% 5%;
-    --foreground: 196.1 2.4% 90%;
-    --card: 196.1 24% 0%;
-    --card-foreground: 196.1 2.4% 90%;
-    --popover: 196.1 29.2% 5%;
-    --popover-foreground: 196.1 2.4% 90%;
-    --primary: 196.1 73.2% 19%;
+    /* Dark theme - mostly neutral with blue accents */
+    --background: var(--neutral-900);
+    --foreground: var(--neutral-100);
+    --card: var(--neutral-800);
+    --card-foreground: var(--neutral-100);
+    --popover: var(--neutral-900);
+    --popover-foreground: var(--neutral-100);
+    --primary: var(--hippie-blue-500);
     --primary-foreground: 0 0% 100%;
-    --secondary: 196.1 19.6% 10%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 234.1 19.6% 15%;
-    --muted-foreground: 196.1 2.4% 60%;
-    --accent: 234.1 19.6% 15%;
-    --accent-foreground: 196.1 2.4% 90%;
+    --secondary: var(--neutral-700);
+    --secondary-foreground: var(--neutral-100);
+    --muted: var(--neutral-800);
+    --muted-foreground: var(--neutral-400);
+    --accent: var(--neutral-700);
+    --accent-foreground: var(--neutral-100);
     --destructive: 0 74% 30%;
-    --destructive-foreground: 196.1 2.4% 90%;
-    --border: 196.1 24.8% 18%;
-    --input: 196.1 24.8% 18%;
-    --ring: 196.1 88.7% 45.3%;
+    --destructive-foreground: var(--neutral-100);
+    --border: var(--neutral-600);
+    --input: var(--neutral-600);
+    --ring: var(--hippie-blue-500);
     --radius: 0.5rem;
-    --chart-1: 196.9 53% 33%;
-    --chart-2: 268.9 53% 33%;
-    --chart-3: 340.9 53% 33%;
-    --chart-4: 52.9 53% 33%;
-    --chart-5: 124.9 53% 33%;
-    --sidebar-background: 196, 29%, 7%;
-    --sidebar-foreground: 196, 2%, 99%;
-    --sidebar-primary: 196, 73%, 15%;
+    --chart-1: var(--hippie-blue-500);
+    --chart-2: var(--hippie-blue-400);
+    --chart-3: var(--hippie-blue-300);
+    --chart-4: var(--hippie-blue-600);
+    --chart-5: var(--hippie-blue-700);
+    --sidebar-background: var(--neutral-800);
+    --sidebar-foreground: var(--neutral-100);
+    --sidebar-primary: var(--hippie-blue-500);
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 234, 20%, 13%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 196, 25%, 17%;
-    --sidebar-ring: 186, 98%, 45%;
+    --sidebar-accent: var(--neutral-700);
+    --sidebar-accent-foreground: var(--neutral-100);
+    --sidebar-border: var(--neutral-600);
+    --sidebar-ring: var(--hippie-blue-500);
   }
 }
 
@@ -90,6 +118,6 @@ body {
 }
 
 .card-bg {
-  @apply transition-colors duration-300 bg-[hsl(196.1,48%,90%)] hover:bg-[hsl(196.1,48%,85%)] 
-         dark:bg-[hsl(196.1,29.2%,5%)] dark:hover:bg-[hsl(196.1,29.2%,10%)];
+  @apply transition-colors duration-300 bg-[hsl(199,20%,98%)] hover:bg-[hsl(199,18%,96%)] 
+         dark:bg-[hsl(199,16%,15%)] dark:hover:bg-[hsl(199,14%,25%)];
 }
