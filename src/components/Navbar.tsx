@@ -59,7 +59,7 @@ export function Navbar() {
   const recipeItems = useMemo(
     () => [
       {
-        title: "View All",
+        title: "View All Recipes",
         href: "/recipes",
         icon: Inbox,
       },
@@ -75,7 +75,7 @@ export function Navbar() {
   const collectionItems = useMemo(
     () => [
       {
-        title: "View All",
+        title: "View All Collections",
         href: "/collections",
         icon: SquareLibrary,
       },

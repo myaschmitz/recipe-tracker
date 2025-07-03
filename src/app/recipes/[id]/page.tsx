@@ -224,13 +224,13 @@ const RecipePage = () => {
       
       {collections.length > 0 && (
         <div className="my-4">
-          <h3 className="font-semibold text-sm text-gray-600 mb-2">Collections:</h3>
+          <h3 className="font-semibold text-sm text-muted-foreground mb-2">Collections:</h3>
           <div className="flex flex-wrap gap-2">
             {collections.map((collection) => (
               <button
                 key={collection.id}
                 onClick={() => router.push(`/collections/${collection.id}`)}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent text-accent-foreground border border-border hover:bg-accent/80 transition-colors cursor-pointer"
               >
                 {collection.name}
               </button>
