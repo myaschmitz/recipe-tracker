@@ -90,8 +90,8 @@ export function Navbar() {
         icon: UserCog,
       },
       {
-        title: "Profile",
-        href: "",
+        title: "Sign In",
+        href: "/auth/login",
         icon: CircleUser,
       },
       {
