@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -27,8 +27,28 @@ export default function Admin() {
   const [isBackingUp, setIsBackingUp] = useState(false);
   const { toast } = useToast();
 
+  // Show welcome toast when admin page loads
+  useEffect(() => {
+    const hasShownWelcome = sessionStorage.getItem('admin-welcome-shown');
+    if (!hasShownWelcome) {
+      toast({
+        title: "👋 Admin Panel",
+        description: "Welcome to the admin panel! Here you can manage test data, backup your database, and perform system operations.",
+        variant: "default",
+      });
+      sessionStorage.setItem('admin-welcome-shown', 'true');
+    }
+  }, [toast]);
+
   const handleGenerateTestData = async () => {
     setIsGenerating(true);
+    
+    // Show initial progress toast
+    toast({
+      title: "🔄 Generating Test Data",
+      description: "Clearing existing data and creating test recipes, collections, and tags...",
+      variant: "default",
+    });
     
     try {
       console.log("Making API request to generate test data...");
@@ -60,9 +80,10 @@ export default function Admin() {
       const result = await response.json();
       console.log("Success response:", result);
       
+      // Enhanced success toast with detailed breakdown
       toast({
-        title: "✅ Success!",
-        description: `Test data generated successfully! Created ${result.data?.recipes || 0} recipes, ${result.data?.collections || 0} collections, ${result.data?.tags || 0} tags, and ${result.data?.units || 0} units.`,
+        title: "🎉 Test Data Generated!",
+        description: `Successfully created ${result.data?.recipes || 0} recipes, ${result.data?.collections || 0} collections, ${result.data?.tags || 0} tags, ${result.data?.units || 0} units, and ${result.data?.ingredients || 0} ingredients. Your database is ready for testing!`,
         variant: "default",
       });
       
@@ -70,9 +91,10 @@ export default function Admin() {
     } catch (error) {
       console.error("Error generating test data:", error);
       
+      // Enhanced error toast
       toast({
-        title: "❌ Error",
-        description: error instanceof Error ? error.message : "Failed to generate test data. Please try again.",
+        title: "❌ Generation Failed",
+        description: `Test data generation failed: ${error instanceof Error ? error.message : "Unknown error occurred. Please check your database connection and try again."}`,
         variant: "destructive",
       });
     } finally {
@@ -82,6 +104,13 @@ export default function Admin() {
 
   const handleDeleteAllData = async () => {
     setIsDeleting(true);
+    
+    // Show initial warning toast
+    toast({
+      title: "⚠️ Deleting All Data",
+      description: "Permanently removing all recipes, collections, tags, and relationships from your database...",
+      variant: "destructive",
+    });
     
     try {
       console.log("Making API request to delete all data...");
@@ -114,9 +143,10 @@ export default function Admin() {
       
       const totalDeleted = Object.values(result.deletedCounts || {}).reduce((sum: number, count: any) => sum + (count || 0), 0);
       
+      // Enhanced success toast with more details
       toast({
-        title: "✅ Success!",
-        description: `All data deleted successfully! Removed ${totalDeleted} records from the database.`,
+        title: "🗑️ All Data Deleted",
+        description: `Successfully removed ${totalDeleted} records from your database. All recipes, collections, tags, and relationships have been permanently deleted.`,
         variant: "default",
       });
       
@@ -124,9 +154,10 @@ export default function Admin() {
     } catch (error) {
       console.error("Error deleting data:", error);
       
+      // Enhanced error toast
       toast({
-        title: "❌ Error",
-        description: error instanceof Error ? error.message : "Failed to delete data. Please try again.",
+        title: "❌ Deletion Failed",
+        description: `Failed to delete all data: ${error instanceof Error ? error.message : "Unknown error occurred. Some data may still remain in your database."}`,
         variant: "destructive",
       });
     } finally {
@@ -136,6 +167,13 @@ export default function Admin() {
 
   const handleBackupDatabase = async (format: 'json' | 'sql') => {
     setIsBackingUp(true);
+    
+    // Show initial toast when backup starts
+    toast({
+      title: "🔄 Creating Backup",
+      description: `Preparing ${format.toUpperCase()} export of your database...`,
+      variant: "default",
+    });
     
     try {
       console.log(`Creating ${format.toUpperCase()} backup...`);
@@ -183,18 +221,20 @@ export default function Admin() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
+      // Enhanced success toast with more details
       toast({
-        title: "✅ Backup Created!",
-        description: `Database backup successfully exported as ${format.toUpperCase()} file: ${filename}`,
+        title: "✅ Backup Complete!",
+        description: `Your database has been successfully exported as ${format.toUpperCase()}. File "${filename}" is now downloading.`,
         variant: "default",
       });
       
     } catch (error) {
       console.error("Error creating backup:", error);
       
+      // Enhanced error toast with more helpful information
       toast({
         title: "❌ Backup Failed",
-        description: error instanceof Error ? error.message : "Failed to create backup. Please try again.",
+        description: `Unable to create ${format.toUpperCase()} backup: ${error instanceof Error ? error.message : "Unknown error occurred. Please try again."}`,
         variant: "destructive",
       });
     } finally {
