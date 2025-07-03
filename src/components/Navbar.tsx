@@ -107,9 +107,11 @@ export function Navbar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="flex flex-row gap-2">
-        <CookingPot />
-        <span className="font-bold text-xl">recipehub</span>
+      <SidebarHeader className="flex flex-row gap-2 ml-4 mt-4">
+        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <CookingPot />
+          <span className="font-bold text-xl">recipehub</span>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
