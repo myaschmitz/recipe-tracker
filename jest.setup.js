@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import React from 'react'
 
 // Mock Supabase client (used by some tests that need it)
 jest.mock('./src/lib/supabaseClient', () => ({
