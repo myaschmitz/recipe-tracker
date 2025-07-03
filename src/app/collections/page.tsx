@@ -1,6 +1,7 @@
 "use client";
 
 import CollectionCard from "@/components/CollectionCard";
+import { Button } from "@/components/ui/button";
 import { CollectionSchema } from "@/types/database/models";
 import { Collection } from "@/types/view/models";
 import { useState, useEffect } from "react";
@@ -40,7 +41,10 @@ const CollectionsPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="font-bold text-2xl">Collections</h1>
+      <h1 className="font-bold text-2xl mb-4">Collections</h1>
+      <Button variant="default" className="mb-4" onClick={() => window.location.href = "/collections/create"}>
+        + Create Collection
+      </Button>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {collections.map((collection) => (
           <CollectionCard

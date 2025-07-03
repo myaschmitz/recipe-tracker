@@ -104,6 +104,18 @@ export async function POST() {
     }
     console.log("Inserted collection recipes");
 
+    // Reset sequences to avoid primary key conflicts when creating new records
+    try {
+      const { error } = await supabase.rpc('reset_sequences');
+      if (error) {
+        console.warn('Failed to reset sequences:', error);
+      } else {
+        console.log("Reset auto-increment sequences");
+      }
+    } catch (err) {
+      console.warn('Could not execute sequence reset:', err);
+    }
+
     console.log("Test data generation completed successfully!");
 
     return NextResponse.json({

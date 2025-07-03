@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { handleApiError, createSuccessResponse } from "@/lib/api";
 import { collectionSchema } from "@/lib/schemas";
+import { ZodError } from "zod";
 
 export async function GET() {
   try {
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
 
     return createSuccessResponse(data, 201);
   } catch (error) {
-    if (error?.name === "ZodError") {
+    if (error instanceof ZodError) {
       return NextResponse.json(
         { error: "Validation failed", details: error.errors },
         { status: 400 }

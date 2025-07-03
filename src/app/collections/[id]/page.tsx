@@ -1,7 +1,6 @@
 "use client";
 
 import RecipeCard from "@/components/RecipeCard";
-import { CollectionRecipeSchema } from "@/types/database/models";
 import { Collection, Recipe } from "@/types/view/models";
 import { ArrowLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -88,7 +87,7 @@ const CollectionPage = () => {
           className="flex items-center gap-2 hover:text-primary transition-all"
         >
           <ArrowLeft />
-          Back to recipes
+          Back to collections
         </button>
       </div>
       <h1 className="text-2xl font-bold">{formatName(collection?.name)}</h1>
