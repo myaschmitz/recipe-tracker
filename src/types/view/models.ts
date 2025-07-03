@@ -2,6 +2,10 @@ export type Recipe = {
   id: number;
   name: string;
   description?: string;
+  prepTime?: number; // in minutes
+  cookTime?: number; // in minutes
+  totalTime?: number; // in minutes
+  link?: string;
   createdAt: string;
   updatedAt: string;
   instructions: string;

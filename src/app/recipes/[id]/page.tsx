@@ -244,13 +244,18 @@ const RecipePage = () => {
       </Card>
       <div className="my-4">
         <h2 className="font-bold text-lg">Ingredients</h2>
-        <ul className="list-disc list-inside">
-          {ingredients.map((ingredient, index) => (
-            <li key={index}>
-              {ingredient.amount} {ingredient.name}
-            </li>
-          ))}
-        </ul>
+        {ingredients.length === 0 ? (
+          <p className="text-muted-foreground">No ingredients found.</p>
+        ) : (
+          <ul className="list-disc list-inside">
+            {ingredients.map((ingredient, index) => (
+              <li key={index}>
+                {ingredient.amount} {ingredient.unit?.name || ""} {ingredient.name}
+                {ingredient.note && <span className="text-muted-foreground"> ({ingredient.note})</span>}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <h2 className="font-bold text-lg">Instructions</h2>
       <div className="text-lg [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:space-y-2 [&_li]:mb-1 [&_p]:mb-2 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:text-base [&_h3]:font-medium [&_strong]:font-bold [&_em]:italic [&_u]:underline [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800">

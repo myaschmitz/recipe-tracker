@@ -359,7 +359,7 @@ const CreateRecipe = () => {
                     onKeyDown={handleKeyDown}
                     min="0"
                     step="any"
-                    className="w-20 bg-secondary"
+                    className="w-20"
                     required
                   />
                 </div>
