@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RecipeIngredient, Tag, Collection } from "@/types/view/models";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Link, Pencil, X, ArrowLeft } from "lucide-react";
+import { Link, Pencil, ArrowLeft, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -187,7 +187,7 @@ const RecipePage = () => {
               className="hover:text-red-700 transition-all"
               disabled={isDeleting}
             >
-              <X className="" size={24} />
+              <Trash2 className="" size={16} />
             </button>
           </DialogTrigger>
           <DialogContent>

@@ -95,7 +95,7 @@ const CollectionPage = () => {
       <div>
         <h2 className="text-xl font-semibold mt-4">Recipes</h2>
         {recipes.length > 0 ? (
-          <div className="flex flex-wrap flex-col gap-4 mt-4">
+          <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2 lg:grid-cols-3">
             {recipes.map((recipe: Recipe) => (
               <RecipeCard
                 key={recipe.id}
