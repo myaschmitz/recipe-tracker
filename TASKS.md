@@ -117,6 +117,15 @@
 - [ ] Drag and drop for ingredient reordering
 - [ ] Ingredient sections/groupings
 - [ ] Custom units input
+- [ ] Recipe filtering and reordering on All Recipes page
+  - [ ] Filter by tags (cuisine type, meal category, dietary restrictions)
+  - [ ] Filter by cooking time (prep time, cook time, total time)
+  - [ ] Sort by name (A-Z, Z-A)
+  - [ ] Sort by creation date (newest first, oldest first)
+  - [ ] Sort by cooking time (shortest to longest, longest to shortest)
+  - [ ] Sort by number of ingredients
+  - [ ] Clear all filters option
+  - [ ] Save filter preferences
 
 ### Advanced Features
 - [ ] Recipe meal planning integration
