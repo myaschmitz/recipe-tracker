@@ -58,20 +58,26 @@ export function Navbar() {
   const recipeItems = useMemo(
     () => [
       {
-        title: "All",
+        title: "View All",
         href: "/recipes",
         icon: Inbox,
-      },
-      {
-        title: "Collections",
-        href: "/collections",
-        icon: SquareLibrary,
       },
       {
         title: "Create Recipe",
         href: "/recipes/create",
         icon: Calendar,
       }
+    ],
+    []
+  );
+
+  const collectionItems = useMemo(
+    () => [
+      {
+        title: "View All",
+        href: "/collections",
+        icon: SquareLibrary,
+      },
     ],
     []
   );
@@ -98,12 +104,12 @@ export function Navbar() {
   );
 
   useEffect(() => {
-    const allItems = [...items, ...recipeItems, ...footerItems];
+    const allItems = [...items, ...recipeItems, ...collectionItems, ...footerItems];
     const activeItem = allItems.find((item) => item.href === path);
     if (activeItem) {
       setActiveTab(activeItem.title);
     }
-  }, [items, recipeItems, footerItems, path]);
+  }, [items, recipeItems, collectionItems, footerItems, path]);
 
   return (
     <Sidebar>
@@ -143,6 +149,30 @@ export function Navbar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {recipeItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      className={`flex hover:font-bold items-center gap-2 ${
+                        activeTab === item.title ? "font-bold" : ""
+                      }`}
+                      onClick={() => setActiveTab(item.title)}
+                      href={item.href}
+                      passHref
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Collections</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {collectionItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link
