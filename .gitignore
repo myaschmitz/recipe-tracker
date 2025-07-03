@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Auto-generated babel config (created by Jest/Next.js)
+babel.config.js
+
+# VS Code workspace settings
+.vscode/
+
+# Helper scripts
+run-tests-clean.sh
+watch-babel.sh

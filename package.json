@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@swc/jest": "^0.2.38",
     "@types/dompurify": "^3.0.5",
     "@types/node": "^20",
     "@types/react": "^19.0.6",
