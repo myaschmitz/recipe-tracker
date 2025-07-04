@@ -21,6 +21,56 @@ import parse from "html-react-parser";
 import { CollectionRecipeSchema } from "@/types/database/models";
 import { safeParseHtml } from "@/lib/htmlSanitizer";
 
+// Utility function to convert decimal to fraction
+const decimalToFraction = (decimal: number): string => {
+  if (decimal === 0) return "0";
+  if (decimal % 1 === 0) return decimal.toString();
+
+  // Handle common cooking fractions first
+  const commonFractions: { [key: string]: string } = {
+    "0.125": "1/8",
+    "0.25": "1/4", 
+    "0.33": "1/3",
+    "0.333": "1/3",
+    "0.5": "1/2",
+    "0.66": "2/3",
+    "0.666": "2/3",
+    "0.67": "2/3",
+    "0.75": "3/4",
+    "0.875": "7/8",
+  };
+
+  const decimalStr = decimal.toString();
+  if (commonFractions[decimalStr]) {
+    return commonFractions[decimalStr];
+  }
+
+  // For mixed numbers (e.g., 2.25 = 2 1/4)
+  const wholePart = Math.floor(decimal);
+  const fractionalPart = decimal - wholePart;
+
+  if (fractionalPart === 0) return wholePart.toString();
+
+  const fractionalStr = fractionalPart.toString();
+  if (commonFractions[fractionalStr]) {
+    return wholePart > 0 ? `${wholePart} ${commonFractions[fractionalStr]}` : commonFractions[fractionalStr];
+  }
+
+  // Fallback: convert to fraction using GCD
+  const precision = 1000; // For 3 decimal places
+  const numerator = Math.round(fractionalPart * precision);
+  const denominator = precision;
+  
+  const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+  const divisor = gcd(numerator, denominator);
+  
+  const reducedNum = numerator / divisor;
+  const reducedDen = denominator / divisor;
+  
+  const fractionStr = `${reducedNum}/${reducedDen}`;
+  return wholePart > 0 ? `${wholePart} ${fractionStr}` : fractionStr;
+};
+
 const RecipePage = () => {
   const params = useParams();
   const router = useRouter();
@@ -31,6 +81,7 @@ const RecipePage = () => {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [showFractions, setShowFractions] = useState(true); // Default to fractions
 
   useEffect(() => {
     if (id) {
@@ -243,17 +294,33 @@ const RecipePage = () => {
         {/* <CardContent></CardContent> */}
       </Card>
       <div className="my-4">
-        <h2 className="font-bold text-lg">Ingredients</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-bold text-lg">Ingredients</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFractions(!showFractions)}
+            className="text-xs"
+          >
+            {showFractions ? "Show Decimals" : "Show Fractions"}
+          </Button>
+        </div>
         {ingredients.length === 0 ? (
           <p className="text-muted-foreground">No ingredients found.</p>
         ) : (
           <ul className="list-disc list-inside">
-            {ingredients.map((ingredient, index) => (
-              <li key={index}>
-                {ingredient.amount} {ingredient.unit?.name || ""} {ingredient.name}
-                {ingredient.note && <span className="text-muted-foreground"> ({ingredient.note})</span>}
-              </li>
-            ))}
+            {ingredients.map((ingredient, index) => {
+              const displayAmount = ingredient.amount 
+                ? (showFractions ? decimalToFraction(ingredient.amount) : ingredient.amount.toString())
+                : "";
+              
+              return (
+                <li key={index}>
+                  {displayAmount} {ingredient.unit?.name || ""} {ingredient.name}
+                  {ingredient.note && <span className="text-muted-foreground"> ({ingredient.note})</span>}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
