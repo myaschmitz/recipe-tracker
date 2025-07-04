@@ -28,8 +28,10 @@ import {
 import { X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const EditRecipePage = () => {
+  const { user } = useAuth();
   const params = useParams();
   const id = params.id?.toString();
   const [recipe, setRecipe] = useState<Recipe>();
@@ -334,6 +336,25 @@ const EditRecipePage = () => {
   };
 
   console.log(recipe);
+
+  if (!user) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p className="text-muted-foreground mb-4">
+            Please sign in to edit recipes.
+          </p>
+          <Button 
+            onClick={() => router.push('/auth?mode=login')}
+            className="bg-primary text-primary-foreground"
+          >
+            Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">

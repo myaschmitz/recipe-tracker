@@ -43,7 +43,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export function Navbar() {
   const { setTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [activeTab, setActiveTab] = useState("");
   const path = usePathname();
 
@@ -86,24 +86,33 @@ export function Navbar() {
   );
 
   const footerItems = useMemo(
-    () => [
-      {
-        title: "Admin",
-        href: "/admin",
-        icon: UserCog,
-      },
-      {
+    () => {
+      const items = [];
+      
+      // Only show admin link for admin users
+      if (profile?.role === 'admin') {
+        items.push({
+          title: "Admin",
+          href: "/admin",
+          icon: UserCog,
+        });
+      }
+      
+      items.push({
         title: user ? "Profile" : "Sign In",
         href: user ? "/profile" : "/auth?mode=login",
         icon: CircleUser,
-      },
-      {
+      });
+      
+      items.push({
         title: "Settings",
         href: "/settings",
         icon: Settings,
-      },
-    ],
-    [user]
+      });
+      
+      return items;
+    },
+    [user, profile]
   );
 
   useEffect(() => {
@@ -117,7 +126,7 @@ export function Navbar() {
   return (
     <Sidebar>
       <SidebarHeader className="flex flex-row gap-2 ml-4 mt-4">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <CookingPot className="opacity-60" />
           <span className="font-bold text-xl text-foreground/60">recipehub</span>
         </Link>

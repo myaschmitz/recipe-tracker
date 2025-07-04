@@ -128,7 +128,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 gap-6 mb-8">
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
@@ -155,31 +155,6 @@ export default function DashboardPage() {
                 Update Profile
               </Link>
             </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Status</CardTitle>
-            <CardDescription>Your account information</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Email Status</span>
-              <Badge variant={user.email_confirmed_at ? "default" : "secondary"}>
-                {user.email_confirmed_at ? "Verified" : "Unverified"}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Account Type</span>
-              <Badge variant="outline">Free</Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Member Since</span>
-              <span className="text-sm text-gray-600">
-                {new Date(user.created_at).toLocaleDateString()}
-              </span>
-            </div>
           </CardContent>
         </Card>
       </div>

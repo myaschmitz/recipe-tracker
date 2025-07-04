@@ -23,6 +23,7 @@ interface Profile {
   dietary_restrictions?: string[];
   is_private: boolean;
   email_notifications: boolean;
+  role: 'user' | 'admin' | 'moderator';
   created_at: string;
 }
 
@@ -49,13 +50,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
     
-    // Set a timeout to prevent infinite loading (increased to 15 seconds)
+    // Set a timeout to prevent infinite loading (reduced to 5 seconds for faster feedback)
     const loadingTimeout = setTimeout(() => {
       if (mounted) {
         console.warn('Auth loading timeout reached');
         setLoading(false);
       }
-    }, 15000); // Increased from 10 to 15 seconds
+    }, 5000); // Reduced from 15 to 5 seconds
 
     // Get initial session with timeout
     const initAuth = async () => {
@@ -81,7 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('initAuth: User found, fetching profile...');
             await fetchProfile(session.user.id);
           } else {
-            console.log('initAuth: No user session, setting loading to false');
+            console.log('initAuth: No user session, setting loading to false immediately');
+            setProfile(null);
             setLoading(false);
           }
         }
@@ -213,12 +215,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           dietary_restrictions: [],
           is_private: false,
           email_notifications: true,
+          role: 'user',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         });
+        setLoading(false);
       } else {
         console.log('Profile created successfully:', data);
         setProfile(data);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error in createInitialProfile:', error);
@@ -241,9 +246,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         dietary_restrictions: [],
         is_private: false,
         email_notifications: true,
+        role: 'user',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       });
+      setLoading(false);
     }
   };
 

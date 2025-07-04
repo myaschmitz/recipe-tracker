@@ -1,5 +1,8 @@
 // Database models matching the exact SQL schema
 
+// User role enum
+export type user_role = "user" | "admin" | "moderator";
+
 export type RecipeSchema = {
   id: number;
   name: string;
@@ -76,4 +79,5 @@ export type ProfileSchema = {
   dietary_restrictions?: string[];
   is_private: boolean;
   email_notifications: boolean;
+  role: user_role;
 };

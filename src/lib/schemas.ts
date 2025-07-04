@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// User role enum based on database schema
+export const userRoleSchema = z.enum(["user", "admin", "moderator"]);
+
 // Unit schema based on database schema
 export const unitSchema = z.object({
   id: z.number().int(),
@@ -129,6 +132,7 @@ export const profileSchema = z.object({
   dietary_restrictions: z.array(z.string()).optional(),
   is_private: z.boolean().default(false),
   email_notifications: z.boolean().default(true),
+  role: userRoleSchema.default('user'),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
@@ -163,6 +167,7 @@ export type TagFormData = z.infer<typeof tagFormSchema>;
 export type CollectionFormData = z.infer<typeof collectionFormSchema>;
 export type ProfileFormData = z.infer<typeof profileFormSchema>;
 export type UnitData = z.infer<typeof unitSchema>;
+export type UserRole = z.infer<typeof userRoleSchema>;
 
 // Database type exports
 export type RecipeSchema = z.infer<typeof recipeSchema>;

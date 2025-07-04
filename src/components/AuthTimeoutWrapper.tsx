@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { RefreshCw, Loader2, AlertCircle } from 'lucide-react';
 
 interface AuthTimeoutWrapperProps {
   children: React.ReactNode;
   timeoutMs?: number;
 }
 
-export function AuthTimeoutWrapper({ children, timeoutMs = 15000 }: AuthTimeoutWrapperProps) {
+export function AuthTimeoutWrapper({ children, timeoutMs = 6000 }: AuthTimeoutWrapperProps) {
   const { loading } = useAuth();
   const [timedOut, setTimedOut] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -48,13 +48,13 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 15000 }: AuthTimeoutW
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="flex justify-center">
-            <WifiOff className="h-16 w-16 text-muted-foreground" />
+            <AlertCircle className="h-16 w-16 text-muted-foreground" />
           </div>
           
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Connection Timeout</h1>
+            <h1 className="text-2xl font-bold">Loading Timeout</h1>
             <p className="text-muted-foreground">
-              Authentication is taking longer than expected. This might be due to a slow network connection.
+              The app is taking longer than expected to load. This might be due to a slow network connection.
             </p>
           </div>
 
@@ -107,9 +107,9 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 15000 }: AuthTimeoutW
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <Wifi className="h-8 w-8 text-primary animate-pulse" />
+            <Loader2 className="h-8 w-8 text-primary animate-spin" />
           </div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">Loading Recipe Hub...</p>
         </div>
       </div>
     );

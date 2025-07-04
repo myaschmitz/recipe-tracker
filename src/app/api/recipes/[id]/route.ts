@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
-import { handleApiError, createSuccessResponse } from "@/lib/api";
+import { handleApiError, createSuccessResponse, requireAuth, checkUserRole } from "@/lib/api";
 
 export async function GET(
   req: NextRequest,
@@ -71,6 +71,26 @@ export async function PUT(
 
     if (!id) {
       return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
+    }
+
+    // Require authentication
+    const profile = await requireAuth();
+
+    // Check if user owns the recipe or is admin
+    const { data: recipe } = await supabase
+      .from("recipe")
+      .select("user_id")
+      .eq("id", id)
+      .single();
+
+    if (!recipe) {
+      return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
+    }
+
+    // Allow editing if user owns the recipe or is admin/moderator
+    const { authorized } = await checkUserRole('moderator');
+    if (recipe.user_id !== profile.id && !authorized) {
+      return NextResponse.json({ error: "Insufficient permissions to edit this recipe" }, { status: 403 });
     }
 
     const {
@@ -168,7 +188,10 @@ export async function PUT(
     }
 
     return createSuccessResponse(recipeData);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message.includes('Authentication required') || error.message.includes('permissions')) {
+      return NextResponse.json({ error: error.message }, { status: error.message.includes('Authentication') ? 401 : 403 });
+    }
     return handleApiError(error, "updating recipe");
   }
 }
@@ -184,6 +207,26 @@ export async function DELETE(
       return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
     }
 
+    // Require authentication
+    const profile = await requireAuth();
+
+    // Check if user owns the recipe or is admin
+    const { data: recipe } = await supabase
+      .from("recipe")
+      .select("user_id")
+      .eq("id", id)
+      .single();
+
+    if (!recipe) {
+      return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
+    }
+
+    // Allow deletion if user owns the recipe or is admin/moderator
+    const { authorized } = await checkUserRole('moderator');
+    if (recipe.user_id !== profile.id && !authorized) {
+      return NextResponse.json({ error: "Insufficient permissions to delete this recipe" }, { status: 403 });
+    }
+
     // Supabase will handle cascading deletes for related records
     const { error } = await supabase.from("recipe").delete().eq("id", id);
 
@@ -192,7 +235,10 @@ export async function DELETE(
     }
 
     return createSuccessResponse({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message.includes('Authentication required') || error.message.includes('permissions')) {
+      return NextResponse.json({ error: error.message }, { status: error.message.includes('Authentication') ? 401 : 403 });
+    }
     return handleApiError(error, "deleting recipe");
   }
 }

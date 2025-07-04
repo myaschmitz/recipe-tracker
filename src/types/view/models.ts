@@ -1,5 +1,8 @@
 // View models with camelCase naming and enhanced functionality
 
+// User role type
+export type UserRole = "user" | "admin" | "moderator";
+
 export type Recipe = {
   id: number;
   name: string;
@@ -78,6 +81,7 @@ export type Profile = {
   dietaryRestrictions?: string[]; // mapped from dietary_restrictions
   isPrivate: boolean; // mapped from is_private
   emailNotifications: boolean; // mapped from email_notifications
+  role: UserRole; // mapped from role
   createdAt: string; // mapped from created_at
   updatedAt?: string; // mapped from updated_at
 };

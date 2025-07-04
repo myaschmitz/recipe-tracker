@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { requireRole } from "@/lib/api";
 
 export async function POST(request: Request) {
   try {
+    // Require admin role
+    await requireRole('admin');
+    
     const { format } = await request.json();
     
     if (!format || !['json', 'sql'].includes(format)) {
@@ -147,6 +151,10 @@ export async function POST(request: Request) {
     }
 
   } catch (error: any) {
+    if (error.message.includes('permissions') || error.message.includes('role required')) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
+    
     console.error("Error creating backup:", error);
     return NextResponse.json(
       {

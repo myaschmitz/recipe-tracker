@@ -21,6 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CollectionMultiSelectProps {
   selectedCollections: Collection[];
@@ -37,34 +38,41 @@ const CollectionMultiSelect = ({
   const [newCollectionName, setNewCollectionName] = useState("");
   const [newCollectionDescription, setNewCollectionDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchCollections = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch("/api/collections");
-        const data = await response.json();
-
-        if (response.ok) {
-          setCollections(data);
-        } else {
-          console.error(`Error fetching collections: ${data.error}`);
-          toast({
-            title: "Error fetching collections",
-            description: data.error || "Unknown error",
-          });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch collections");
         }
-      } catch (error) {
+        
+        const data = await response.json();
+        setCollections(data);
+      } catch (error: any) {
         console.error("Error fetching collections:", error);
         toast({
           title: "Error fetching collections",
-          description: "Failed to load collections",
+          description: error.message || "Failed to load collections",
+          variant: "destructive",
         });
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCollections();
-  }, [toast]);
+  }, [user, toast]);
 
   const handleCollectionSelect = (collection: Collection) => {
     const isSelected = selectedCollections.some((c) => c.id === collection.id);
@@ -162,23 +170,34 @@ const CollectionMultiSelect = ({
 
   return (
     <div className="flex flex-col space-y-2">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="justify-between w-fit max-w-xs"
-          >
-            {selectedCollections.length === 0
-              ? "Select collections..."
-              : `${selectedCollections.length} collection(s) selected`}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-80 p-0">
-          <Command>
-            <CommandInput placeholder="Search collections..." />
-            <CommandList>
+      {!user ? (
+        <div className="text-sm text-muted-foreground">
+          Please sign in to manage collections
+        </div>
+      ) : loading ? (
+        <div className="text-sm text-muted-foreground">
+          Loading collections...
+        </div>
+      ) : (
+        <>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="justify-between w-fit max-w-xs"
+              >
+                {selectedCollections.length === 0
+                  ? "Select collections..."
+                  : `${selectedCollections.length} collection(s) selected`}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0">
+              <Command>
+                <CommandInput placeholder="Search collections..." />
+                <CommandList>
+                  <CommandEmpty>No collections found.</CommandEmpty>
               {isCreating ? (
                 <CommandGroup>
                   <div className="px-2 py-1 text-sm font-bold text-foreground">
@@ -282,26 +301,28 @@ const CollectionMultiSelect = ({
                   })}
                 </CommandGroup>
               )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
 
-      {/* Display selected collections */}
-      {selectedCollections.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {selectedCollections.map((collection) => (
-            <Badge key={collection.id} variant="secondary" className="flex items-center space-x-1">
-              <span>{collection.name}</span>
-              <button
-                onClick={() => handleRemoveCollection(collection.id)}
-                className="ml-1 hover:text-destructive"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </Badge>
-          ))}
-        </div>
+          {/* Display selected collections */}
+          {selectedCollections.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {selectedCollections.map((collection) => (
+                <Badge key={collection.id} variant="secondary" className="flex items-center space-x-1">
+                  <span>{collection.name}</span>
+                  <button
+                    onClick={() => handleRemoveCollection(collection.id)}
+                    className="ml-1 hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

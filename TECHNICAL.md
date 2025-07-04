@@ -163,9 +163,95 @@ CREATE TABLE public.profile (
   dietary_restrictions ARRAY,
   is_private boolean DEFAULT false,
   email_notifications boolean DEFAULT true,
+  role user_role DEFAULT 'user'::user_role,
   CONSTRAINT profile_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
+```
+
+### User Role System
+
+#### user_role Enum Type
+```sql
+CREATE TYPE user_role AS ENUM ('user', 'admin', 'moderator');
+```
+
+### User Role System
+
+#### user_role Enum Type
+```sql
+CREATE TYPE user_role AS ENUM ('user', 'admin', 'moderator');
+```
+
+#### Role Management Functions
+```sql
+-- Function to check if the current user has a specific role
+CREATE OR REPLACE FUNCTION public.has_role(required_role user_role)
+RETURNS boolean
+LANGUAGE sql
+SECURITY INVOKER
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.profile
+    WHERE id = (select auth.uid())
+    AND role = required_role
+  );
+$$;
+
+-- Function to check if the current user is an admin
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY INVOKER
+AS $$
+  SELECT public.has_role('admin'::user_role);
+$$;
+
+-- Function to set a user's role (admin only)
+CREATE OR REPLACE FUNCTION public.set_user_role(user_id uuid, new_role user_role)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  -- Check if the current user is an admin
+  IF NOT (SELECT public.is_admin()) THEN
+    RAISE EXCEPTION 'Only administrators can change user roles';
+  END IF;
+
+  -- Update the user's role
+  UPDATE public.profile
+  SET role = new_role
+  WHERE id = user_id;
+END;
+$$;
+
+-- Function to promote the first user to admin
+CREATE OR REPLACE FUNCTION public.promote_first_user_to_admin()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  first_user_id uuid;
+BEGIN
+  -- Get the ID of the first user in the system
+  SELECT id INTO first_user_id
+  FROM auth.users
+  ORDER BY created_at
+  LIMIT 1;
+  
+  -- Update their role to admin
+  UPDATE public.profile
+  SET role = 'admin'::user_role
+  WHERE id = first_user_id;
+  
+  RAISE NOTICE 'User % has been promoted to admin', first_user_id;
+END;
+$$;
 ```
 
 ### Initial Data Setup
@@ -208,6 +294,9 @@ CREATE INDEX idx_recipe_tag_tag_id ON recipe_tag(tag_id);
 CREATE INDEX idx_collection_user_id ON collection(user_id);
 CREATE INDEX idx_collection_recipe_recipe_id ON collection_recipe(recipe_id);
 CREATE INDEX idx_collection_recipe_collection_id ON collection_recipe(collection_id);
+
+-- Role-based indexes
+CREATE INDEX IF NOT EXISTS idx_profile_role ON public.profile(role);
 
 -- Search indexes
 CREATE INDEX idx_recipe_name_search ON recipe USING gin(to_tsvector('english', name));
@@ -255,7 +344,29 @@ CREATE INDEX idx_tag_name_search ON tag USING gin(to_tsvector('english', name));
 - `GET /api/profile` - Get user profile
 - `PUT /api/profile` - Update user profile
 
+### User Roles (Admin only)
+- `GET /api/admin/users` - Fetch all users with roles (admin only)
+- `PUT /api/admin/users/[id]/role` - Update user role (admin only)
+  - Body: `{ role: 'user' | 'admin' | 'moderator' }`
+- `GET /api/admin/roles` - Get available roles and permissions
+
 ## TypeScript Types
+
+### Role Types
+```typescript
+export type UserRole = 'user' | 'admin' | 'moderator';
+
+export interface RolePermissions {
+  canCreateRecipes: boolean;
+  canEditOwnRecipes: boolean;
+  canEditAllRecipes: boolean;
+  canDeleteOwnRecipes: boolean;
+  canDeleteAllRecipes: boolean;
+  canManageUsers: boolean;
+  canViewAnalytics: boolean;
+  canModerateContent: boolean;
+}
+```
 
 ### Database Models
 ```typescript
@@ -335,6 +446,7 @@ export interface ProfileSchema {
   dietary_restrictions?: string[];
   is_private: boolean;
   email_notifications: boolean;
+  role: 'user' | 'admin' | 'moderator';
 }
 ```
 
@@ -404,6 +516,7 @@ export interface Profile {
   dietary_restrictions?: string[];
   is_private: boolean;
   email_notifications: boolean;
+  role: 'user' | 'admin' | 'moderator';
   created_at: string;
   updated_at?: string;
 }
@@ -437,25 +550,74 @@ ALTER TABLE collection ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profile ENABLE ROW LEVEL SECURITY;
 
 -- Policies for recipes
-CREATE POLICY "Users can view all recipes" ON recipe
-  FOR SELECT USING (true);
+CREATE POLICY "Anyone can view recipes" 
+ON public.recipe
+FOR SELECT 
+USING (true);
 
-CREATE POLICY "Users can manage own recipes" ON recipe
-  FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own recipes" 
+ON public.recipe
+FOR INSERT 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Owners and admins can update recipes" 
+ON public.recipe
+FOR UPDATE
+USING (
+  user_id = (select auth.uid()) OR 
+  (SELECT public.is_admin())
+);
+
+CREATE POLICY "Owners and admins can delete recipes" 
+ON public.recipe
+FOR DELETE
+USING (
+  user_id = (select auth.uid()) OR 
+  (SELECT public.is_admin())
+);
 
 -- Policies for collections
-CREATE POLICY "Users can view public collections" ON collection
-  FOR SELECT USING (is_public = true OR auth.uid() = user_id);
+CREATE POLICY "Users can view public collections or own collections" 
+ON public.collection
+FOR SELECT 
+USING (is_public = true OR auth.uid() = user_id);
 
-CREATE POLICY "Users can manage own collections" ON collection
-  FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own collections" 
+ON public.collection
+FOR INSERT 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Owners and admins can update collections" 
+ON public.collection
+FOR UPDATE
+USING (
+  auth.uid() = user_id OR 
+  (SELECT public.is_admin())
+);
+
+CREATE POLICY "Owners and admins can delete collections" 
+ON public.collection
+FOR DELETE
+USING (
+  auth.uid() = user_id OR 
+  (SELECT public.is_admin())
+);
 
 -- Policies for profiles
-CREATE POLICY "Users can view all profiles" ON profile
-  FOR SELECT USING (true);
+CREATE POLICY "Users can view all profiles" 
+ON public.profile
+FOR SELECT 
+USING (true);
 
-CREATE POLICY "Users can update own profile" ON profile
-  FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" 
+ON public.profile
+FOR UPDATE 
+USING (auth.uid() = id);
+
+CREATE POLICY "Admins can update any profile" 
+ON public.profile
+FOR UPDATE 
+USING ((SELECT public.is_admin()));
 ```
 
 ### Local Development
@@ -536,6 +698,86 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 - Test complete user journeys
 - Test recipe creation and management flows
 - Test authentication and authorization
+
+## User Role System
+
+### Overview
+The application implements a role-based access control (RBAC) system with three distinct roles:
+
+- **`user`** - Default role for all new users. Can create and manage their own recipes and collections.
+- **`admin`** - Full system access. Can manage all recipes, collections, and user accounts.
+- **`moderator`** - Intermediate role with extended permissions for content moderation.
+
+### Role Implementation
+
+#### Database Schema
+- Uses PostgreSQL `ENUM` type for type safety: `CREATE TYPE user_role AS ENUM ('user', 'admin', 'moderator')`
+- Role column added to `profile` table with default value of `'user'`
+- Indexed for performance: `CREATE INDEX idx_profile_role ON profile(role)`
+
+#### Helper Functions
+- `has_role(required_role)` - Check if current user has specific role
+- `is_admin()` - Shorthand to check admin status
+- `set_user_role(user_id, new_role)` - Admin-only function to change user roles
+- `promote_first_user_to_admin()` - One-time setup function for initial admin
+
+#### Row Level Security Integration
+- Enhanced RLS policies that consider user roles
+- Admin override permissions for recipe and collection management
+- Granular access control based on role hierarchy
+
+### Role Permissions
+
+#### User Role (`user`)
+- Create, read, update, delete own recipes
+- Create, read, update, delete own collections
+- View public collections from other users
+- Update own profile information
+
+#### Moderator Role (`moderator`)
+- All user permissions
+- View and moderate public content
+- Extended reporting capabilities
+- Content flagging and review permissions
+
+#### Admin Role (`admin`)
+- All moderator permissions
+- Full system access to all recipes and collections
+- User management capabilities (view users, assign roles)
+- System configuration access
+- Database administration functions
+
+### Setup Instructions
+
+1. **Initial Admin Setup**: Run `SELECT public.promote_first_user_to_admin();` to promote the first registered user to admin
+2. **Role Assignment**: Use `SELECT public.set_user_role('user-uuid', 'admin'::user_role);` to assign roles
+3. **Permission Testing**: Use `SELECT public.has_role('admin'::user_role);` to test role permissions
+
+### Frontend Integration
+
+#### Role Checking
+```typescript
+// Check user role in components
+const { profile } = useAuth();
+const isAdmin = profile?.role === 'admin';
+const isModerator = ['admin', 'moderator'].includes(profile?.role || 'user');
+```
+
+#### Route Protection
+```typescript
+// Protect admin routes
+if (!isAdmin) {
+  redirect('/dashboard');
+}
+```
+
+#### Conditional UI
+```jsx
+// Show admin features conditionally
+{isAdmin && (
+  <AdminPanel />
+)}
+```
 
 ## Authentication Navigation System
 

@@ -5,35 +5,75 @@ import { Button } from "@/components/ui/button";
 import { CollectionSchema } from "@/types/database/models";
 import { Collection } from "@/types/view/models";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const CollectionsPage = () => {
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchCollections = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch("/api/collections");
 
         if (!response.ok) {
-          throw new Error("Failed to fetch collections");
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch collections");
         }
+        
         const data = await response.json();
         setCollections(
           data.map((collection: CollectionSchema) => ({
             id: collection.id,
             name: collection.name,
             description: collection.description,
+            isPublic: collection.is_public,
+            userId: collection.user_id,
+            createdAt: collection.created_at,
+            updatedAt: collection.updated_at,
+            recipes: []
           }))
         );
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching collections:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to load collections",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCollections();
-  }, []);
+  }, [user, toast]);
 
-  if (!collections) {
+  if (!user) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center py-8">
+          <h1 className="text-2xl font-bold mb-4">Sign In Required</h1>
+          <p className="text-muted-foreground mb-4">
+            Please sign in to view and manage your collections.
+          </p>
+          <Button onClick={() => window.location.href = "/auth?mode=login"}>
+            Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
     return (
       <div className="container mx-auto p-4 text-lg font-bold">Loading...</div>
     );

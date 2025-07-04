@@ -56,30 +56,52 @@ export async function PUT(request: Request) {
     theme_preference,
     dietary_restrictions,
     is_private,
-    email_notifications
+    email_notifications,
+    role
   } = body;
+
+  // Check if user is trying to update their own role
+  if (role && role !== undefined) {
+    // Only admins can change roles
+    const { data: currentProfile } = await supabase
+      .from('profile')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (currentProfile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Only administrators can change user roles' }, { status: 403 });
+    }
+  }
+
+  const updateData: any = {
+    username,
+    name,
+    first_name,
+    last_name,
+    avatar_url,
+    location,
+    email,
+    phone,
+    bio,
+    date_of_birth,
+    timezone,
+    language,
+    theme_preference,
+    dietary_restrictions,
+    is_private,
+    email_notifications,
+    updated_at: new Date().toISOString(),
+  };
+
+  // Only include role if user is admin
+  if (role && role !== undefined) {
+    updateData.role = role;
+  }
 
   const { data: profile, error } = await supabase
     .from('profile')
-    .update({
-      username,
-      name,
-      first_name,
-      last_name,
-      avatar_url,
-      location,
-      email,
-      phone,
-      bio,
-      date_of_birth,
-      timezone,
-      language,
-      theme_preference,
-      dietary_restrictions,
-      is_private,
-      email_notifications,
-      updated_at: new Date().toISOString(),
-    })
+    .update(updateData)
     .eq('id', session.user.id)
     .select()
     .single();

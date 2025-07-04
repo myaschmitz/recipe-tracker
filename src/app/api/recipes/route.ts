@@ -6,6 +6,7 @@ import {
   handleApiError,
   createSuccessResponse,
   DEFAULT_RECIPE_LIMIT,
+  requireAuth,
 } from "@/lib/api";
 import { recipeSchema } from "@/lib/schemas";
 
@@ -70,14 +71,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Require authentication
+    const profile = await requireAuth();
+    
     const body = await request.json();
 
     // Validate with Zod schema
     const validatedData = recipeSchema.parse(body);
-
-    // Get user ID from auth (in a real app, you'd get this from session/JWT)
-    // For now, we'll use a placeholder or get it from the request
-    const userId = body.userId || "placeholder-user-id";
 
     // Insert recipe into db
     const {
@@ -94,7 +94,7 @@ export async function POST(request: Request) {
           cook_time: validatedData.cook_time,
           total_time: validatedData.total_time,
           link: validatedData.link,
-          user_id: userId,
+          user_id: profile.id,
         })
         .select()
         .single();

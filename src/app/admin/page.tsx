@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Shield, Users, Settings } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Admin() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -25,20 +27,123 @@ export default function Admin() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
+  const [showUserManagement, setShowUserManagement] = useState(false);
   const { toast } = useToast();
+  const { profile, loading, user, refreshProfile } = useAuth();
+  const router = useRouter();
+
+  // Add debug logging
+  useEffect(() => {
+    console.log('Admin page auth state:', { 
+      loading, 
+      hasUser: !!user, 
+      hasProfile: !!profile, 
+      profileRole: profile?.role,
+      profileData: profile 
+    });
+  }, [loading, user, profile]);
+
+  // Try to refresh profile when component mounts
+  useEffect(() => {
+    if (user && !loading && refreshProfile) {
+      console.log('Attempting to refresh profile...');
+      refreshProfile();
+    }
+  }, [user, loading, refreshProfile]);
+
+  // Check if user is admin (with delay to allow profile to load)
+  useEffect(() => {
+    console.log('Admin page auth check:', { loading, profile, role: profile?.role });
+    
+    // Don't redirect immediately, give some time for profile to load
+    const timeoutId = setTimeout(() => {
+      if (!loading && (!profile || profile.role !== 'admin')) {
+        console.log('Access denied - redirecting to dashboard');
+        toast({
+          title: "Access Denied",
+          description: "You need administrator privileges to access this page.",
+          variant: "destructive",
+        });
+        router.push('/dashboard');
+        return;
+      }
+    }, 1000); // Wait 1 second
+
+    return () => clearTimeout(timeoutId);
+  }, [profile, loading, router, toast]);
 
   // Show welcome toast when admin page loads
   useEffect(() => {
-    const hasShownWelcome = sessionStorage.getItem('admin-welcome-shown');
-    if (!hasShownWelcome) {
-      toast({
-        title: "👋 Admin Panel",
-        description: "Welcome to the admin panel! Here you can manage test data, backup your database, and perform system operations.",
-        variant: "default",
-      });
-      sessionStorage.setItem('admin-welcome-shown', 'true');
+    if (profile?.role === 'admin') {
+      const hasShownWelcome = sessionStorage.getItem('admin-welcome-shown');
+      if (!hasShownWelcome) {
+        toast({
+          title: "👋 Admin Panel",
+          description: "Welcome to the admin panel! Here you can manage users, test data, and perform system operations.",
+          variant: "default",
+        });
+        sessionStorage.setItem('admin-welcome-shown', 'true');
+      }
     }
-  }, [toast]);
+  }, [toast, profile]);
+
+  // Load users for management
+  const loadUsers = async () => {
+    try {
+      const response = await fetch('/api/admin/users');
+      if (response.ok) {
+        const userData = await response.json();
+        setUsers(userData);
+      } else if (response.status === 403) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have permission to view users.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load users.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateUserRole = async (userId: string, newRole: string) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/role`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: "Role Updated",
+          description: result.message,
+          variant: "default",
+        });
+        loadUsers(); // Refresh user list
+      } else if (response.status === 403) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have permission to change user roles.",
+          variant: "destructive",
+        });
+      } else {
+        throw new Error('Failed to update role');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update user role.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleGenerateTestData = async () => {
     setIsGenerating(true);
@@ -242,6 +347,42 @@ export default function Admin() {
     }
   };
 
+  // Show loading state while auth is being checked
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="flex items-center justify-center min-h-[200px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading admin panel...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if not admin (but be more permissive during loading)
+  if (!loading && profile && profile.role !== 'admin') {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center min-h-[200px] flex items-center justify-center">
+          <div>
+            <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+            <p className="text-muted-foreground mb-4">
+              You need administrator privileges to access this page.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Current role: {profile?.role || 'Not authenticated'}
+            </p>
+            <Button onClick={() => router.push('/dashboard')} className="mt-4">
+              Go to Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Admin</h1>
@@ -379,6 +520,93 @@ export default function Admin() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+        </div>
+      </div>
+
+      {/* User Management Section */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Users className="h-5 w-5" />
+          User Management
+        </h2>
+        <div className="space-y-4">
+          <Button
+            onClick={() => {
+              setShowUserManagement(!showUserManagement);
+              if (!showUserManagement) {
+                loadUsers();
+              }
+            }}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Shield className="h-4 w-4" />
+            {showUserManagement ? "Hide" : "Show"} User Roles
+          </Button>
+          
+          {showUserManagement && (
+            <div className="bg-card rounded-lg border p-4">
+              <div className="space-y-3">
+                {users.map((user) => (
+                  <div key={user.id} className="flex items-center justify-between p-3 bg-muted rounded">
+                    <div>
+                      <div className="font-medium">{user.username}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {user.first_name && user.last_name 
+                          ? `${user.first_name} ${user.last_name}` 
+                          : user.email || 'No email'
+                        }
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Joined: {new Date(user.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        user.role === 'admin' ? 'bg-red-100 text-red-800' :
+                        user.role === 'moderator' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {user.role}
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            Change Role
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem 
+                            onClick={() => updateUserRole(user.id, 'user')}
+                            disabled={user.role === 'user'}
+                          >
+                            User
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => updateUserRole(user.id, 'moderator')}
+                            disabled={user.role === 'moderator'}
+                          >
+                            Moderator
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => updateUserRole(user.id, 'admin')}
+                            disabled={user.role === 'admin'}
+                          >
+                            Admin
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                ))}
+                {users.length === 0 && (
+                  <div className="text-center text-muted-foreground py-4">
+                    No users found.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -20,8 +20,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CreateRecipe = () => {
+  const { user } = useAuth();
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]);
@@ -195,6 +197,25 @@ const CreateRecipe = () => {
 
     setIsSubmitting(false);
   };
+
+  if (!user) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p className="text-muted-foreground mb-4">
+            Please sign in to create recipes.
+          </p>
+          <Button 
+            onClick={() => router.push('/auth?mode=login')}
+            className="bg-primary text-primary-foreground"
+          >
+            Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">

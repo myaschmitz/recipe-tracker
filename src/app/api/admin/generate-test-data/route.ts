@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { requireRole, handleApiError } from "@/lib/api";
 import testData from "../../../../../test-data.json";
 
 export async function POST() {
   try {
+    // Require admin role
+    await requireRole('admin');
+    
     console.log("Starting test data generation...");
     
     // Check environment variables
@@ -133,6 +137,10 @@ export async function POST() {
     });
 
   } catch (error: any) {
+    if (error.message.includes('permissions') || error.message.includes('role required')) {
+      return NextResponse.json({ error: error.message }, { status: 403 });
+    }
+    
     console.error("Error generating test data:", error);
     return NextResponse.json(
       {
