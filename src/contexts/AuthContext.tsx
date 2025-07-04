@@ -6,13 +6,23 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface Profile {
   id: string;
-  updated_at: string;
+  updated_at?: string;
   username: string;
-  name: string;
-  first_name: string;
-  last_name: string;
-  avatar_url: string;
-  location: string;
+  name?: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+  location?: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+  date_of_birth?: string;
+  timezone?: string;
+  language: string;
+  theme_preference: string;
+  dietary_restrictions?: string[];
+  is_private: boolean;
+  email_notifications: boolean;
   created_at: string;
 }
 
@@ -37,37 +47,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
+    let mounted = true;
+    
+    // Set a timeout to prevent infinite loading (increased to 15 seconds)
+    const loadingTimeout = setTimeout(() => {
+      if (mounted) {
+        console.warn('Auth loading timeout reached');
         setLoading(false);
       }
-    });
+    }, 15000); // Increased from 10 to 15 seconds
+
+    // Get initial session with timeout
+    const initAuth = async () => {
+      try {
+        console.log('initAuth: Starting authentication check...');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('initAuth: Error getting session:', error);
+          if (mounted) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        console.log('initAuth: Session check complete, session exists:', !!session);
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            console.log('initAuth: User found, fetching profile...');
+            await fetchProfile(session.user.id);
+          } else {
+            console.log('initAuth: No user session, setting loading to false');
+            setLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('initAuth: Error in initAuth:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initAuth();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+        console.log('Auth state change:', event, session?.user?.id);
         
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
-          setLoading(false);
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            await fetchProfile(session.user.id);
+          } else {
+            setProfile(null);
+            setLoading(false);
+          }
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(loadingTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('Fetching profile for user:', userId);
+      
+      // First try a simple direct fetch with a longer timeout
       const { data, error } = await supabase
         .from('profile')
         .select('*')
@@ -78,44 +136,114 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Error fetching profile:', error);
         // If profile doesn't exist, create one
         if (error.code === 'PGRST116') {
+          console.log('Profile not found, creating initial profile');
           await createInitialProfile(userId);
+        } else {
+          console.error('Profile fetch error:', error.message);
+          // Set loading to false even on error so UI doesn't hang
+          setLoading(false);
         }
       } else {
+        console.log('Profile fetched successfully:', data);
         setProfile(data);
+        setLoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in fetchProfile:', error);
-    } finally {
+      
+      // Handle timeout or other errors gracefully
+      if (error.message === 'Profile fetch timeout') {
+        console.error('Profile fetch timed out - continuing without profile');
+      }
+      
+      // Always set loading to false to prevent infinite loading
       setLoading(false);
     }
   };
 
   const createInitialProfile = async (userId: string, firstName?: string, lastName?: string, username?: string) => {
     try {
+      console.log('Creating initial profile for user:', userId);
+      
+      const profileData = {
+        id: userId,
+        username: username || `user_${userId.slice(-8)}`,
+        name: firstName && lastName ? `${firstName} ${lastName}` : '',
+        first_name: firstName || '',
+        last_name: lastName || '',
+        avatar_url: '',
+        location: '',
+        email: '',
+        phone: '',
+        bio: '',
+        date_of_birth: '',
+        timezone: '',
+        language: 'en',
+        theme_preference: 'system',
+        dietary_restrictions: [],
+        is_private: false,
+        email_notifications: true,
+        created_at: new Date().toISOString()
+      };
+
       const { data, error } = await supabase
         .from('profile')
-        .insert([
-          {
-            id: userId,
-            username: username || `user_${userId.slice(-8)}`,
-            name: firstName && lastName ? `${firstName} ${lastName}` : '',
-            first_name: firstName || '',
-            last_name: lastName || '',
-            avatar_url: '',
-            location: '',
-            created_at: new Date().toISOString()
-          }
-        ])
+        .insert([profileData])
         .select()
         .single();
 
       if (error) {
         console.error('Error creating profile:', error);
+        // Set a basic profile even if creation fails
+        setProfile({
+          id: userId,
+          username: username || `user_${userId.slice(-8)}`,
+          name: firstName && lastName ? `${firstName} ${lastName}` : '',
+          first_name: firstName || '',
+          last_name: lastName || '',
+          avatar_url: '',
+          location: '',
+          email: '',
+          phone: '',
+          bio: '',
+          date_of_birth: '',
+          timezone: '',
+          language: 'en',
+          theme_preference: 'system',
+          dietary_restrictions: [],
+          is_private: false,
+          email_notifications: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
       } else {
+        console.log('Profile created successfully:', data);
         setProfile(data);
       }
     } catch (error) {
       console.error('Error in createInitialProfile:', error);
+      // Set a basic profile as fallback
+      setProfile({
+        id: userId,
+        username: username || `user_${userId.slice(-8)}`,
+        name: firstName && lastName ? `${firstName} ${lastName}` : '',
+        first_name: firstName || '',
+        last_name: lastName || '',
+        avatar_url: '',
+        location: '',
+        email: '',
+        phone: '',
+        bio: '',
+        date_of_birth: '',
+        timezone: '',
+        language: 'en',
+        theme_preference: 'system',
+        dietary_restrictions: [],
+        is_private: false,
+        email_notifications: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
     }
   };
 

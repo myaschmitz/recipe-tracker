@@ -153,6 +153,16 @@ CREATE TABLE public.profile (
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   location text,
   name text,
+  email text,
+  phone text,
+  bio text,
+  date_of_birth date,
+  timezone text,
+  language text DEFAULT 'en'::text,
+  theme_preference text DEFAULT 'system'::text,
+  dietary_restrictions ARRAY,
+  is_private boolean DEFAULT false,
+  email_notifications boolean DEFAULT true,
   CONSTRAINT profile_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
@@ -315,6 +325,16 @@ export interface ProfileSchema {
   created_at: string;
   location?: string;
   name?: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+  date_of_birth?: string;
+  timezone?: string;
+  language: string;
+  theme_preference: string;
+  dietary_restrictions?: string[];
+  is_private: boolean;
+  email_notifications: boolean;
 }
 ```
 
@@ -374,6 +394,16 @@ export interface Profile {
   last_name?: string;
   name?: string;
   location?: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+  date_of_birth?: string;
+  timezone?: string;
+  language: string;
+  theme_preference: string;
+  dietary_restrictions?: string[];
+  is_private: boolean;
+  email_notifications: boolean;
   created_at: string;
   updated_at?: string;
 }

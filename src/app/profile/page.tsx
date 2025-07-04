@@ -5,12 +5,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Calendar, LogOut } from "lucide-react";
+import { User, Mail, Calendar, MapPin, Phone, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import ProfileErrorBoundary from "@/components/ProfileErrorBoundary";
 
 const ProfilePage = () => {
-    const { user, profile, signOut } = useAuth();
+    const { user, profile, signOut, loading } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
 
@@ -30,6 +31,33 @@ const ProfilePage = () => {
             });
         }
     };
+
+    // Show loading state
+    if (loading) {
+        return (
+            <main className="container mx-auto px-4 py-8">
+                <div className="max-w-2xl">
+                    <div className="animate-pulse space-y-4">
+                        <div className="h-8 bg-gray-200 rounded w-32"></div>
+                        <div className="h-4 bg-gray-200 rounded w-64"></div>
+                        <div className="space-y-2">
+                            <div className="h-16 w-16 bg-gray-200 rounded-full"></div>
+                            <div className="h-6 bg-gray-200 rounded w-48"></div>
+                            <div className="h-4 bg-gray-200 rounded w-32"></div>
+                        </div>
+                    </div>
+                    {/* Development helper */}
+                    {process.env.NODE_ENV === 'development' && (
+                        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                            <p className="text-sm text-yellow-800">
+                                Loading taking too long? This might be a development auth issue.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </main>
+        );
+    }
 
     if (!user) {
         return (
@@ -72,8 +100,22 @@ const ProfilePage = () => {
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <Mail className="h-5 w-5 text-muted-foreground" />
-                            <span>{user.email}</span>
+                            <span>{profile?.email || user.email}</span>
                         </div>
+                        
+                        {profile?.phone && (
+                            <div className="flex items-center gap-3">
+                                <Phone className="h-5 w-5 text-muted-foreground" />
+                                <span>{profile.phone}</span>
+                            </div>
+                        )}
+                        
+                        {profile?.location && (
+                            <div className="flex items-center gap-3">
+                                <MapPin className="h-5 w-5 text-muted-foreground" />
+                                <span>{profile.location}</span>
+                            </div>
+                        )}
                         
                         {profile?.created_at && (
                             <div className="flex items-center gap-3">
@@ -84,6 +126,26 @@ const ProfilePage = () => {
                             </div>
                         )}
                     </div>
+                    
+                    {profile?.bio && (
+                        <div className="space-y-2">
+                            <h4 className="text-sm font-medium text-muted-foreground">Bio</h4>
+                            <p className="text-sm">{profile.bio}</p>
+                        </div>
+                    )}
+                    
+                    {profile?.dietary_restrictions && profile.dietary_restrictions.length > 0 && (
+                        <div className="space-y-2">
+                            <h4 className="text-sm font-medium text-muted-foreground">Dietary Restrictions</h4>
+                            <div className="flex flex-wrap gap-1">
+                                {profile.dietary_restrictions.map((restriction) => (
+                                    <Badge key={restriction} variant="outline" className="text-xs">
+                                        {restriction}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
                 
                 <Separator />
@@ -111,6 +173,27 @@ const ProfilePage = () => {
                                 <span>{profile.location}</span>
                             </div>
                         )}
+                        
+                        {profile?.language && (
+                            <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Language</span>
+                                <span className="capitalize">{profile.language}</span>
+                            </div>
+                        )}
+                        
+                        {profile?.theme_preference && (
+                            <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Theme</span>
+                                <span className="capitalize">{profile.theme_preference}</span>
+                            </div>
+                        )}
+                        
+                        <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground">Profile Privacy</span>
+                            <Badge variant={profile?.is_private ? "destructive" : "default"}>
+                                {profile?.is_private ? "Private" : "Public"}
+                            </Badge>
+                        </div>
                     </div>
                 </div>
                 
@@ -118,7 +201,7 @@ const ProfilePage = () => {
                 
                 {/* Actions Section */}
                 <div className="flex gap-3">
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => router.push('/settings')}>
                         Edit Profile
                     </Button>
                     <Button 
@@ -126,7 +209,7 @@ const ProfilePage = () => {
                         onClick={handleSignOut}
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     >
-                        <LogOut className="h-4 w-4 mr-2" />
+                        <LogOut className="h-4 w-4" />
                         Sign Out
                     </Button>
                 </div>

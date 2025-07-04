@@ -66,4 +66,14 @@ export type ProfileSchema = {
   created_at: string;
   location?: string;
   name?: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+  date_of_birth?: string;
+  timezone?: string;
+  language: string;
+  theme_preference: string;
+  dietary_restrictions?: string[];
+  is_private: boolean;
+  email_notifications: boolean;
 };

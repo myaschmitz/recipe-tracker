@@ -40,7 +40,24 @@ export async function PUT(request: Request) {
   }
 
   const body = await request.json();
-  const { username, name, first_name, last_name, avatar_url, location } = body;
+  const { 
+    username, 
+    name, 
+    first_name, 
+    last_name, 
+    avatar_url, 
+    location,
+    email,
+    phone,
+    bio,
+    date_of_birth,
+    timezone,
+    language,
+    theme_preference,
+    dietary_restrictions,
+    is_private,
+    email_notifications
+  } = body;
 
   const { data: profile, error } = await supabase
     .from('profile')
@@ -51,6 +68,16 @@ export async function PUT(request: Request) {
       last_name,
       avatar_url,
       location,
+      email,
+      phone,
+      bio,
+      date_of_birth,
+      timezone,
+      language,
+      theme_preference,
+      dietary_restrictions,
+      is_private,
+      email_notifications,
       updated_at: new Date().toISOString(),
     })
     .eq('id', session.user.id)

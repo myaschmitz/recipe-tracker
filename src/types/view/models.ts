@@ -68,6 +68,16 @@ export type Profile = {
   lastName?: string; // mapped from last_name
   name?: string;
   location?: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+  dateOfBirth?: string; // mapped from date_of_birth
+  timezone?: string;
+  language: string;
+  themePreference: string; // mapped from theme_preference
+  dietaryRestrictions?: string[]; // mapped from dietary_restrictions
+  isPrivate: boolean; // mapped from is_private
+  emailNotifications: boolean; // mapped from email_notifications
   createdAt: string; // mapped from created_at
   updatedAt?: string; // mapped from updated_at
 };

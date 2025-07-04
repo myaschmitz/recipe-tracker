@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { ConditionalLayout } from "@/components/ConditionalLayout";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthErrorBoundary } from "@/components/AuthErrorBoundary";
+import { AuthTimeoutWrapper } from "@/components/AuthTimeoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,19 +33,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
-            <Toaster />
-          </ThemeProvider>
-        </AuthProvider>
+        <AuthErrorBoundary>
+          <AuthProvider>
+            <AuthTimeoutWrapper>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <ConditionalLayout>
+                  {children}
+                </ConditionalLayout>
+                <Toaster />
+              </ThemeProvider>
+            </AuthTimeoutWrapper>
+          </AuthProvider>
+        </AuthErrorBoundary>
       </body>
     </html>
   );

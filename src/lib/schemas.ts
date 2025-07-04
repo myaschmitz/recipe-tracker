@@ -119,6 +119,16 @@ export const profileSchema = z.object({
   last_name: z.string().optional(),
   name: z.string().optional(),
   location: z.string().optional(),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  bio: z.string().optional(),
+  date_of_birth: z.string().optional(), // ISO date string
+  timezone: z.string().optional(),
+  language: z.string().default('en'),
+  theme_preference: z.string().default('system'),
+  dietary_restrictions: z.array(z.string()).optional(),
+  is_private: z.boolean().default(false),
+  email_notifications: z.boolean().default(true),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
