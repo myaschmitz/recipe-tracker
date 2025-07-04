@@ -21,20 +21,48 @@ export default function DashboardPage() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Please sign in to access your dashboard.</p>
+      <div className="min-h-screen w-full flex items-center justify-center bg-background p-8">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="mx-auto mb-6 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+            <ChefHat className="h-8 w-8 text-primary" />
+          </div>
+          
+          <div className="space-y-3">
+            <h1 className="text-2xl font-bold text-foreground">Dashboard Access Required</h1>
+            <p className="text-muted-foreground">
+              Please sign in to access your personal dashboard and manage your recipes.
+            </p>
+          </div>
+          
+          <div className="space-y-4 pt-4">
+            <Link href="/auth?mode=login">
+              <Button className="w-full" size="lg">
+                Sign In to Dashboard
+              </Button>
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <Link href="/auth?mode=signup" className="text-primary hover:underline font-medium">
+                Sign up here
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const getInitials = (firstName: string, lastName: string, name: string, username: string) => {
+  const getInitials = (firstName?: string, lastName?: string, name?: string, username?: string) => {
     if (firstName && lastName) {
       return `${firstName[0]}${lastName[0]}`.toUpperCase();
     }
     if (name) {
       return name.split(' ').map(n => n[0]).join('').toUpperCase();
     }
-    return username.slice(0, 2).toUpperCase();
+    if (username) {
+      return username.slice(0, 2).toUpperCase();
+    }
+    return 'U';
   };
 
   return (

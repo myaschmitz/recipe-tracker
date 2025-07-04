@@ -33,7 +33,7 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
       return (
         <SidebarProvider>
           <Navbar />
-          <main>
+          <main className="w-full">
             <SidebarTrigger />
             {children}
           </main>
@@ -49,7 +49,7 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   return (
     <SidebarProvider>
       <Navbar />
-      <main>
+      <main className="w-full">
         <SidebarTrigger />
         {children}
       </main>

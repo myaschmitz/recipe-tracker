@@ -51,7 +51,7 @@ export function Navbar() {
     () => [
       {
         title: "Dashboard",
-        href: "/",
+        href: "/dashboard",
         icon: Home,
       },
     ],

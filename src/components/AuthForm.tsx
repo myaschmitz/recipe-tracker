@@ -76,8 +76,8 @@ export function AuthForm() {
           title: "Welcome back!",
           description: "You've successfully signed in.",
         });
-        // Redirect to main app after successful sign in
-        router.push('/recipes');
+        // Redirect to dashboard after successful sign in
+        router.push('/dashboard');
       } else {
         // Sign up logic
         console.log('Attempting to sign up with:', formData.email);
