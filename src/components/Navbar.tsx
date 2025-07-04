@@ -94,7 +94,7 @@ export function Navbar() {
       },
       {
         title: user ? "Profile" : "Sign In",
-        href: user ? "/profile" : "/auth",
+        href: user ? "/profile" : "/auth?mode=login",
         icon: CircleUser,
       },
       {

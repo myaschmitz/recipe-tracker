@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
 
   // If user is not authenticated and trying to access protected route
   if (!session && isProtectedRoute) {
-    return NextResponse.redirect(new URL('/auth', req.url));
+    return NextResponse.redirect(new URL('/auth?mode=login', req.url));
   }
 
   // If user is authenticated and trying to access public auth routes

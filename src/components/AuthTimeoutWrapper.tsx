@@ -66,7 +66,7 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 15000 }: AuthTimeoutW
             
             <Button 
               variant="outline" 
-              onClick={() => window.location.href = '/auth'}
+              onClick={() => window.location.href = '/auth?mode=login'}
               className="w-full"
             >
               Go to Sign In

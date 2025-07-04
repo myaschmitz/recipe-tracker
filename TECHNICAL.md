@@ -536,3 +536,78 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 - Test complete user journeys
 - Test recipe creation and management flows
 - Test authentication and authorization
+
+## Authentication Navigation System
+
+### Overview
+The authentication system now supports tab-based navigation using URL query parameters to direct users to the appropriate auth form (login or signup).
+
+### Implementation Details
+
+#### Query Parameter System
+- **`/auth?mode=login`** - Directs to login tab
+- **`/auth?mode=signup`** - Directs to signup tab  
+- **`/auth`** (no mode) - Defaults to login tab
+
+#### Navigation Sources
+1. **Landing Page**:
+   - "Get Started Free" button → `/auth?mode=signup`
+   - "Sign In" button → `/auth?mode=login`
+
+2. **Forgot Password Page**:
+   - "Back to sign in" link → `/auth?mode=login`
+
+3. **Error Pages & Timeouts**:
+   - All error redirects → `/auth?mode=login`
+
+4. **Middleware Protection**:
+   - Protected route access → `/auth?mode=login`
+
+5. **Navbar**:
+   - Sign In link → `/auth?mode=login`
+
+6. **API Signout**:
+   - Logout redirect → `/auth?mode=login`
+
+#### Dynamic Tab Switching
+- Users can switch between login/signup tabs within the form
+- URL updates automatically without page refresh using `window.history.replaceState()`
+- State management preserves form data during tab switches
+
+#### Components Updated
+- **AuthForm.tsx**: Added query parameter handling and tab state management
+- **LandingPage.tsx**: Updated all auth links with appropriate modes
+- **Navbar.tsx**: Updated auth link to use login mode
+- **ForgotPasswordPage.tsx**: Updated return links to use login mode
+- **AuthErrorBoundary.tsx**: Updated error redirect to use login mode
+- **AuthTimeoutWrapper.tsx**: Updated timeout redirect to use login mode
+- **middleware.ts**: Updated protected route redirect to use login mode
+
+#### Benefits
+- **Improved UX**: Users land on the correct form based on their intent
+- **Context Preservation**: Users from "forgot password" get login form since they have an account
+- **Consistent Flow**: All signup-related actions lead to signup form
+- **URL State**: Current tab state is preserved in URL for bookmarking/sharing
+
+#### Technical Implementation
+```tsx
+// Query parameter detection
+useEffect(() => {
+  const mode = searchParams.get('mode');
+  if (mode === 'signup') {
+    setIsLogin(false);
+  } else if (mode === 'login') {
+    setIsLogin(true);
+  } else {
+    setIsLogin(true); // Default to login
+  }
+}, [searchParams]);
+
+// Tab switching with URL update
+const handleTabSwitch = (loginMode: boolean) => {
+  setIsLogin(loginMode);
+  const newMode = loginMode ? 'login' : 'signup';
+  const newUrl = `/auth?mode=${newMode}`;
+  window.history.replaceState(null, '', newUrl);
+};
+```

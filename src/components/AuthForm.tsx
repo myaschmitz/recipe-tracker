@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,12 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CookingPot, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function AuthForm() {
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,6 +25,28 @@ export function AuthForm() {
     firstName: "",
     lastName: "",
   });
+
+  // Handle query parameters for initial tab state
+  useEffect(() => {
+    const mode = searchParams.get('mode');
+    if (mode === 'signup') {
+      setIsLogin(false);
+    } else if (mode === 'login') {
+      setIsLogin(true);
+    } else {
+      // Default to login tab if no mode specified
+      setIsLogin(true);
+    }
+  }, [searchParams]);
+
+  // Function to handle tab switching and update URL
+  const handleTabSwitch = (loginMode: boolean) => {
+    setIsLogin(loginMode);
+    // Update URL without causing a page refresh
+    const newMode = loginMode ? 'login' : 'signup';
+    const newUrl = `/auth?mode=${newMode}`;
+    window.history.replaceState(null, '', newUrl);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -251,15 +274,12 @@ export function AuthForm() {
             </form>
 
             <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-background text-muted-foreground">
-                    {isLogin ? "Don't have an account?" : "Already have an account?"}
-                  </span>
-                </div>
+              <div className="relative flex items-center justify-center">
+                <div className="flex-1 border-t border-border mr-4" />
+                <span className="text-sm text-muted-foreground">
+                  {isLogin ? "Don't have an account?" : "Already have an account?"}
+                </span>
+                <div className="flex-1 border-t border-border ml-4" />
               </div>
 
               <div className="mt-6">
@@ -267,10 +287,10 @@ export function AuthForm() {
                   type="button"
                   variant="outline"
                   className="w-full"
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => handleTabSwitch(!isLogin)}
                   disabled={loading}
                 >
-                  {isLogin ? "Create new account" : "Sign in instead"}
+                  {isLogin ? "Create new account" : "Sign in"}
                 </Button>
               </div>
             </div>
