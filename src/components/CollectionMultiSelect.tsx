@@ -35,6 +35,7 @@ const CollectionMultiSelect = ({
   const [open, setOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
+  const [newCollectionDescription, setNewCollectionDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -107,7 +108,7 @@ const CollectionMultiSelect = ({
         },
         body: JSON.stringify({
           name: newCollectionName.trim(),
-          description: "",
+          description: newCollectionDescription.trim(),
         }),
       });
 
@@ -123,6 +124,7 @@ const CollectionMultiSelect = ({
         
         // Reset form
         setNewCollectionName("");
+        setNewCollectionDescription("");
         setIsCreating(false);
         
         toast({
@@ -154,6 +156,7 @@ const CollectionMultiSelect = ({
     } else if (e.key === "Escape") {
       setIsCreating(false);
       setNewCollectionName("");
+      setNewCollectionDescription("");
     }
   };
 
@@ -178,29 +181,47 @@ const CollectionMultiSelect = ({
             <CommandList>
               {isCreating ? (
                 <CommandGroup>
-                  <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                  <div className="px-2 py-1 text-sm font-bold text-foreground">
                     Create New Collection
                   </div>
-                  <div className="flex flex-col space-y-2 p-2">
-                    <Label htmlFor="new-collection-name" className="text-sm">
-                      Collection Name
-                    </Label>
-                    <div className="flex space-x-2">
+                  <div className="flex flex-col space-y-3 p-2 pt-1">
+                    <div>
+                      <Label htmlFor="new-collection-name" className="text-sm">
+                        Collection Name<span className="text-red-700">*</span>
+                      </Label>
                       <Input
                         id="new-collection-name"
                         value={newCollectionName}
                         onChange={(e) => setNewCollectionName(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Enter collection name"
-                        className="flex-1"
+                        className="mt-1"
                         disabled={isSubmitting}
                       />
+                    </div>
+                    <div>
+                      <Label htmlFor="new-collection-description" className="text-sm">
+                        Description
+                      </Label>
+                      <Input
+                        id="new-collection-description"
+                        value={newCollectionDescription}
+                        onChange={(e) => setNewCollectionDescription(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Enter collection description"
+                        className="mt-1"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div className="flex space-x-2">
                       <Button
                         size="sm"
                         onClick={handleCreateCollection}
                         disabled={isSubmitting || !newCollectionName.trim()}
+                        className="flex-1"
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="h-4 w-4 mr-1" />
+                        Create
                       </Button>
                       <Button
                         size="sm"
@@ -208,6 +229,7 @@ const CollectionMultiSelect = ({
                         onClick={() => {
                           setIsCreating(false);
                           setNewCollectionName("");
+                          setNewCollectionDescription("");
                         }}
                         disabled={isSubmitting}
                       >
@@ -236,22 +258,24 @@ const CollectionMultiSelect = ({
                         key={collection.id}
                         onSelect={() => handleCollectionSelect(collection)}
                       >
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-start space-x-3 w-full py-1">
                           <div
-                            className={`h-4 w-4 border rounded-sm flex items-center justify-center ${
+                            className={`h-4 w-4 min-w-[16px] border-2 rounded-sm flex items-center justify-center mt-0.5 ${
                               isSelected
                                 ? "bg-primary border-primary"
-                                : "border-input"
+                                : "border-muted-foreground hover:border-primary transition-colors"
                             }`}
                           >
                             {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
                           </div>
-                          <span>{collection.name}</span>
-                          {collection.description && (
-                            <span className="text-xs text-muted-foreground">
-                              - {collection.description}
-                            </span>
-                          )}
+                          <div className="flex flex-col flex-1 min-w-0">
+                            <span className="text-sm font-medium">{collection.name}</span>
+                            {collection.description && (
+                              <span className="text-xs text-muted-foreground mt-1 leading-tight">
+                                {collection.description}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </CommandItem>
                     );
