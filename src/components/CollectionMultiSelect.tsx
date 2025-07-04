@@ -168,7 +168,7 @@ const CollectionMultiSelect = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="justify-between"
+            className="justify-between w-fit max-w-xs"
           >
             {selectedCollections.length === 0
               ? "Select collections..."

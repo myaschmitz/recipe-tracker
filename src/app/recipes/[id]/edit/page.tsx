@@ -2,23 +2,10 @@
 
 import RichTextEditor from "@/components/RichTextEditor";
 import CollectionMultiSelect from "@/components/CollectionMultiSelect";
-import { Badge } from "@/components/ui/badge";
+import TagMultiSelect from "@/components/TagMultiSelect";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -47,9 +34,6 @@ const EditRecipePage = () => {
   const id = params.id?.toString();
   const [recipe, setRecipe] = useState<Recipe>();
   const [units, setUnits] = useState<Unit[]>([]);
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]);
   const [name, setName] = useState("");
@@ -130,18 +114,7 @@ const EditRecipePage = () => {
       };
 
       const fetchTags = async () => {
-        const response = await fetch("/api/tags");
-        const data = await response.json();
-
-        if (response.ok) {
-          const formattedTags = data.map((d: TagSchema) => {
-            return { id: d.id, name: d.name };
-          });
-
-          setTags(formattedTags);
-        } else {
-          console.error(`Error fetching tags: ${data.error}`);
-        }
+        // Tags are now fetched by TagMultiSelect component
       };
 
       const fetchRecipeTags = async (recipeId: string) => {
@@ -230,20 +203,8 @@ const EditRecipePage = () => {
   }, [id]);
 
   // add selected tags
-  const handleTagSelect = (tag: Tag) => {
-    setSelectedTags((curSelectedTags) => {
-      if (!curSelectedTags.some((t) => t.id === tag.id)) {
-        const updatedTags = [...curSelectedTags, tag];
-        return updatedTags;
-      }
-      return curSelectedTags;
-    });
-  };
-
-  const handleTagRemove = (tag: Tag) => {
-    setSelectedTags((curSelectedTags) =>
-      curSelectedTags.filter((t) => t.id !== tag.id)
-    );
+  const handleTagChange = (tags: Tag[]) => {
+    setSelectedTags(tags);
   };
 
   const handleCollectionChange = (collections: Collection[]) => {
@@ -598,60 +559,10 @@ const EditRecipePage = () => {
             <Label htmlFor="recipe-tag" className="text-md font-bold max-w-sm">
               Tags
             </Label>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="max-w-fit my-1"
-                >
-                  Select tags...
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <Command>
-                  <CommandInput placeholder="Search tags" />
-                  <CommandList>
-                    <CommandEmpty>No tags found.</CommandEmpty>
-                    <CommandGroup>
-                      {tags
-                        ?.filter((tag) => !selectedTags.some((selectedTag) => selectedTag.id === tag.id))
-                        .sort((a, b) => a.name.localeCompare(b.name))
-                        .map((tag) => (
-                          <CommandItem
-                            key={tag.id}
-                            value={tag.name}
-                            onSelect={(currentValue: string) => {
-                              setValue(
-                                currentValue === value ? "" : currentValue
-                              );
-                              setOpen(false);
-                              handleTagSelect(tag);
-                            }}
-                          >
-                            {tag.name}
-                          </CommandItem>
-                        ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            <div className="mt-2 flex flex-row">
-              {selectedTags.map((tag) => (
-                <Badge key={tag.id} className="mr-2 mb-2">
-                  {tag.name}
-                  <Button
-                    size="sm"
-                    onClick={() => handleTagRemove(tag)}
-                    className="outline-none shadow-none bg-transparent p-0 ml-2 mr-1 hover:bg-transparent hover:outline-none hover:text-red-700"
-                  >
-                    <X />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
+            <TagMultiSelect
+              selectedTags={selectedTags}
+              onTagChange={handleTagChange}
+            />
           </div>
           <div className="mb-6 flex flex-col max-w-sm">
             <Label htmlFor="recipe-collections" className="text-md font-bold max-w-sm">
