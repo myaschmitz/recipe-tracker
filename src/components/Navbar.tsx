@@ -39,9 +39,11 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Navbar() {
   const { setTheme } = useTheme();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("");
   const path = usePathname();
 
@@ -91,8 +93,8 @@ export function Navbar() {
         icon: UserCog,
       },
       {
-        title: "Sign In",
-        href: "/auth/login",
+        title: user ? "Profile" : "Sign In",
+        href: user ? "/profile" : "/auth",
         icon: CircleUser,
       },
       {
@@ -101,7 +103,7 @@ export function Navbar() {
         icon: Settings,
       },
     ],
-    []
+    [user]
   );
 
   useEffect(() => {

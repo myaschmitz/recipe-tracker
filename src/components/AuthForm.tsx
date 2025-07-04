@@ -1,15 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CookingPot } from "lucide-react";
+import { CookingPot, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const SignUpPage = () => {
+export function AuthForm() {
+  const { signIn, signUp } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -26,11 +33,87 @@ const SignUpPage = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual authentication logic
-    console.log("Form submitted:", formData);
-    console.log("Mode:", isLogin ? "login" : "signup");
+    setLoading(true);
+
+    // Safety timeout to ensure loading state is reset
+    const timeoutId = setTimeout(() => {
+      console.log('Auth timeout - resetting loading state');
+      setLoading(false);
+    }, 10000); // 10 second timeout
+
+    try {
+      if (isLogin) {
+        // Sign in logic
+        console.log('Attempting to sign in with:', formData.email);
+        const result = await signIn(formData.email, formData.password);
+        console.log('Sign in result:', result);
+        toast({
+          title: "Welcome back!",
+          description: "You've successfully signed in.",
+        });
+        // Redirect to main app after successful sign in
+        router.push('/recipes');
+      } else {
+        // Sign up logic
+        console.log('Attempting to sign up with:', formData.email);
+        // Validation
+        if (formData.password !== formData.confirmPassword) {
+          toast({
+            title: "Error",
+            description: "Passwords do not match",
+            variant: "destructive",
+          });
+          clearTimeout(timeoutId);
+          setLoading(false);
+          return;
+        }
+
+        if (formData.password.length < 6) {
+          toast({
+            title: "Error",
+            description: "Password must be at least 6 characters",
+            variant: "destructive",
+          });
+          clearTimeout(timeoutId);
+          setLoading(false);
+          return;
+        }
+
+        if (!formData.firstName.trim() || !formData.lastName.trim()) {
+          toast({
+            title: "Error",
+            description: "First name and last name are required",
+            variant: "destructive",
+          });
+          clearTimeout(timeoutId);
+          setLoading(false);
+          return;
+        }
+
+        // Create username from first/last name
+        const username = `${formData.firstName.toLowerCase()}_${formData.lastName.toLowerCase()}`;
+        
+        const result = await signUp(formData.email, formData.password, username, formData.firstName, formData.lastName);
+        console.log('Sign up result:', result);
+        toast({
+          title: "Account created!",
+          description: "Please check your email to confirm your account.",
+        });
+      }
+    } catch (err: any) {
+      console.error('Auth error:', err);
+      toast({
+        title: "Error",
+        description: err.message || `Failed to ${isLogin ? 'sign in' : 'sign up'}`,
+        variant: "destructive",
+      });
+    } finally {
+      clearTimeout(timeoutId);
+      console.log('Setting loading to false');
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,10 +123,11 @@ const SignUpPage = () => {
           <Link href="/" className="flex items-center justify-center gap-2 hover:opacity-80 transition-opacity">
             <CookingPot className="h-8 w-8" />
             <span className="font-bold text-2xl">recipehub</span>
-          </Link>            <h2 className="mt-6 text-3xl font-extrabold">
-              {isLogin ? "Sign in to your account" : "Create your account"}
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+          </Link>
+          <h2 className="mt-6 text-3xl font-extrabold">
+            {isLogin ? "Sign in to your account" : "Create your account"}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             {isLogin ? "Welcome back! Please sign in to continue." : "Join us and start organizing your recipes!"}
           </p>
         </div>
@@ -72,6 +156,7 @@ const SignUpPage = () => {
                       value={formData.firstName}
                       onChange={handleInputChange}
                       placeholder="John"
+                      disabled={loading}
                     />
                   </div>
                   <div>
@@ -84,6 +169,7 @@ const SignUpPage = () => {
                       value={formData.lastName}
                       onChange={handleInputChange}
                       placeholder="Doe"
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -100,6 +186,7 @@ const SignUpPage = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="john@example.com"
+                  disabled={loading}
                 />
               </div>
 
@@ -114,6 +201,7 @@ const SignUpPage = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="••••••••"
+                  disabled={loading}
                 />
               </div>
 
@@ -129,11 +217,35 @@ const SignUpPage = () => {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     placeholder="••••••••"
+                    disabled={loading}
                   />
                 </div>
               )}
 
-              <Button type="submit" className="w-full">
+              {isLogin && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input
+                      id="remember-me"
+                      name="remember-me"
+                      type="checkbox"
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                    />
+                    <Label htmlFor="remember-me" className="ml-2 text-sm">
+                      Remember me
+                    </Label>
+                  </div>
+
+                  <div className="text-sm">
+                    <Link href="/auth/forgot-password" className="text-primary hover:underline">
+                      Forgot your password?
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLogin ? "Sign In" : "Create Account"}
               </Button>
             </form>
@@ -156,6 +268,7 @@ const SignUpPage = () => {
                   variant="outline"
                   className="w-full"
                   onClick={() => setIsLogin(!isLogin)}
+                  disabled={loading}
                 >
                   {isLogin ? "Create new account" : "Sign in instead"}
                 </Button>
@@ -180,6 +293,4 @@ const SignUpPage = () => {
       </div>
     </div>
   );
-};
-
-export default SignUpPage;
+}

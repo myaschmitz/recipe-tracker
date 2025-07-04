@@ -28,12 +28,12 @@ export default function LandingPage() {
             Organize, discover, and share your favorite recipes. Build your personal cookbook and never lose a recipe again.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link href="/auth/signup">
+            <Link href="/auth">
               <Button size="lg" className="px-8">
                 Get Started Free
               </Button>
             </Link>
-            <Link href="/auth/login">
+            <Link href="/auth">
               <Button size="lg" variant="outline" className="px-8">
                 Sign In
               </Button>
@@ -148,12 +148,12 @@ export default function LandingPage() {
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 justify-center">
-                <Link href="/auth/signup">
+                <Link href="/auth">
                   <Button size="lg" className="px-8">
                     Create Your Account
                   </Button>
                 </Link>
-                <Link href="/auth/login">
+                <Link href="/auth">
                   <Button size="lg" variant="outline" className="px-8">
                     Sign In
                   </Button>

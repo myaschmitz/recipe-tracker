@@ -50,7 +50,7 @@ const ForgotPasswordPage = () => {
                   >
                     Try again
                   </Button>
-                  <Link href="/auth/login" className="w-full">
+                  <Link href="/auth" className="w-full">
                     <Button variant="ghost" className="w-full">
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Back to sign in
@@ -111,7 +111,7 @@ const ForgotPasswordPage = () => {
 
             <div className="mt-6">
               <div className="text-center">
-                <Link href="/auth/login" className="text-sm text-primary hover:underline">
+                <Link href="/auth" className="text-sm text-primary hover:underline">
                   <ArrowLeft className="h-4 w-4 inline mr-1" />
                   Back to sign in
                 </Link>
