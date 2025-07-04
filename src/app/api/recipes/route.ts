@@ -13,12 +13,50 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get("limit");
+    const search = searchParams.get("search");
+    const tags = searchParams.get("tags");
+    const userId = searchParams.get("user_id");
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("recipe")
-      .select("id, name, description")
-      .order("created_at", { ascending: false })
-      .limit(limit ? parseInt(limit) : DEFAULT_RECIPE_LIMIT);
+      .select("id, name, description, prep_time, cook_time, total_time, link, created_at, updated_at, user_id")
+      .order("created_at", { ascending: false });
+
+    // Apply filters
+    if (search) {
+      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+
+    if (userId) {
+      query = query.eq("user_id", userId);
+    }
+
+    // Handle tag filtering separately
+    if (tags) {
+      const tagIds = tags.split(',').map(id => parseInt(id));
+      
+      // Get recipe IDs that have the specified tags
+      const { data: recipeIds, error: tagError } = await supabase
+        .from("recipe_tag")
+        .select("recipe_id")
+        .in("tag_id", tagIds);
+
+      if (tagError) {
+        throw tagError;
+      }
+
+      if (recipeIds && recipeIds.length > 0) {
+        const recipeIdList = recipeIds.map(r => r.recipe_id);
+        query = query.in("id", recipeIdList);
+      } else {
+        // No recipes found with those tags
+        return createSuccessResponse([]);
+      }
+    }
+
+    query = query.limit(limit ? parseInt(limit) : DEFAULT_RECIPE_LIMIT);
+
+    const { data, error } = await query;
 
     if (error) {
       throw error;
@@ -34,10 +72,14 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Validate with Zod schema - add this right after getting the body
+    // Validate with Zod schema
     const validatedData = recipeSchema.parse(body);
 
-    // insert recipe into db
+    // Get user ID from auth (in a real app, you'd get this from session/JWT)
+    // For now, we'll use a placeholder or get it from the request
+    const userId = body.userId || "placeholder-user-id";
+
+    // Insert recipe into db
     const {
       data: recipe,
       error: recipeError,
@@ -48,10 +90,11 @@ export async function POST(request: Request) {
           name: validatedData.name,
           description: validatedData.description,
           instructions: validatedData.instructions,
-          prep_time: validatedData.prepTime,
-          cook_time: validatedData.cookTime,
-          total_time: validatedData.totalTime,
+          prep_time: validatedData.prep_time,
+          cook_time: validatedData.cook_time,
+          total_time: validatedData.total_time,
           link: validatedData.link,
+          user_id: userId,
         })
         .select()
         .single();
@@ -68,6 +111,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Insert ingredients
     if (validatedData.ingredients && validatedData.ingredients.length > 0) {
       const { error: ingredientError } = await supabase
         .from("recipe_ingredient")
@@ -76,7 +120,7 @@ export async function POST(request: Request) {
             recipe_id: recipe.id,
             name: ingredient.name,
             amount: ingredient.amount,
-            unit_id: ingredient.unitId,
+            unit_id: ingredient.unit_id,
             note: ingredient.note,
           }))
         );
@@ -86,11 +130,12 @@ export async function POST(request: Request) {
       }
     }
 
+    // Insert recipe-tag relationships
     if (validatedData.tags && validatedData.tags.length > 0) {
       const { error: tagError } = await supabase.from("recipe_tag").insert(
-        validatedData.tags.map((tag) => ({
+        validatedData.tags.map((tagId) => ({
           recipe_id: recipe.id,
-          tag_id: tag,
+          tag_id: tagId,
         }))
       );
 
@@ -100,6 +145,7 @@ export async function POST(request: Request) {
       }
     }
 
+    // Insert collection-recipe relationships
     if (validatedData.collections && validatedData.collections.length > 0) {
       const { error: collectionError } = await supabase.from("collection_recipe").insert(
         validatedData.collections.map((collectionId) => ({

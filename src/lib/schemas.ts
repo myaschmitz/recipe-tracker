@@ -1,12 +1,23 @@
 import { z } from "zod";
 
+// Unit schema based on database schema
+export const unitSchema = z.object({
+  id: z.number().int(),
+  name: z.string().min(1, "Unit name is required"),
+  symbol: z.string().optional(),
+});
+
+// Recipe ingredient schema based on database schema
 export const recipeIngredientSchema = z.object({
+  id: z.number().int().optional(),
+  recipe_id: z.number().int().optional(),
   name: z.string().min(1, "Ingredient name is required"),
   amount: z
     .number()
     .positive("Amount must be positive")
     .or(
       z.string().transform((val) => {
+        if (!val) throw new Error("Amount is required");
         const num = parseFloat(val);
         if (isNaN(num) || num <= 0) {
           throw new Error("Amount must be a positive number");
@@ -14,15 +25,17 @@ export const recipeIngredientSchema = z.object({
         return num;
       })
     ),
-  unitId: z.number().int().positive("Valid unit is required"),
+  unit_id: z.number().int().positive("Unit is required"),
   note: z.string().optional(),
 });
 
+// Recipe schema based on database schema
 export const recipeSchema = z.object({
+  id: z.number().int().optional(),
   name: z.string().min(1, "Recipe name is required"),
   description: z.string().optional(),
   instructions: z.string().min(1, "Instructions are required"),
-  prepTime: z
+  prep_time: z
     .number()
     .int()
     .min(0)
@@ -33,7 +46,7 @@ export const recipeSchema = z.object({
         .transform((val) => (val ? parseInt(val) : undefined))
         .optional()
     ),
-  cookTime: z
+  cook_time: z
     .number()
     .int()
     .min(0)
@@ -44,7 +57,7 @@ export const recipeSchema = z.object({
         .transform((val) => (val ? parseInt(val) : undefined))
         .optional()
     ),
-  totalTime: z
+  total_time: z
     .number()
     .int()
     .min(0)
@@ -56,6 +69,9 @@ export const recipeSchema = z.object({
         .optional()
     ),
   link: z.string().url().optional().or(z.literal("")),
+  user_id: z.string().uuid().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
   ingredients: z
     .array(recipeIngredientSchema)
     .min(1, "At least one ingredient is required"),
@@ -63,24 +79,91 @@ export const recipeSchema = z.object({
   collections: z.array(z.number().int()).optional(),
 });
 
+// Tag schema based on database schema
 export const tagSchema = z.object({
-  id: z.number().int(),
-  name: z.string().min(1),
+  id: z.number().int().optional(),
+  name: z.string().min(1, "Tag name is required"),
 });
 
-export const unitSchema = z.object({
-  id: z.number().int(),
-  name: z.string().min(1),
+// Recipe tag relationship schema
+export const recipeTagSchema = z.object({
+  id: z.number().int().optional(),
+  recipe_id: z.number().int(),
+  tag_id: z.number().int().optional(),
 });
 
+// Collection schema based on database schema
 export const collectionSchema = z.object({
+  id: z.number().int().optional(),
   name: z.string().min(1, "Collection name is required"),
   description: z.string().optional(),
+  user_id: z.string().uuid().optional(),
+  is_public: z.boolean().default(false),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
+});
+
+// Collection recipe relationship schema
+export const collectionRecipeSchema = z.object({
+  id: z.number().int().optional(),
+  recipe_id: z.number().int(),
+  collection_id: z.number().int(),
+});
+
+// Profile schema based on database schema
+export const profileSchema = z.object({
+  id: z.string().uuid(),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  avatar_url: z.string().url().optional(),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  name: z.string().optional(),
+  location: z.string().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
+});
+
+// Form schemas for UI components
+export const recipeFormSchema = recipeSchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export const tagFormSchema = tagSchema.omit({ id: true });
+
+export const collectionFormSchema = collectionSchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export const profileFormSchema = profileSchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
 });
 
 // Type exports for use in components
-export type RecipeFormData = z.infer<typeof recipeSchema>;
+export type RecipeFormData = z.infer<typeof recipeFormSchema>;
 export type RecipeIngredientFormData = z.infer<typeof recipeIngredientSchema>;
-export type TagData = z.infer<typeof tagSchema>;
+export type TagFormData = z.infer<typeof tagFormSchema>;
+export type CollectionFormData = z.infer<typeof collectionFormSchema>;
+export type ProfileFormData = z.infer<typeof profileFormSchema>;
 export type UnitData = z.infer<typeof unitSchema>;
-export type CollectionFormData = z.infer<typeof collectionSchema>;
+
+// Database type exports
+export type RecipeSchema = z.infer<typeof recipeSchema>;
+export type RecipeIngredientSchema = z.infer<typeof recipeIngredientSchema>;
+export type TagSchema = z.infer<typeof tagSchema>;
+export type RecipeTagSchema = z.infer<typeof recipeTagSchema>;
+export type CollectionSchema = z.infer<typeof collectionSchema>;
+export type CollectionRecipeSchema = z.infer<typeof collectionRecipeSchema>;
+export type ProfileSchema = z.infer<typeof profileSchema>;
+
+// Legacy exports for backward compatibility
+export const ingredientSchema = recipeIngredientSchema;
+export type IngredientFormData = RecipeIngredientFormData;
+export type TagData = TagFormData;

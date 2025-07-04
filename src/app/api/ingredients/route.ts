@@ -4,8 +4,13 @@ import { handleApiError, createSuccessResponse } from "@/lib/api";
 export async function GET() {
   try {
     const { data, error } = await supabase
-      .from("ingredient")
-      .select("*")
+      .from("recipe_ingredient")
+      .select(`
+        *,
+        unit (
+          id, name, symbol
+        )
+      `)
       .order("name", { ascending: true });
 
     if (error) {
@@ -14,6 +19,6 @@ export async function GET() {
 
     return createSuccessResponse(data);
   } catch (error) {
-    return handleApiError(error, "fetching ingredients");
+    return handleApiError(error, "fetching recipe ingredients");
   }
 }

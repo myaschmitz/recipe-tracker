@@ -1,14 +1,17 @@
+// Database models matching the exact SQL schema
+
 export type RecipeSchema = {
   id: number;
   name: string;
   description?: string;
-  created_at: string;
-  updated_at: string;
   instructions: string;
   prep_time?: number;
   cook_time?: number;
   total_time?: number;
   link?: string;
+  created_at: string;
+  updated_at: string;
+  user_id?: string;
 };
 
 export type RecipeIngredientSchema = {
@@ -26,33 +29,41 @@ export type UnitSchema = {
   symbol?: string;
 };
 
-export type RecipeTagSchema = {
-  recipe_id: number;
-  tag_id: number;
-};
-
 export type TagSchema = {
   id: number;
   name: string;
 };
 
-export type ProfileSchema = {
+export type RecipeTagSchema = {
   id: number;
-  updated_at: string;
-  username: string;
-  name: string;
-  avatar_url?: string;
+  recipe_id: number;
+  tag_id?: number;
 };
 
 export type CollectionSchema = {
   id: number;
-  name: string;
-  description?: string;
   created_at: string;
   updated_at: string;
+  name: string;
+  description?: string;
+  user_id?: string;
+  is_public: boolean;
 };
 
 export type CollectionRecipeSchema = {
-  collection_id: number;
+  id: number;
   recipe_id: number;
+  collection_id: number;
+};
+
+export type ProfileSchema = {
+  id: string;
+  updated_at?: string;
+  username: string;
+  avatar_url?: string;
+  first_name?: string;
+  last_name?: string;
+  created_at: string;
+  location?: string;
+  name?: string;
 };

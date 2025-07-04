@@ -13,19 +13,52 @@ export async function GET(
       return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    // Get recipe with ingredients, tags, and collections
+    const { data: recipe, error: recipeError } = await supabase
       .from("recipe")
-      .select("id, name, description, instructions, prep_time, cook_time, total_time, link")
+      .select(`
+        id, name, description, instructions, prep_time, cook_time, total_time, link, created_at, updated_at, user_id,
+        recipe_ingredient (
+          id, name, amount, unit_id, note,
+          unit (
+            id, name, symbol
+          )
+        ),
+        recipe_tag (
+          tag (
+            id, name
+          )
+        ),
+        collection_recipe (
+          collection (
+            id, name, description, is_public, created_at, updated_at, user_id
+          )
+        )
+      `)
       .eq("id", id)
       .single();
 
-    if (error) {
-      throw error;
+    if (recipeError) {
+      throw recipeError;
     }
 
-    return createSuccessResponse(data);
+    // Transform the data to match the expected format
+    const transformedRecipe = {
+      ...recipe,
+      ingredients: recipe.recipe_ingredient?.map((ri: any) => ({
+        ...ri,
+        unit: ri.unit
+      })) || [],
+      tags: recipe.recipe_tag?.map((rt: any) => rt.tag) || [],
+      collections: recipe.collection_recipe?.map((cr: any) => cr.collection) || [],
+    };
+
+    // Remove the join table data from the response
+    const { recipe_ingredient, recipe_tag, collection_recipe, ...cleanRecipe } = transformedRecipe;
+
+    return createSuccessResponse(cleanRecipe);
   } catch (error) {
-    return handleApiError(error, "fetching recipe(s)");
+    return handleApiError(error, "fetching recipe");
   }
 }
 
@@ -47,9 +80,10 @@ export async function PUT(
       ingredients,
       tags,
       collections,
-      prepTime,
-      cookTime,
-      totalTime,
+      prep_time,
+      cook_time,
+      total_time,
+      link,
     } = await req.json();
 
     // Update the recipe
@@ -59,9 +93,11 @@ export async function PUT(
         name,
         description,
         instructions,
-        prep_time: prepTime,
-        cook_time: cookTime,
-        total_time: totalTime,
+        prep_time,
+        cook_time,
+        total_time,
+        link,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id)
       .select()
@@ -80,7 +116,7 @@ export async function PUT(
         recipe_id: parseInt(id),
         name: ingredient.name,
         amount: ingredient.amount,
-        unit_id: ingredient.unitId,
+        unit_id: ingredient.unit_id,
         note: ingredient.note,
       }));
 
@@ -148,6 +184,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
     }
 
+    // Supabase will handle cascading deletes for related records
     const { error } = await supabase.from("recipe").delete().eq("id", id);
 
     if (error) {

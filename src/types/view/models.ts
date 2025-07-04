@@ -1,24 +1,27 @@
+// View models with camelCase naming and enhanced functionality
+
 export type Recipe = {
   id: number;
   name: string;
   description?: string;
-  prepTime?: number; // in minutes
-  cookTime?: number; // in minutes
-  totalTime?: number; // in minutes
-  link?: string;
-  createdAt: string;
-  updatedAt: string;
   instructions: string;
-  ingredients: RecipeIngredient[];
+  prepTime?: number; // in minutes (mapped from prep_time)
+  cookTime?: number; // in minutes (mapped from cook_time)
+  totalTime?: number; // in minutes (mapped from total_time)
+  link?: string;
+  createdAt: string; // mapped from created_at
+  updatedAt: string; // mapped from updated_at
+  userId?: string; // mapped from user_id
+  ingredients: Ingredient[];
   tags: Tag[];
   collections?: Collection[];
 };
 
-export type RecipeIngredient = {
+export type Ingredient = {
   id: number;
-  recipeId: number;
+  recipeId: number; // mapped from recipe_id
   name: string;
-  amount?: number;
+  amount: number;
   unit: Unit;
   note?: string;
 };
@@ -29,45 +32,66 @@ export type Unit = {
   symbol?: string;
 };
 
-export type RecipeTag = {
-  recipeId: number;
-  tagId: number;
-};
-
 export type Tag = {
   id: number;
   name: string;
 };
 
-export type Profile = {
+export type RecipeTag = {
   id: number;
-  updatedAt: string;
-  username: string;
-  name: string;
-  avatarUrl?: string;
+  recipeId: number; // mapped from recipe_id
+  tagId?: number; // mapped from tag_id
 };
 
 export type Collection = {
   id: number;
   name: string;
   description?: string;
-  createdAt: string;
-  updatedAt: string;
+  userId?: string; // mapped from user_id
+  isPublic: boolean; // mapped from is_public
+  createdAt: string; // mapped from created_at
+  updatedAt: string; // mapped from updated_at
   recipes: Recipe[];
 };
 
 export type CollectionRecipe = {
-  collectionId: number;
-  recipeId: number;
+  id: number;
+  recipeId: number; // mapped from recipe_id
+  collectionId: number; // mapped from collection_id
 };
 
-// forms only collect user data
-export type RecipeForm = Omit<Recipe, "id" | "created_at" | "updated_at">;
-export type RecipeIngredientForm = Omit<RecipeIngredient, "id" | "recipeId">;
-export type CollectionForm = Omit<Collection, "id" | "createdAt" | "recipes">;
+export type Profile = {
+  id: string;
+  username: string;
+  avatarUrl?: string; // mapped from avatar_url
+  firstName?: string; // mapped from first_name
+  lastName?: string; // mapped from last_name
+  name?: string;
+  location?: string;
+  createdAt: string; // mapped from created_at
+  updatedAt?: string; // mapped from updated_at
+};
 
-export type RecipeBasicCard = Omit<Recipe, "instructions" | "ingredients">;
+// Form types for creating/editing
+export type RecipeForm = Omit<Recipe, "id" | "createdAt" | "updatedAt" | "userId" | "ingredients" | "tags" | "collections"> & {
+  ingredients: IngredientForm[];
+  tags: number[];
+  collections: number[];
+};
 
-// export type CreateUnit = Omit<Unit, "id">;
-// export type CreateRecipe = Omit<Recipe, "id">;
-// export type CreateIngredient = Omit<Ingredient, "id">;
+export type IngredientForm = {
+  name: string;
+  amount: number;
+  unit_id: number;
+  note?: string;
+};
+
+export type CollectionForm = Omit<Collection, "id" | "createdAt" | "updatedAt" | "userId" | "recipes">;
+export type TagForm = Omit<Tag, "id">;
+
+// Card types for displaying recipe summaries
+export type RecipeCard = Omit<Recipe, "instructions" | "ingredients">;
+
+// Legacy types for backward compatibility
+export type RecipeIngredient = Ingredient;
+export type RecipeIngredientForm = IngredientForm;
