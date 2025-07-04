@@ -5,8 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CookingPot, BookOpen, Users, Star, ChefHat, Search } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LandingPage() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
       {/* Theme Toggle - Fixed Position */}
@@ -28,16 +31,26 @@ export default function LandingPage() {
             Organize, discover, and share your favorite recipes. Build your personal cookbook and never lose a recipe again.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link href="/auth?mode=signup">
-              <Button size="lg" className="px-8">
-                Get Started Free
-              </Button>
-            </Link>
-            <Link href="/auth?mode=login">
-              <Button size="lg" variant="outline" className="px-8">
-                Sign In
-              </Button>
-            </Link>
+            {user ? (
+              <Link href="/recipes">
+                <Button size="lg" className="px-8">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/auth?mode=signup">
+                  <Button size="lg" className="px-8">
+                    Get Started Free
+                  </Button>
+                </Link>
+                <Link href="/auth?mode=login">
+                  <Button size="lg" variant="outline" className="px-8">
+                    Sign In
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -141,27 +154,44 @@ export default function LandingPage() {
         <div className="text-center">
           <Card className="max-w-2xl mx-auto">
             <CardHeader>
-              <CardTitle className="text-2xl">Ready to start cooking?</CardTitle>
+              <CardTitle className="text-2xl">
+                {user ? "Welcome back!" : "Ready to start cooking?"}
+              </CardTitle>
               <CardDescription className="text-lg">
-                Join thousands of home cooks who trust Recipe Hub to organize their culinary adventures.
+                {user 
+                  ? "Continue organizing your culinary adventures with Recipe Hub."
+                  : "Join thousands of home cooks who trust Recipe Hub to organize their culinary adventures."
+                }
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 justify-center">
-                <Link href="/auth?mode=signup">
-                  <Button size="lg" className="px-8">
-                    Create Your Account
-                  </Button>
-                </Link>
-                <Link href="/auth?mode=login">
-                  <Button size="lg" variant="outline" className="px-8">
-                    Sign In
-                  </Button>
-                </Link>
+                {user ? (
+                  <Link href="/recipes">
+                    <Button size="lg" className="px-8">
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/auth?mode=signup">
+                      <Button size="lg" className="px-8">
+                        Create Your Account
+                      </Button>
+                    </Link>
+                    <Link href="/auth?mode=login">
+                      <Button size="lg" variant="outline" className="px-8">
+                        Sign In
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
-              <p className="text-sm text-muted-foreground mt-4">
-                Free forever. No credit card required.
-              </p>
+              {!user && (
+                <p className="text-sm text-muted-foreground mt-4">
+                  Free forever. No credit card required.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>

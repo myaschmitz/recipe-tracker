@@ -17,14 +17,23 @@ export async function GET() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      throw error;
+      console.error('Supabase error fetching collections:', error);
+      // Return empty array on database error to prevent frontend crashes
+      return createSuccessResponse([]);
     }
-    return createSuccessResponse(data);
+    
+    // Ensure we always return an array
+    return createSuccessResponse(data || []);
   } catch (error: any) {
+    console.error('Collections API error:', error);
+    
     if (error.message.includes('Authentication required')) {
       return NextResponse.json({ error: error.message }, { status: 401 });
     }
-    return handleApiError(error, "fetching collections");
+    
+    // For any other error, return empty array to prevent frontend crashes
+    // The frontend can handle empty collections gracefully
+    return createSuccessResponse([]);
   }
 }
 

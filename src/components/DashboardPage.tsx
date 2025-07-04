@@ -18,62 +18,83 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      const response = await fetch("/api/recipes?limit=3");
-      const data = await response.json();
+      try {
+        const response = await fetch("/api/recipes?limit=3");
+        const data = await response.json();
 
-      if (!response.ok) {
-        console.error("Error fetching /api/recipes?limit=3");
-        return;
-      }
+        if (!response.ok) {
+          console.error("Error fetching /api/recipes?limit=3");
+          return;
+        }
 
-      // Fetch collection data for these recipes
-      const collectionRecipeResponse = await fetch("/api/collection-recipes");
-      const collectionRecipeData = await collectionRecipeResponse.json();
-      const collectionResponse = await fetch("/api/collections");
-      const collectionData = await collectionResponse.json();
+        // Ensure data is an array
+        if (!Array.isArray(data)) {
+          console.error("Recipes data is not an array");
+          setRecipes([]);
+          return;
+        }
 
-      const formattedCollections = collectionData.map((d: Collection) => {
-        return { id: d.id, name: d.name, description: d.description, createdAt: d.createdAt, updatedAt: d.updatedAt };
-      });
+        // Fetch collection data for these recipes
+        const collectionRecipeResponse = await fetch("/api/collection-recipes");
+        const collectionRecipeData = await collectionRecipeResponse.json();
+        const collectionResponse = await fetch("/api/collections");
+        const collectionData = await collectionResponse.json();
 
-      const collectionRecipesMap = collectionRecipeData.map((d: CollectionRecipeSchema) => {
-        return { collection_id: d.collection_id, recipe_id: d.recipe_id };
-      });
-
-      // Fetch tags for each recipe
-      const recipesWithTagsAndCollections = await Promise.all(
-        data.map(async (recipe: RecipeBasicCard) => {
-          // Fetch tags for this recipe
-          const tagsResponse = await fetch(`/api/tags/${recipe.id}`);
-          const tagsData = tagsResponse.ok ? await tagsResponse.json() : [];
-
-          // Find collections for this recipe
-          const recipeCollectionRelations = collectionRecipesMap.filter(
-            (relation: CollectionRecipeSchema) => relation.recipe_id === recipe.id
-          );
-
-          const recipeCollections = recipeCollectionRelations
-            .map((relation: CollectionRecipeSchema) => {
-              return formattedCollections.find((collection: Collection) => collection.id === relation.collection_id);
-            })
-            .filter(Boolean);
-
-          return {
-            id: recipe.id,
-            name: recipe.name,
-            description: recipe.description,
-            tags: tagsData || [],
-            ingredients: [], // Empty for basic card
-            collections: recipeCollections,
-            // Required fields for Recipe type
-            createdAt: recipe.createdAt || '',
-            updatedAt: recipe.updatedAt || '',
-            instructions: '',
+        const formattedCollections = Array.isArray(collectionData) ? collectionData.map((d: Collection) => {
+          return { 
+            id: d.id, 
+            name: d.name, 
+            description: d.description, 
+            createdAt: d.createdAt, 
+            updatedAt: d.updatedAt,
+            isPublic: d.isPublic || false,
+            userId: d.userId || '',
+            recipes: []
           };
-        })
-      );
+        }) : [];
 
-      setRecipes(recipesWithTagsAndCollections);
+        const collectionRecipesMap = Array.isArray(collectionRecipeData) ? collectionRecipeData.map((d: CollectionRecipeSchema) => {
+          return { collection_id: d.collection_id, recipe_id: d.recipe_id };
+        }) : [];
+
+        // Fetch tags for each recipe
+        const recipesWithTagsAndCollections = await Promise.all(
+          data.map(async (recipe: RecipeBasicCard) => {
+            // Fetch tags for this recipe
+            const tagsResponse = await fetch(`/api/tags/${recipe.id}`);
+            const tagsData = tagsResponse.ok ? await tagsResponse.json() : [];
+
+            // Find collections for this recipe
+            const recipeCollectionRelations = collectionRecipesMap.filter(
+              (relation) => relation.recipe_id === recipe.id
+            );
+
+            const recipeCollections = recipeCollectionRelations
+              .map((relation) => {
+                return formattedCollections.find((collection) => collection.id === relation.collection_id);
+              })
+              .filter(Boolean) as Collection[];
+
+            return {
+              id: recipe.id,
+              name: recipe.name,
+              description: recipe.description,
+              tags: Array.isArray(tagsData) ? tagsData : [],
+              ingredients: [], // Empty for basic card
+              collections: recipeCollections,
+              // Required fields for Recipe type
+              createdAt: recipe.createdAt || '',
+              updatedAt: recipe.updatedAt || '',
+              instructions: '',
+            };
+          })
+        );
+
+        setRecipes(recipesWithTagsAndCollections);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setRecipes([]);
+      }
     };
 
     fetchRecipes();

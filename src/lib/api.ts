@@ -27,23 +27,28 @@ export const validateRequired = (fields: Record<string, any>) => {
 
 // Role checking utilities
 export const getUserProfile = async () => {
-  const cookieStore = await cookies();
-  const supabase = createRouteHandlerClient({ 
-    cookies: () => Promise.resolve(cookieStore) 
-  });
-  
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createRouteHandlerClient({ 
+      cookies: () => Promise.resolve(cookieStore) 
+    });
+    
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      return null;
+    }
+
+    const { data: profile } = await supabase
+      .from('profile')
+      .select('*')
+      .eq('id', session.user.id)
+      .single();
+
+    return profile;
+  } catch (error) {
+    console.error('Error getting user profile:', error);
     return null;
   }
-
-  const { data: profile } = await supabase
-    .from('profile')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
-
-  return profile;
 };
 
 export const checkUserRole = async (requiredRole: UserRole) => {

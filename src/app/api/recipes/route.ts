@@ -60,12 +60,17 @@ export async function GET(request: Request) {
     const { data, error } = await query;
 
     if (error) {
-      throw error;
+      console.error('Supabase error fetching recipes:', error);
+      // Return empty array on database error to prevent frontend crashes
+      return createSuccessResponse([]);
     }
 
-    return createSuccessResponse(data);
+    // Ensure we always return an array
+    return createSuccessResponse(data || []);
   } catch (error) {
-    return handleApiError(error, "fetching recipes");
+    console.error('Recipes API error:', error);
+    // Return empty array instead of error response to prevent frontend crashes
+    return createSuccessResponse([]);
   }
 }
 

@@ -30,20 +30,28 @@ const CollectionsPage = () => {
         }
         
         const data = await response.json();
-        setCollections(
-          data.map((collection: CollectionSchema) => ({
-            id: collection.id,
-            name: collection.name,
-            description: collection.description,
-            isPublic: collection.is_public,
-            userId: collection.user_id,
-            createdAt: collection.created_at,
-            updatedAt: collection.updated_at,
-            recipes: []
-          }))
-        );
+        
+        // Ensure data is an array before processing
+        if (Array.isArray(data)) {
+          setCollections(
+            data.map((collection: CollectionSchema) => ({
+              id: collection.id,
+              name: collection.name,
+              description: collection.description,
+              isPublic: collection.is_public,
+              userId: collection.user_id,
+              createdAt: collection.created_at,
+              updatedAt: collection.updated_at,
+              recipes: []
+            }))
+          );
+        } else {
+          console.warn("Collections API returned non-array data:", data);
+          setCollections([]);
+        }
       } catch (error: any) {
         console.error("Error fetching collections:", error);
+        setCollections([]); // Set empty array on error
         toast({
           title: "Error",
           description: error.message || "Failed to load collections",

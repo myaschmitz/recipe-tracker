@@ -46,6 +46,7 @@ const CollectionMultiSelect = ({
     const fetchCollections = async () => {
       if (!user) {
         setLoading(false);
+        setCollections([]); // Ensure we have an empty array
         return;
       }
 
@@ -58,9 +59,17 @@ const CollectionMultiSelect = ({
         }
         
         const data = await response.json();
-        setCollections(data);
+        
+        // Ensure data is an array before setting it
+        if (Array.isArray(data)) {
+          setCollections(data);
+        } else {
+          console.warn("Collections API returned non-array data:", data);
+          setCollections([]);
+        }
       } catch (error: any) {
         console.error("Error fetching collections:", error);
+        setCollections([]); // Set empty array on error
         toast({
           title: "Error fetching collections",
           description: error.message || "Failed to load collections",

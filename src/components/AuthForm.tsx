@@ -12,12 +12,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export function AuthForm() {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user, loading } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLogin, setIsLogin] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,6 +25,14 @@ export function AuthForm() {
     firstName: "",
     lastName: "",
   });
+
+  // Redirect logged-in users to dashboard
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard');
+      return;
+    }
+  }, [user, loading, router]);
 
   // Handle query parameters for initial tab state
   useEffect(() => {
@@ -58,12 +66,12 @@ export function AuthForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setFormLoading(true);
 
     // Safety timeout to ensure loading state is reset
     const timeoutId = setTimeout(() => {
       console.log('Auth timeout - resetting loading state');
-      setLoading(false);
+      setFormLoading(false);
     }, 10000); // 10 second timeout
 
     try {
@@ -89,7 +97,7 @@ export function AuthForm() {
             variant: "destructive",
           });
           clearTimeout(timeoutId);
-          setLoading(false);
+          setFormLoading(false);
           return;
         }
 
@@ -100,7 +108,7 @@ export function AuthForm() {
             variant: "destructive",
           });
           clearTimeout(timeoutId);
-          setLoading(false);
+          setFormLoading(false);
           return;
         }
 
@@ -111,7 +119,7 @@ export function AuthForm() {
             variant: "destructive",
           });
           clearTimeout(timeoutId);
-          setLoading(false);
+          setFormLoading(false);
           return;
         }
 
@@ -135,9 +143,21 @@ export function AuthForm() {
     } finally {
       clearTimeout(timeoutId);
       console.log('Setting loading to false');
-      setLoading(false);
+      setFormLoading(false);
     }
   };
+
+  // Show loading while checking authentication status
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4">
@@ -179,7 +199,7 @@ export function AuthForm() {
                       value={formData.firstName}
                       onChange={handleInputChange}
                       placeholder="John"
-                      disabled={loading}
+                      disabled={formLoading}
                     />
                   </div>
                   <div>
@@ -192,7 +212,7 @@ export function AuthForm() {
                       value={formData.lastName}
                       onChange={handleInputChange}
                       placeholder="Doe"
-                      disabled={loading}
+                      disabled={formLoading}
                     />
                   </div>
                 </div>
@@ -209,7 +229,7 @@ export function AuthForm() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="john@example.com"
-                  disabled={loading}
+                  disabled={formLoading}
                 />
               </div>
 
@@ -224,7 +244,7 @@ export function AuthForm() {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="••••••••"
-                  disabled={loading}
+                  disabled={formLoading}
                 />
               </div>
 
@@ -240,7 +260,7 @@ export function AuthForm() {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    disabled={loading}
+                    disabled={formLoading}
                   />
                 </div>
               )}
@@ -267,8 +287,8 @@ export function AuthForm() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button type="submit" className="w-full" disabled={formLoading}>
+                {formLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLogin ? "Sign In" : "Create Account"}
               </Button>
             </form>

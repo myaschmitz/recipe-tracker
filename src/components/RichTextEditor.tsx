@@ -123,6 +123,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       Underline,
     ],
     content: defaultValue,
+    immediatelyRender: false, // Fix SSR hydration warning
     editorProps: {
       attributes: {
         class:

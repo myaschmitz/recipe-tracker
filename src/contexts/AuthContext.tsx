@@ -127,12 +127,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('Fetching profile for user:', userId);
       
-      // First try a simple direct fetch with a longer timeout
-      const { data, error } = await supabase
+      // Add a race condition with timeout for the profile fetch
+      const profilePromise = supabase
         .from('profile')
         .select('*')
         .eq('id', userId)
         .single();
+      
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+      );
+      
+      const { data, error } = await Promise.race([profilePromise, timeoutPromise]) as any;
 
       if (error) {
         console.error('Error fetching profile:', error);
@@ -140,6 +146,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error.code === 'PGRST116') {
           console.log('Profile not found, creating initial profile');
           await createInitialProfile(userId);
+        } else if (error.message === 'Profile fetch timeout') {
+          console.error('Profile fetch timed out - setting basic profile');
+          setProfile({
+            id: userId,
+            username: `user_${userId.slice(-8)}`,
+            name: '',
+            first_name: '',
+            last_name: '',
+            avatar_url: '',
+            location: '',
+            email: '',
+            phone: '',
+            bio: '',
+            date_of_birth: '',
+            timezone: '',
+            language: 'en',
+            theme_preference: 'system',
+            dietary_restrictions: [],
+            is_private: false,
+            email_notifications: true,
+            role: 'user',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          setLoading(false);
         } else {
           console.error('Profile fetch error:', error.message);
           // Set loading to false even on error so UI doesn't hang
@@ -155,8 +186,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Handle timeout or other errors gracefully
       if (error.message === 'Profile fetch timeout') {
-        console.error('Profile fetch timed out - continuing without profile');
+        console.error('Profile fetch timed out - setting basic fallback profile');
       }
+      
+      // Set a basic fallback profile to prevent app from breaking
+      setProfile({
+        id: userId,
+        username: `user_${userId.slice(-8)}`,
+        name: '',
+        first_name: '',
+        last_name: '',
+        avatar_url: '',
+        location: '',
+        email: '',
+        phone: '',
+        bio: '',
+        date_of_birth: '',
+        timezone: '',
+        language: 'en',
+        theme_preference: 'system',
+        dietary_restrictions: [],
+        is_private: false,
+        email_notifications: true,
+        role: 'user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
       
       // Always set loading to false to prevent infinite loading
       setLoading(false);
@@ -185,14 +240,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         dietary_restrictions: [],
         is_private: false,
         email_notifications: true,
+        role: 'user',
         created_at: new Date().toISOString()
       };
 
-      const { data, error } = await supabase
+      // Add timeout to profile creation
+      const createPromise = supabase
         .from('profile')
         .insert([profileData])
         .select()
         .single();
+      
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Profile creation timeout')), 3000)
+      );
+      
+      const { data, error } = await Promise.race([createPromise, timeoutPromise]) as any;
 
       if (error) {
         console.error('Error creating profile:', error);
