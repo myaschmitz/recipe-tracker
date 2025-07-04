@@ -24,6 +24,8 @@ interface RichTextEditorProps {
   id?: string;
   onChange: (value: string) => void;
   required?: boolean;
+  defaultValue?: string;
+  placeholder?: string;
 }
 
 const RichTextEditorMenuBar = ({ editor }: MenuBarProps) => {
@@ -98,7 +100,11 @@ const RichTextEditorMenuBar = ({ editor }: MenuBarProps) => {
   );
 };
 
-const RichTextEditor: React.FC<RichTextEditorProps> = ({ onChange }) => {
+const RichTextEditor: React.FC<RichTextEditorProps> = ({ 
+  onChange, 
+  defaultValue = "", 
+  placeholder = "Add instructions here" 
+}) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -113,9 +119,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ onChange }) => {
           },
         },
       }),
-      Placeholder.configure({ placeholder: "Add instructions here" }),
+      Placeholder.configure({ placeholder }),
       Underline,
     ],
+    content: defaultValue,
     editorProps: {
       attributes: {
         class:
@@ -137,6 +144,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ onChange }) => {
       };
     }
   }, [editor, onChange]);
+
+  // Update editor content when defaultValue changes
+  useEffect(() => {
+    if (editor && defaultValue !== editor.getHTML()) {
+      editor.commands.setContent(defaultValue);
+    }
+  }, [editor, defaultValue]);
 
   if (!editor) {
     return null;

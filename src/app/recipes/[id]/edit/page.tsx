@@ -1,6 +1,7 @@
 "use client";
 
 import RichTextEditor from "@/components/RichTextEditor";
+import CollectionMultiSelect from "@/components/CollectionMultiSelect";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +36,7 @@ import {
   RecipeIngredientForm,
   Tag,
   Unit,
+  Collection,
 } from "@/types/view/models";
 import { X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -49,6 +51,7 @@ const EditRecipePage = () => {
   const [value, setValue] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]);
   const [name, setName] = useState("");
   const [prepTime, setPrepTime] = useState<number | undefined>(undefined);
   const [cookTime, setCookTime] = useState<number | undefined>(undefined);
@@ -66,10 +69,31 @@ const EditRecipePage = () => {
         const response = await fetch(`/api/recipes/${id}`);
         const data = await response.json();
 
-        setRecipe(data);
+        const recipeData = {
+          id: data.id,
+          name: data.name,
+          description: data.description,
+          prepTime: data.prep_time,
+          cookTime: data.cook_time,
+          totalTime: data.total_time,
+          ingredients: data.ingredients,
+          instructions: data.instructions,
+          tags: data.tags,
+          collections: data.collections,
+        } as Recipe;
+
+        setRecipe(recipeData);
+
+        // Populate form fields with recipe data
+        setName(recipeData.name || "");
+        setDescription(recipeData.description || "");
+        setPrepTime(recipeData.prepTime);
+        setCookTime(recipeData.cookTime);
+        setTotalTime(recipeData.totalTime);
+        setInstructions(recipeData.instructions || "");
 
         if (!response.ok) {
-          console.error("Error fetching /api/ingedients/[recipeId].");
+          console.error("Error fetching /api/ingredients/[recipeId].");
         }
       };
 
@@ -83,20 +107,22 @@ const EditRecipePage = () => {
           }
           const ingredients = await response.json();
 
-          const formattedIngredients = ingredients.map(
-            (i: RecipeIngredientSchema) => {
-              return {
-                id: i.id,
-                recipeId: i.recipe_id,
-                name: i.name,
-                amount: i.amount,
-                unit: i.unit_id,
-                note: i.note,
-              };
-            }
-          );
-
-          setIngredients(ingredients);
+          // The API returns properly formatted ingredients with unit objects
+          setIngredients(ingredients.length > 0 ? ingredients.map((i: any) => ({
+            id: i.id,
+            recipeId: i.recipeId,
+            name: i.name,
+            amount: i.amount,
+            unit: i.unit, // This already contains {id, name, symbol}
+            note: i.note || "",
+          })) : [
+            {
+              name: "",
+              amount: undefined,
+              unit: { id: 0, name: "" } as Unit,
+              note: "",
+            },
+          ]);
           return ingredients;
         } catch (error) {
           console.error(error);
@@ -118,6 +144,68 @@ const EditRecipePage = () => {
         }
       };
 
+      const fetchRecipeTags = async (recipeId: string) => {
+        const response = await fetch(`/api/tags/${recipeId}`);
+
+        if (!response.ok) {
+          console.error(`Error fetching recipe tags: ${response.statusText}`);
+          return;
+        }
+
+        const data = await response.json();
+        const formattedTags = data.map((d: Tag) => {
+          return { id: d.id, name: d.name };
+        });
+
+        setSelectedTags(formattedTags);
+      };
+
+      const fetchRecipeCollections = async (recipeId: string) => {
+        try {
+          // First get all collection-recipe relationships
+          const collectionRecipeResponse = await fetch(`/api/collection-recipes`);
+          
+          if (!collectionRecipeResponse.ok) {
+            throw new Error(
+              `Error fetching collection recipes: ${collectionRecipeResponse.statusText}`
+            );
+          }
+
+          const allCollectionRecipes = await collectionRecipeResponse.json();
+          
+          // Filter for this specific recipe
+          const recipeCollectionIds = allCollectionRecipes
+            .filter((cr: any) => cr.recipe_id === parseInt(recipeId))
+            .map((cr: any) => cr.collection_id);
+
+          if (recipeCollectionIds.length === 0) {
+            setSelectedCollections([]);
+            return;
+          }
+
+          // Get all collections
+          const collectionsResponse = await fetch(`/api/collections`);
+          
+          if (!collectionsResponse.ok) {
+            throw new Error(
+              `Error fetching collections: ${collectionsResponse.statusText}`
+            );
+          }
+
+          const allCollections = await collectionsResponse.json();
+          
+          // Filter to only collections this recipe belongs to
+          const recipeCollections = allCollections.filter((collection: Collection) => 
+            recipeCollectionIds.includes(collection.id)
+          );
+
+          setSelectedCollections(recipeCollections);
+        } catch (error) {
+          console.error("Error fetching recipe collections:", error);
+          setSelectedCollections([]);
+        }
+      };
+
       const fetchUnits = async () => {
         const response = await fetch("/api/units");
         const data = await response.json();
@@ -135,6 +223,8 @@ const EditRecipePage = () => {
       fetchRecipe();
       fetchIngredients(id);
       fetchTags();
+      fetchRecipeTags(id);
+      fetchRecipeCollections(id);
       fetchUnits();
     }
   }, [id]);
@@ -148,13 +238,16 @@ const EditRecipePage = () => {
       }
       return curSelectedTags;
     });
-    console.log(selectedTags);
   };
 
   const handleTagRemove = (tag: Tag) => {
     setSelectedTags((curSelectedTags) =>
       curSelectedTags.filter((t) => t.id !== tag.id)
     );
+  };
+
+  const handleCollectionChange = (collections: Collection[]) => {
+    setSelectedCollections(collections);
   };
 
   const handleAddIngredient = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -242,8 +335,8 @@ const EditRecipePage = () => {
       return;
     }
 
-    const response = await fetch("/api/recipes", {
-      method: "POST",
+    const response = await fetch(`/api/recipes/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -258,6 +351,7 @@ const EditRecipePage = () => {
           note: ingredient.note,
         })),
         tags: selectedTags.map((tag) => tag.id),
+        collections: selectedCollections.map((collection) => collection.id),
         prepTime: prepTime ? Number(prepTime) : undefined,
         cookTime: cookTime ? Number(cookTime) : undefined,
         totalTime: totalTime ? Number(totalTime) : undefined,
@@ -267,61 +361,115 @@ const EditRecipePage = () => {
     const result = await response.json();
 
     if (response.ok) {
-      console.log("Recipe created successfully");
-
-      // reset fields
-      // setName("");
-      // setDescription("");
-      // setInstructions("");
-      // setIngredients([]);
-      // setSelectedTags([]);
+      console.log("Recipe updated successfully");
       toast({
-        title: "Recipe added successfully",
+        title: "Recipe updated successfully",
       });
-      router.push(`/recipes/${result.id}`);
+      router.push(`/recipes/${id}`);
     } else {
-      console.log(`Error creating recipe: ${result.error}`);
-      // alert(`Error creating recipe: ${result.error}`);
-      toast({ title: "Error creating recipe", description: result.error });
+      console.log(`Error updating recipe: ${result.error}`);
+      toast({ title: "Error updating recipe", description: result.error });
     }
   };
 
+  console.log(recipe);
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="font-bold text-2xl mb-4">Edit Recipe</h1>
+      <h1 className="text-2xl font-bold mb-4">Edit Recipe</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <div className="mb-4 flex flex-col max-w-sm">
-            <Label htmlFor="recipe-name" className="text-lg font-bold">
+          <div className="mb-6 flex flex-col max-w-sm">
+            <Label htmlFor="recipe-name" className="text-md font-bold">
               Name<span className="text-red-700">*</span>
             </Label>
             <Input
               type="text"
-              value={recipe?.name}
+              value={name}
               id="recipe-name"
               placeholder="Name"
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md shadow-sm sm:text-sm"
               required
             />
           </div>
-          <div className="mb-4 flex flex-col max-w-sm">
-            <Label htmlFor="recipe-description" className="text-lg font-bold">
+          <div className="mb-6 flex flex-row gap-6">
+            <div className="flex flex-col max-w-sm">
+              <Label htmlFor="prep-time" className="text-sm font-bold">
+                Prep Time
+              </Label>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  type="number"
+                  id="prep-time"
+                  placeholder=""
+                  value={prepTime ?? ""}
+                  onChange={(e) => setPrepTime(parseInt(e.target.value) || undefined)}
+                  min="0"
+                  step="any"
+                  className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
+                />
+                <span>min</span>
+              </div>
+            </div>
+            <div className="flex flex-col max-w-sm">
+              <Label htmlFor="cook-time" className="text-sm font-bold">
+                Cook Time
+              </Label>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  type="number"
+                  id="cook-time"
+                  placeholder=""
+                  value={cookTime ?? ""}
+                  onChange={(e) => setCookTime(parseInt(e.target.value) || undefined)}
+                  min="0"
+                  step="any"
+                  className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
+                />
+                <span>min</span>
+              </div>
+            </div>
+            <div className="flex flex-col max-w-sm">
+              <Label htmlFor="total-time" className="text-sm font-bold">
+                Total Time
+              </Label>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  type="number"
+                  id="total-time"
+                  placeholder=""
+                  value={totalTime ?? ""}
+                  onChange={(e) => setTotalTime(parseInt(e.target.value) || undefined)}
+                  min="0"
+                  step="any"
+                  className="mt-1 block rounded-md shadow-sm sm:text-sm w-16"
+                />
+                <span>min</span>
+              </div>
+            </div>
+          </div>
+          <div className="mb-6 flex flex-col max-w-md">
+            <Label htmlFor="recipe-description" className="text-md font-bold">
               Description
             </Label>
             <Textarea
               id="recipe-description"
               placeholder="Description"
-              value={recipe?.description}
+              value={description ?? ""}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md shadow-sm sm:text-sm"
             />
           </div>
-          <div className="mb-4 flex flex-col">
-            <Label htmlFor="ingredients" className="text-lg font-bold">
+          <div className="mb-6 flex flex-col">
+            <Label htmlFor="ingredients" className="text-md font-bold">
               Ingredients<span className="text-red-700">*</span>
             </Label>
-            <Button className="max-w-fit" onClick={handleAddIngredient}>
+            <Button
+              size="sm"
+              className="max-w-fit mt-1"
+              onClick={handleAddIngredient}
+            >
               + Add ingredient
             </Button>
             {ingredients.map((ingredient, index) => (
@@ -330,12 +478,14 @@ const EditRecipePage = () => {
                 className="flex sm:items-center items-start sm:flex-row flex-col mt-4"
               >
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
-                  <Label
-                    htmlFor={`ingredient-amount-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Amount
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-amount-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Amount
+                    </Label>
+                  )}
                   <Input
                     id={`ingredient-amount-${index}`}
                     type="number"
@@ -351,17 +501,19 @@ const EditRecipePage = () => {
                   />
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
-                  <Label
-                    htmlFor={`ingredient-unit-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Unit
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-unit-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Unit
+                    </Label>
+                  )}
                   <Select
+                    value={ingredient.unit?.name || ""}
                     onValueChange={(value) =>
                       handleIngredientChange(index, "unit", value)
                     }
-                    onKeyDown={handleKeyDown}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Unit" />
@@ -376,24 +528,16 @@ const EditRecipePage = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {/* <Input
-                    id={`ingredient-unit-${index}`}
-                    type="text"
-                    value={ingredient.unit}
-                    onChange={(e) =>
-                      handleIngredientChange(index, "unit", e.target.value)
-                    }
-                    className="w-24"
-                    required
-                  /> */}
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
-                  <Label
-                    htmlFor={`ingredient-name-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Name
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-name-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Name
+                    </Label>
+                  )}
                   <Input
                     id={`ingredient-name-${index}`}
                     type="text"
@@ -407,12 +551,14 @@ const EditRecipePage = () => {
                   />
                 </div>
                 <div className="flex flex-col mr-2 w-full">
-                  <Label
-                    htmlFor={`ingredient-note-${index}`}
-                    className="text-xs ml-1"
-                  >
-                    Note
-                  </Label>
+                  {index < 1 && (
+                    <Label
+                      htmlFor={`ingredient-note-${index}`}
+                      className="text-xs ml-1 mb-1"
+                    >
+                      Note
+                    </Label>
+                  )}
                   <div className="flex flex-row items-center">
                     <Input
                       id={`ingredient-note-${index}`}
@@ -426,7 +572,7 @@ const EditRecipePage = () => {
                     />
                     <Button
                       onClick={() => handleRemoveIngredient(index)}
-                      className="ml-2"
+                      className="ml-2 hover:text-red-700"
                       variant="ghost"
                     >
                       <X />
@@ -436,19 +582,21 @@ const EditRecipePage = () => {
               </div>
             ))}
           </div>
-          <div className="mb-4 flex flex-col">
-            <Label htmlFor="instructions" className="text-lg font-bold">
+          <div className="mb-6 flex flex-col w-full">
+            <Label htmlFor="instructions" className="text-md font-bold">
               Instructions<span className="text-red-700">*</span>
             </Label>
             <RichTextEditor
               id={`instruction-desc`}
               onChange={handleInstructionChange}
+              defaultValue={instructions}
+              placeholder="Add instructions here..."
               required
             />
           </div>
-          <div className="mb-4 flex flex-col max-w-sm">
-            <Label htmlFor="recipe-tag" className="text-lg font-bold max-w-sm">
-              Tag
+          <div className="mb-6 flex flex-col max-w-sm">
+            <Label htmlFor="recipe-tag" className="text-md font-bold max-w-sm">
+              Tags
             </Label>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
@@ -456,19 +604,20 @@ const EditRecipePage = () => {
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="max-w-fit"
+                  className="max-w-fit my-1"
                 >
                   Select tags...
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
                 <Command>
-                  <CommandInput placeholder="Search tags..." />
+                  <CommandInput placeholder="Search tags" />
                   <CommandList>
                     <CommandEmpty>No tags found.</CommandEmpty>
                     <CommandGroup>
                       {tags
-                        ?.sort((a, b) => a.name.localeCompare(b.name))
+                        ?.filter((tag) => !selectedTags.some((selectedTag) => selectedTag.id === tag.id))
+                        .sort((a, b) => a.name.localeCompare(b.name))
                         .map((tag) => (
                           <CommandItem
                             key={tag.id}
@@ -494,14 +643,24 @@ const EditRecipePage = () => {
                 <Badge key={tag.id} className="mr-2 mb-2">
                   {tag.name}
                   <Button
+                    size="sm"
                     onClick={() => handleTagRemove(tag)}
-                    className="outline-none shadow-none bg-transparent hover:bg-transparent hover:outline-none hover:text-green-700"
+                    className="outline-none shadow-none bg-transparent p-0 ml-2 mr-1 hover:bg-transparent hover:outline-none hover:text-red-700"
                   >
-                    <X className="m-1" />
+                    <X />
                   </Button>
                 </Badge>
               ))}
             </div>
+          </div>
+          <div className="mb-6 flex flex-col max-w-sm">
+            <Label htmlFor="recipe-collections" className="text-md font-bold max-w-sm">
+              Collections
+            </Label>
+            <CollectionMultiSelect
+              selectedCollections={selectedCollections}
+              onCollectionChange={handleCollectionChange}
+            />
           </div>
         </div>
         <Button
@@ -509,7 +668,7 @@ const EditRecipePage = () => {
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : "Create Recipe"}
+          {isSubmitting ? "Submitting..." : "Update Recipe"}
         </Button>
       </form>
     </div>
