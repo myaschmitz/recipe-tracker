@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CookingPot, BookOpen, Users, Star, ChefHat, Search } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -32,7 +32,7 @@ export default function LandingPage() {
           </p>
           <div className="flex gap-4 justify-center">
             {user ? (
-              <Link href="/recipes">
+              <Link href="/dashboard">
                 <Button size="lg" className="px-8">
                   Go to Dashboard
                 </Button>
@@ -167,7 +167,7 @@ export default function LandingPage() {
             <CardContent>
               <div className="flex gap-4 justify-center">
                 {user ? (
-                  <Link href="/recipes">
+                  <Link href="/dashboard">
                     <Button size="lg" className="px-8">
                       Go to Dashboard
                     </Button>

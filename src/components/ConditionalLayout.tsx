@@ -21,28 +21,9 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
     return <>{children}</>;
   }
   
-  // For the homepage, wait for auth to load before deciding layout
+  // For the homepage, never show navbar regardless of auth state
   if (pathname === '/') {
-    if (loading) {
-      // While loading, don't show navbar to prevent flash
-      return <>{children}</>;
-    }
-    
-    // Once loaded, show navbar only if user is authenticated
-    if (user) {
-      return (
-        <SidebarProvider>
-          <Navbar />
-          <main className="w-full">
-            <SidebarTrigger />
-            {children}
-          </main>
-        </SidebarProvider>
-      );
-    } else {
-      // Landing page - no navbar
-      return <>{children}</>;
-    }
+    return <>{children}</>;
   }
   
   // For all other pages, always show navbar (these are app pages)
