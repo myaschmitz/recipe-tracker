@@ -80,7 +80,6 @@ export default function DashboardPage() {
             <h1 className="text-3xl font-bold">
               Welcome back, {profile?.name || profile?.first_name || profile?.username}!
             </h1>
-            <p className="text-gray-600">Ready to cook something delicious?</p>
           </div>
         </div>
         <Button asChild>
