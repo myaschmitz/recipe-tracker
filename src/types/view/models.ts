@@ -63,6 +63,28 @@ export type CollectionRecipe = {
   collectionId: number; // mapped from collection_id
 };
 
+export type UserRecipeFavorite = {
+  id: number;
+  userId: string; // mapped from user_id
+  recipeId: number; // mapped from recipe_id
+  createdAt: string; // mapped from created_at
+};
+
+export type UserCollectionFavorite = {
+  id: number;
+  userId: string; // mapped from user_id
+  collectionId: number; // mapped from collection_id
+  createdAt: string; // mapped from created_at
+};
+
+export type UserWantToMake = {
+  id: number;
+  userId: string; // mapped from user_id
+  recipeId: number; // mapped from recipe_id
+  createdAt: string; // mapped from created_at
+  notes?: string;
+};
+
 export type Profile = {
   id: string;
   username: string;
@@ -102,6 +124,9 @@ export type IngredientForm = {
 
 export type CollectionForm = Omit<Collection, "id" | "createdAt" | "updatedAt" | "userId" | "recipes">;
 export type TagForm = Omit<Tag, "id">;
+export type UserRecipeFavoriteForm = Omit<UserRecipeFavorite, "id" | "userId" | "createdAt">;
+export type UserCollectionFavoriteForm = Omit<UserCollectionFavorite, "id" | "userId" | "createdAt">;
+export type UserWantToMakeForm = Omit<UserWantToMake, "id" | "userId" | "createdAt">;
 
 // Card types for displaying recipe summaries
 export type RecipeCard = Omit<Recipe, "instructions" | "ingredients">;

@@ -113,6 +113,31 @@ export const collectionRecipeSchema = z.object({
   collection_id: z.number().int(),
 });
 
+// User recipe favorite schema
+export const userRecipeFavoriteSchema = z.object({
+  id: z.number().int().optional(),
+  user_id: z.string().uuid(),
+  recipe_id: z.number().int(),
+  created_at: z.string().optional(),
+});
+
+// User collection favorite schema
+export const userCollectionFavoriteSchema = z.object({
+  id: z.number().int().optional(),
+  user_id: z.string().uuid(),
+  collection_id: z.number().int(),
+  created_at: z.string().optional(),
+});
+
+// User want to make schema
+export const userWantToMakeSchema = z.object({
+  id: z.number().int().optional(),
+  user_id: z.string().uuid(),
+  recipe_id: z.number().int(),
+  created_at: z.string().optional(),
+  notes: z.string().optional(),
+});
+
 // Profile schema based on database schema
 export const profileSchema = z.object({
   id: z.string().uuid(),
@@ -160,6 +185,24 @@ export const profileFormSchema = profileSchema.omit({
   updated_at: true,
 });
 
+export const userRecipeFavoriteFormSchema = userRecipeFavoriteSchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+});
+
+export const userCollectionFavoriteFormSchema = userCollectionFavoriteSchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+});
+
+export const userWantToMakeFormSchema = userWantToMakeSchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+});
+
 // Type exports for use in components
 export type RecipeFormData = z.infer<typeof recipeFormSchema>;
 export type RecipeIngredientFormData = z.infer<typeof recipeIngredientSchema>;
@@ -168,6 +211,9 @@ export type CollectionFormData = z.infer<typeof collectionFormSchema>;
 export type ProfileFormData = z.infer<typeof profileFormSchema>;
 export type UnitData = z.infer<typeof unitSchema>;
 export type UserRole = z.infer<typeof userRoleSchema>;
+export type UserRecipeFavoriteFormData = z.infer<typeof userRecipeFavoriteFormSchema>;
+export type UserCollectionFavoriteFormData = z.infer<typeof userCollectionFavoriteFormSchema>;
+export type UserWantToMakeFormData = z.infer<typeof userWantToMakeFormSchema>;
 
 // Database type exports
 export type RecipeSchema = z.infer<typeof recipeSchema>;
@@ -177,6 +223,9 @@ export type RecipeTagSchema = z.infer<typeof recipeTagSchema>;
 export type CollectionSchema = z.infer<typeof collectionSchema>;
 export type CollectionRecipeSchema = z.infer<typeof collectionRecipeSchema>;
 export type ProfileSchema = z.infer<typeof profileSchema>;
+export type UserRecipeFavoriteSchema = z.infer<typeof userRecipeFavoriteSchema>;
+export type UserCollectionFavoriteSchema = z.infer<typeof userCollectionFavoriteSchema>;
+export type UserWantToMakeSchema = z.infer<typeof userWantToMakeSchema>;
 
 // Legacy exports for backward compatibility
 export const ingredientSchema = recipeIngredientSchema;

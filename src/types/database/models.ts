@@ -59,6 +59,28 @@ export type CollectionRecipeSchema = {
   collection_id: number;
 };
 
+export type UserRecipeFavoriteSchema = {
+  id: number;
+  user_id: string;
+  recipe_id: number;
+  created_at: string;
+};
+
+export type UserCollectionFavoriteSchema = {
+  id: number;
+  user_id: string;
+  collection_id: number;
+  created_at: string;
+};
+
+export type UserWantToMakeSchema = {
+  id: number;
+  user_id: string;
+  recipe_id: number;
+  created_at: string;
+  notes?: string;
+};
+
 export type ProfileSchema = {
   id: string;
   updated_at?: string;

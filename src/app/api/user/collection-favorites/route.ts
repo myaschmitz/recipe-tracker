@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse, requireAuth } from "@/lib/api";
-import { collectionSchema } from "@/lib/schemas";
+import { userCollectionFavoriteFormSchema } from "@/lib/schemas";
 import { ZodError } from "zod";
 
 export async function GET() {
@@ -10,67 +10,81 @@ export async function GET() {
     const profile = await requireAuth();
     const supabase = await createClient();
 
-    // Fetch collections for the authenticated user and public collections
+    // Fetch user's collection favorites
     const { data, error } = await supabase
-      .from("collection")
-      .select("*")
-      .or(`user_id.eq.${profile.id},is_public.eq.true`)
+      .from("user_collection_favorite")
+      .select(`
+        *,
+        collection:collection_id (
+          id,
+          name,
+          description,
+          created_at,
+          updated_at
+        )
+      `)
+      .eq("user_id", profile.id)
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error('Supabase error fetching collections:', error);
-      // Return empty array on database error to prevent frontend crashes
+      console.error('Supabase error fetching collection favorites:', error);
       return createSuccessResponse([]);
     }
     
-    // Ensure we always return an array
     return createSuccessResponse(data || []);
   } catch (error: any) {
-    console.error('Collections API error:', error);
+    console.error('Collection favorites API error:', error);
     
     if (error.message.includes('Authentication required')) {
       return NextResponse.json({ error: error.message }, { status: 401 });
     }
     
-    // For any other error, return empty array to prevent frontend crashes
-    // The frontend can handle empty collections gracefully
     return createSuccessResponse([]);
   }
 }
 
 export async function POST(request: Request) {
   try {
-    console.log('POST /api/collections - Starting...');
+    console.log('POST /api/user/collection-favorites - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id, role: profile.role });
+    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
-    console.log('Supabase client created');
-
     const body = await request.json();
     console.log('Request body:', body);
 
     // Validate with Zod schema
-    const validatedData = collectionSchema.parse(body);
+    const validatedData = userCollectionFavoriteFormSchema.parse(body);
     console.log('Data validated:', validatedData);
 
-    console.log('Creating collection with data:', {
-      name: validatedData.name,
-      description: validatedData.description,
+    // Check if already favorited
+    const { data: existing } = await supabase
+      .from("user_collection_favorite")
+      .select("id")
+      .eq("user_id", profile.id)
+      .eq("collection_id", validatedData.collection_id)
+      .single();
+
+    if (existing) {
+      return NextResponse.json(
+        { error: "Collection is already favorited" },
+        { status: 409 }
+      );
+    }
+
+    console.log('Creating collection favorite with data:', {
       user_id: profile.id,
-      is_public: validatedData.is_public || false
+      collection_id: validatedData.collection_id
     });
 
     const { data, error } = await supabase
-      .from("collection")
+      .from("user_collection_favorite")
       .insert([
         { 
-          name: validatedData.name, 
-          description: validatedData.description,
           user_id: profile.id,
-          is_public: validatedData.is_public || false
+          collection_id: validatedData.collection_id
         },
       ])
       .select("*");
@@ -80,12 +94,10 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    console.log('Collection created successfully:', data);
+    console.log('Collection favorite created successfully:', data);
     return createSuccessResponse(data, 201);
   } catch (error: any) {
-    console.error('POST /api/collections - Error:', error);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
+    console.error('POST /api/user/collection-favorites - Error:', error);
     if (error.message.includes('Authentication required')) {
       return NextResponse.json({ error: error.message }, { status: 401 });
     }
@@ -95,6 +107,8 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    return handleApiError(error, "creating collection");
+    return handleApiError(error, "creating collection favorite");
   }
 }
+
+
