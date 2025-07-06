@@ -52,14 +52,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+    let loadingTimeout: NodeJS.Timeout;
     
     // Set a timeout to prevent infinite loading (reduced to 5 seconds for faster feedback)
-    const loadingTimeout = setTimeout(() => {
-      if (mounted) {
-        console.warn('Auth loading timeout reached');
-        setLoading(false);
+    const setLoadingTimeout = () => {
+      loadingTimeout = setTimeout(() => {
+        if (mounted) {
+          console.warn('Auth loading timeout reached');
+          setLoading(false);
+        }
+      }, 5000); // Reduced from 15 to 5 seconds
+    };
+
+    // Clear timeout helper
+    const clearLoadingTimeout = () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
       }
-    }, 5000); // Reduced from 15 to 5 seconds
+    };
+
+    setLoadingTimeout();
 
     // Get initial session with timeout
     const initAuth = async () => {
@@ -70,6 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error) {
           console.error('initAuth: Error getting session:', error);
           if (mounted) {
+            clearLoadingTimeout();
             setLoading(false);
           }
           return;
@@ -84,15 +97,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (session?.user) {
             console.log('initAuth: User found, fetching profile...');
             await fetchProfile(session.user.id);
+            clearLoadingTimeout(); // Clear timeout when profile fetch completes
           } else {
             console.log('initAuth: No user session, setting loading to false immediately');
             setProfile(null);
+            clearLoadingTimeout();
             setLoading(false);
           }
         }
       } catch (error) {
         console.error('initAuth: Error in initAuth:', error);
         if (mounted) {
+          clearLoadingTimeout();
           setLoading(false);
         }
       }
@@ -111,8 +127,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           if (session?.user) {
             await fetchProfile(session.user.id);
+            clearLoadingTimeout(); // Clear timeout when profile fetch completes
           } else {
             setProfile(null);
+            clearLoadingTimeout();
             setLoading(false);
           }
         }
@@ -121,7 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       mounted = false;
-      clearTimeout(loadingTimeout);
+      clearLoadingTimeout();
       subscription.unsubscribe();
     };
   }, []);
