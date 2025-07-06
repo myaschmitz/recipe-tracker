@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { API_ENDPOINTS } from "@/config/constants";
 import { Tag } from "@/types/view/models";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +42,7 @@ const TagMultiSelect = ({
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch("/api/tags");
+        const response = await fetch(API_ENDPOINTS.TAGS);
         const data = await response.json();
 
         if (response.ok) {
@@ -100,7 +101,7 @@ const TagMultiSelect = ({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/tags", {
+      const response = await fetch(API_ENDPOINTS.TAGS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

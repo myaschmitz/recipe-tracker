@@ -8,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { API_ENDPOINTS, LIMITS } from "@/config/constants";
 import { RecipeSchema, CollectionRecipeSchema } from "@/types/database/models";
-import { Recipe, RecipeBasicCard, Collection } from "@/types/view/models";
+import { Recipe, RecipeCard as RecipeCardType, Collection } from "@/types/view/models";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -19,7 +20,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const response = await fetch("/api/recipes?limit=3");
+        const response = await fetch(`${API_ENDPOINTS.RECIPES}?limit=${LIMITS.DASHBOARD_RECENT_RECIPES}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -35,9 +36,9 @@ export default function DashboardPage() {
         }
 
         // Fetch collection data for these recipes
-        const collectionRecipeResponse = await fetch("/api/collection-recipes");
+        const collectionRecipeResponse = await fetch(API_ENDPOINTS.COLLECTION_RECIPES);
         const collectionRecipeData = await collectionRecipeResponse.json();
-        const collectionResponse = await fetch("/api/collections");
+        const collectionResponse = await fetch(API_ENDPOINTS.COLLECTIONS);
         const collectionData = await collectionResponse.json();
 
         const formattedCollections = Array.isArray(collectionData) ? collectionData.map((d: Collection) => {
@@ -59,7 +60,7 @@ export default function DashboardPage() {
 
         // Fetch tags for each recipe
         const recipesWithTagsAndCollections = await Promise.all(
-          data.map(async (recipe: RecipeBasicCard) => {
+          data.map(async (recipe: RecipeCardType) => {
             // Fetch tags for this recipe
             const tagsResponse = await fetch(`/api/tags/${recipe.id}`);
             const tagsData = tagsResponse.ok ? await tagsResponse.json() : [];

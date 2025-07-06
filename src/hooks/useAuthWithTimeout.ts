@@ -1,7 +1,8 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
+import { TIMEOUTS } from '@/config/constants';
 
-export function useAuthWithTimeout(timeoutMs = 10000) {
+export function useAuthWithTimeout(timeoutMs = TIMEOUTS.AUTH_TIMEOUT) {
   const auth = useAuth();
   const [timedOut, setTimedOut] = useState(false);
 

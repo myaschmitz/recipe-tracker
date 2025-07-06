@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from '@/lib/supabase/server';
+import { LIMITS, TIMEOUTS } from '@/config/constants';
 import type { UserRole } from '@/lib/schemas';
 
 export const handleApiError = (error: any, context: string) => {
@@ -56,7 +57,7 @@ export const getUserProfile = async () => {
       .single();
     
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Profile fetch timeout in API')), 5000)
+      setTimeout(() => reject(new Error('Profile fetch timeout in API')), TIMEOUTS.PROFILE_FETCH_TIMEOUT)
     );
     
     const { data: profile, error: profileError } = await Promise.race([
@@ -130,5 +131,5 @@ export const requireRole = async (requiredRole: UserRole) => {
 };
 
 // Constants for consistent API behavior
-export const DEFAULT_RECIPE_LIMIT = 1000;
-export const DEFAULT_API_TIMEOUT = 30000;
+export const DEFAULT_RECIPE_LIMIT = LIMITS.DEFAULT_RECIPE_LIMIT;
+export const DEFAULT_API_TIMEOUT = TIMEOUTS.DEFAULT_API_TIMEOUT;

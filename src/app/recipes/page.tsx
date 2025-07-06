@@ -1,5 +1,6 @@
 "use client";
 
+import { API_ENDPOINTS } from "@/config/constants";
 import { Recipe, RecipeTag, Tag, Collection } from "@/types/view/models";
 import { RecipeSchema, RecipeTagSchema, CollectionRecipeSchema } from "@/types/database/models";
 import React, { useState, useEffect } from "react";
@@ -14,15 +15,15 @@ const Recipes = () => {
 
     const fetchData = async () => {
       try {
-        const recipeResponse = await fetch("/api/recipes");
+        const recipeResponse = await fetch(API_ENDPOINTS.RECIPES);
         const recipeData = await recipeResponse.json();
-        const recipeTagResponse = await fetch("/api/recipe-tags");
+        const recipeTagResponse = await fetch(API_ENDPOINTS.RECIPE_TAGS);
         const recipeTagData = await recipeTagResponse.json();
-        const tagResponse = await fetch("/api/tags");
+        const tagResponse = await fetch(API_ENDPOINTS.TAGS);
         const tagData = await tagResponse.json();
-        const collectionRecipeResponse = await fetch("/api/collection-recipes");
+        const collectionRecipeResponse = await fetch(API_ENDPOINTS.COLLECTION_RECIPES);
         const collectionRecipeData = await collectionRecipeResponse.json();
-        const collectionResponse = await fetch("/api/collections");
+        const collectionResponse = await fetch(API_ENDPOINTS.COLLECTIONS);
         const collectionData = await collectionResponse.json();
 
         // Ensure all data is arrays before calling .map()

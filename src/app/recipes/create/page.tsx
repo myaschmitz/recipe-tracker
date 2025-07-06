@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { API_ENDPOINTS } from "@/config/constants";
 import { RecipeIngredientForm, Tag, Unit, Collection } from "@/types/view/models";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,7 +48,7 @@ const CreateRecipe = () => {
 
   useEffect(() => {
     const fetchUnits = async () => {
-      const response = await fetch("/api/units");
+      const response = await fetch(API_ENDPOINTS.UNITS);
       const data = await response.json();
 
       if (response.ok) {
@@ -157,7 +158,7 @@ const CreateRecipe = () => {
       return;
     }
 
-    const response = await fetch("/api/recipes", {
+    const response = await fetch(API_ENDPOINTS.RECIPES, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

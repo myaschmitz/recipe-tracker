@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { API_ENDPOINTS } from "@/config/constants";
 import { Collection } from "@/types/view/models";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,7 +52,7 @@ const CollectionMultiSelect = ({
       }
 
       try {
-        const response = await fetch("/api/collections");
+        const response = await fetch(API_ENDPOINTS.COLLECTIONS);
         
         if (!response.ok) {
           const errorData = await response.json();
@@ -118,7 +119,7 @@ const CollectionMultiSelect = ({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/collections", {
+      const response = await fetch(API_ENDPOINTS.COLLECTIONS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

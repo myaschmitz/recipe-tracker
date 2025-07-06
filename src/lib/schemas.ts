@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { VALIDATION } from "@/config/constants";
 
 // User role enum based on database schema
 export const userRoleSchema = z.enum(["user", "admin", "moderator"]);
@@ -6,7 +7,7 @@ export const userRoleSchema = z.enum(["user", "admin", "moderator"]);
 // Unit schema based on database schema
 export const unitSchema = z.object({
   id: z.number().int(),
-  name: z.string().min(1, "Unit name is required"),
+  name: z.string().min(VALIDATION.MIN_UNIT_NAME_LENGTH, "Unit name is required"),
   symbol: z.string().optional(),
 });
 
@@ -14,7 +15,7 @@ export const unitSchema = z.object({
 export const recipeIngredientSchema = z.object({
   id: z.number().int().optional(),
   recipe_id: z.number().int().optional(),
-  name: z.string().min(1, "Ingredient name is required"),
+  name: z.string().min(VALIDATION.MIN_INGREDIENT_NAME_LENGTH, "Ingredient name is required"),
   amount: z
     .number()
     .positive("Amount must be positive")
@@ -35,13 +36,13 @@ export const recipeIngredientSchema = z.object({
 // Recipe schema based on database schema
 export const recipeSchema = z.object({
   id: z.number().int().optional(),
-  name: z.string().min(1, "Recipe name is required"),
+  name: z.string().min(VALIDATION.MIN_RECIPE_NAME_LENGTH, "Recipe name is required"),
   description: z.string().optional(),
-  instructions: z.string().min(1, "Instructions are required"),
+  instructions: z.string().min(VALIDATION.MIN_INSTRUCTIONS_LENGTH, "Instructions are required"),
   prep_time: z
     .number()
     .int()
-    .min(0)
+    .min(VALIDATION.MIN_TIME)
     .optional()
     .or(
       z
@@ -52,7 +53,7 @@ export const recipeSchema = z.object({
   cook_time: z
     .number()
     .int()
-    .min(0)
+    .min(VALIDATION.MIN_TIME)
     .optional()
     .or(
       z
@@ -63,7 +64,7 @@ export const recipeSchema = z.object({
   total_time: z
     .number()
     .int()
-    .min(0)
+    .min(VALIDATION.MIN_TIME)
     .optional()
     .or(
       z
@@ -77,7 +78,7 @@ export const recipeSchema = z.object({
   updated_at: z.string().optional(),
   ingredients: z
     .array(recipeIngredientSchema)
-    .min(1, "At least one ingredient is required"),
+    .min(VALIDATION.MIN_INGREDIENTS_REQUIRED, "At least one ingredient is required"),
   tags: z.array(z.number().int()).optional(),
   collections: z.array(z.number().int()).optional(),
 });
@@ -85,7 +86,7 @@ export const recipeSchema = z.object({
 // Tag schema based on database schema
 export const tagSchema = z.object({
   id: z.number().int().optional(),
-  name: z.string().min(1, "Tag name is required"),
+  name: z.string().min(VALIDATION.MIN_TAG_NAME_LENGTH, "Tag name is required"),
 });
 
 // Recipe tag relationship schema
@@ -98,7 +99,7 @@ export const recipeTagSchema = z.object({
 // Collection schema based on database schema
 export const collectionSchema = z.object({
   id: z.number().int().optional(),
-  name: z.string().min(1, "Collection name is required"),
+  name: z.string().min(VALIDATION.MIN_COLLECTION_NAME_LENGTH, "Collection name is required"),
   description: z.string().optional(),
   user_id: z.string().uuid().optional(),
   is_public: z.boolean().default(false),
@@ -141,7 +142,7 @@ export const userWantToMakeSchema = z.object({
 // Profile schema based on database schema
 export const profileSchema = z.object({
   id: z.string().uuid(),
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().min(VALIDATION.MIN_USERNAME_LENGTH, "Username must be at least 3 characters"),
   avatar_url: z.string().url().optional(),
   first_name: z.string().optional(),
   last_name: z.string().optional(),

@@ -2,6 +2,7 @@
 
 import CollectionCard from "@/components/CollectionCard";
 import { Button } from "@/components/ui/button";
+import { API_ENDPOINTS } from "@/config/constants";
 import { CollectionSchema } from "@/types/database/models";
 import { Collection } from "@/types/view/models";
 import { useState, useEffect } from "react";
@@ -22,7 +23,7 @@ const CollectionsPage = () => {
       }
 
       try {
-        const response = await fetch("/api/collections");
+        const response = await fetch(API_ENDPOINTS.COLLECTIONS);
 
         if (!response.ok) {
           const errorData = await response.json();
