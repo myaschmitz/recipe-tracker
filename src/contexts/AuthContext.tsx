@@ -46,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isProfileFetching, setIsProfileFetching] = useState(false);
 
   // Create supabase client
   const supabase = createClient();
@@ -126,8 +127,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(session?.user ?? null);
           
           if (session?.user) {
-            await fetchProfile(session.user.id);
-            clearLoadingTimeout(); // Clear timeout when profile fetch completes
+            // Only fetch profile for certain events to prevent duplicates
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+              await fetchProfile(session.user.id);
+              clearLoadingTimeout(); // Clear timeout when profile fetch completes
+            } else if (event === 'INITIAL_SESSION' && !profile) {
+              // Only fetch on initial session if we don't already have a profile
+              await fetchProfile(session.user.id);
+              clearLoadingTimeout();
+            }
           } else {
             setProfile(null);
             clearLoadingTimeout();
@@ -145,98 +153,90 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const fetchProfile = async (userId: string) => {
+    // Prevent multiple simultaneous profile fetches
+    if (isProfileFetching) {
+      console.log('Profile fetch already in progress, skipping...');
+      return;
+    }
+
     try {
+      setIsProfileFetching(true);
       console.log('Fetching profile for user:', userId);
       
-      // Add a race condition with timeout for the profile fetch
-      const profilePromise = supabase
-        .from('profile')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      // Increase timeout to 10 seconds and use the SSR API route
+      const profilePromise = fetch(`/api/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(res => res.json());
       
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
       );
       
-      const { data, error } = await Promise.race([profilePromise, timeoutPromise]) as any;
+      const result = await Promise.race([profilePromise, timeoutPromise]) as any;
 
-      if (error) {
-        console.error('Error fetching profile:', error);
+      if (result.error) {
+        console.error('Error fetching profile:', result.error);
         // If profile doesn't exist, create one
-        if (error.code === 'PGRST116') {
+        if (result.error.includes('No rows found') || result.error.includes('PGRST116')) {
           console.log('Profile not found, creating initial profile');
           await createInitialProfile(userId);
-        } else if (error.message === 'Profile fetch timeout') {
-          console.error('Profile fetch timed out - setting basic profile');
-          setProfile({
-            id: userId,
-            username: `user_${userId.slice(-8)}`,
-            name: '',
-            first_name: '',
-            last_name: '',
-            avatar_url: '',
-            location: '',
-            email: '',
-            phone: '',
-            bio: '',
-            date_of_birth: '',
-            timezone: '',
-            language: 'en',
-            theme_preference: 'system',
-            dietary_restrictions: [],
-            is_private: false,
-            email_notifications: true,
-            role: 'user',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-          setLoading(false);
         } else {
-          console.error('Profile fetch error:', error.message);
-          // Set loading to false even on error so UI doesn't hang
-          setLoading(false);
+          console.error('Profile fetch error:', result.error);
+          await createBasicProfile(userId);
         }
-      } else {
-        console.log('Profile fetched successfully:', data);
-        setProfile(data);
+      } else if (result && typeof result === 'object' && result.id) {
+        // Handle direct profile data response
+        console.log('Profile fetched successfully:', result);
+        setProfile(result);
         setLoading(false);
+      } else {
+        // Handle case where no profile data is returned
+        console.log('No profile data returned, creating basic profile');
+        await createBasicProfile(userId);
       }
     } catch (error: any) {
       console.error('Error in fetchProfile:', error);
       
-      // Handle timeout or other errors gracefully
       if (error.message === 'Profile fetch timeout') {
         console.error('Profile fetch timed out - setting basic fallback profile');
       }
       
       // Set a basic fallback profile to prevent app from breaking
-      setProfile({
-        id: userId,
-        username: `user_${userId.slice(-8)}`,
-        name: '',
-        first_name: '',
-        last_name: '',
-        avatar_url: '',
-        location: '',
-        email: '',
-        phone: '',
-        bio: '',
-        date_of_birth: '',
-        timezone: '',
-        language: 'en',
-        theme_preference: 'system',
-        dietary_restrictions: [],
-        is_private: false,
-        email_notifications: true,
-        role: 'user',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-      
-      // Always set loading to false to prevent infinite loading
-      setLoading(false);
+      await createBasicProfile(userId);
+    } finally {
+      setIsProfileFetching(false);
     }
+  };
+
+  const createBasicProfile = async (userId: string) => {
+    const basicProfile = {
+      id: userId,
+      username: `user_${userId.slice(-8)}`,
+      name: '',
+      first_name: '',
+      last_name: '',
+      avatar_url: '',
+      location: '',
+      email: '',
+      phone: '',
+      bio: '',
+      date_of_birth: '',
+      timezone: '',
+      language: 'en',
+      theme_preference: 'system',
+      dietary_restrictions: [],
+      is_private: false,
+      email_notifications: true,
+      role: 'user' as const,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    setProfile(basicProfile);
+    setLoading(false);
   };
 
   const createInitialProfile = async (userId: string, firstName?: string, lastName?: string, username?: string) => {
