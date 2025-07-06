@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse, requireAuth, checkUserRole } from "@/lib/api";
 
 export async function GET(
@@ -7,6 +7,7 @@ export async function GET(
   context: { params: { id: string } }
 ) {
   try {
+    const supabase = await createClient();
     const { id } = await context.params;
 
     if (!id) {
@@ -67,6 +68,7 @@ export async function PUT(
   context: { params: { id: string } }
 ) {
   try {
+    const supabase = await createClient();
     const { id } = await context.params;
 
     if (!id) {
@@ -201,6 +203,7 @@ export async function DELETE(
   context: { params: { id: string } }
 ) {
   try {
+    const supabase = await createClient();
     const { id } = await context.params;
 
     if (!id) {

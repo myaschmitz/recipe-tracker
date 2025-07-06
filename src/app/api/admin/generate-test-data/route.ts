@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { requireRole, handleApiError } from "@/lib/api";
 import testData from "../../../../../test-data.json";
 
 export async function POST() {
   try {
+    const supabase = await createClient();
     // Require admin role
     await requireRole('admin');
     

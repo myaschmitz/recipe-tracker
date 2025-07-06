@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse } from "@/lib/api";
 
 export async function GET(req: NextRequest) {
+  const supabase = await createClient();
   const { searchParams } = new URL(req.url);
   const idsParam = searchParams.get('ids');
   

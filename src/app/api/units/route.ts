@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse, validateRequired } from "@/lib/api";
 import { unitSchema } from "@/lib/schemas";
 import { NextResponse } from "next/server";
@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 
 export async function GET() {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("unit")
       .select("*")
@@ -23,6 +24,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const body = await request.json();
 
     // Basic validation for required fields

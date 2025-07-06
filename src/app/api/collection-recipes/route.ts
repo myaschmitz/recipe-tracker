@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import {
   handleApiError,
   createSuccessResponse,
@@ -7,6 +7,7 @@ import {
 
 export async function GET() {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("collection_recipe")
       .select("*");
@@ -23,6 +24,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const { collection_id, recipe_id } = await request.json();
 
     validateRequired({ collection_id, recipe_id });

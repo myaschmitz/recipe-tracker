@@ -1,16 +1,13 @@
 import { NextResponse } from 'next/server';
 import { requireRole, handleApiError } from '@/lib/api';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
     // Require admin role
     await requireRole('admin');
 
-    const { createRouteHandlerClient } = require('@supabase/auth-helpers-nextjs');
-    const { cookies } = require('next/headers');
-    
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await createClient();
 
     // Fetch all users with their profiles
     const { data: profiles, error } = await supabase

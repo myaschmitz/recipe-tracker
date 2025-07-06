@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireRole, handleApiError } from '@/lib/api';
 import { userRoleSchema } from '@/lib/schemas';
+import { createClient } from '@/lib/supabase/server';
 
 export async function PUT(
   request: Request,
@@ -10,11 +11,7 @@ export async function PUT(
     // Require admin role
     await requireRole('admin');
 
-    const { createRouteHandlerClient } = require('@supabase/auth-helpers-nextjs');
-    const { cookies } = require('next/headers');
-    
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = await createClient();
 
     const body = await request.json();
     const { role } = body;

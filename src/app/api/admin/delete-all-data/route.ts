@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/api";
 
 export async function DELETE() {
   try {
+    const supabase = await createClient();
     // Require admin role
     await requireRole('admin');
     

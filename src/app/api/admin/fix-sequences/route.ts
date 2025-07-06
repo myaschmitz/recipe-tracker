@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
   try {
+    const supabase = await createClient();
     console.log("Attempting to fix sequences...");
 
     // Try to create a collection with a high ID to advance the sequence

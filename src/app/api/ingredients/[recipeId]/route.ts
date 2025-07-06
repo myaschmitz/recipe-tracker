@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiError, createSuccessResponse } from "@/lib/api";
 
@@ -7,6 +7,7 @@ export async function GET(
   context: { params: { recipeId: string } }
 ) {
   try {
+    const supabase = await createClient();
     const { recipeId } = await context.params;
 
     if (!recipeId) {

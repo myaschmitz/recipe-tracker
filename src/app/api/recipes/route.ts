@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { RecipeSchema } from "@/types/database/models";
 import { PostgrestError } from "@supabase/supabase-js";
 import {
@@ -12,6 +12,8 @@ import { recipeSchema } from "@/lib/schemas";
 
 export async function GET(request: Request) {
   try {
+    const supabase = await createClient();
+    
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get("limit");
     const search = searchParams.get("search");
@@ -47,7 +49,7 @@ export async function GET(request: Request) {
       }
 
       if (recipeIds && recipeIds.length > 0) {
-        const recipeIdList = recipeIds.map(r => r.recipe_id);
+        const recipeIdList = recipeIds.map((r: any) => r.recipe_id);
         query = query.in("id", recipeIdList);
       } else {
         // No recipes found with those tags
@@ -78,6 +80,8 @@ export async function POST(request: Request) {
   try {
     // Require authentication
     const profile = await requireAuth();
+    
+    const supabase = await createClient();
     
     const body = await request.json();
 

@@ -1,8 +1,9 @@
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse } from "@/lib/api";
 
 export async function GET() {
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("tag")
       .select("*")
@@ -20,6 +21,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
     const body = await request.json();
     const { name } = body;
 
