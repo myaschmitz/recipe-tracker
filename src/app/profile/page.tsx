@@ -5,32 +5,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Calendar, MapPin, Phone, LogOut } from "lucide-react";
+import { User, Mail, Calendar, MapPin, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
 import ProfileErrorBoundary from "@/components/ProfileErrorBoundary";
 
 const ProfilePage = () => {
-    const { user, profile, signOut, loading } = useAuth();
+    const { user, profile, loading } = useAuth();
     const router = useRouter();
-    const { toast } = useToast();
-
-    const handleSignOut = async () => {
-        try {
-            await signOut();
-            toast({
-                title: "Signed out successfully",
-                description: "You have been signed out of your account.",
-            });
-            router.push("/");
-        } catch (error) {
-            toast({
-                title: "Error signing out",
-                description: "There was a problem signing you out.",
-                variant: "destructive",
-            });
-        }
-    };
 
     // Show loading state
     if (loading) {
@@ -150,67 +131,10 @@ const ProfilePage = () => {
                 
                 <Separator />
                 
-                {/* Account Details Section */}
-                <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Account Information</h3>
-                    
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">User ID</span>
-                            <span className="font-mono text-sm">{user.id}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Email Status</span>
-                            <Badge variant={user.email_confirmed_at ? "default" : "destructive"}>
-                                {user.email_confirmed_at ? "Verified" : "Unverified"}
-                            </Badge>
-                        </div>
-                        
-                        {profile?.location && (
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Location</span>
-                                <span>{profile.location}</span>
-                            </div>
-                        )}
-                        
-                        {profile?.language && (
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Language</span>
-                                <span className="capitalize">{profile.language}</span>
-                            </div>
-                        )}
-                        
-                        {profile?.theme_preference && (
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Theme</span>
-                                <span className="capitalize">{profile.theme_preference}</span>
-                            </div>
-                        )}
-                        
-                        <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Profile Privacy</span>
-                            <Badge variant={profile?.is_private ? "destructive" : "default"}>
-                                {profile?.is_private ? "Private" : "Public"}
-                            </Badge>
-                        </div>
-                    </div>
-                </div>
-                
-                <Separator />
-                
                 {/* Actions Section */}
                 <div className="flex gap-3">
                     <Button variant="outline" onClick={() => router.push('/settings')}>
                         Edit Profile
-                    </Button>
-                    <Button 
-                        variant="outline" 
-                        onClick={handleSignOut}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                        <LogOut className="h-4 w-4" />
-                        Sign Out
                     </Button>
                 </div>
             </div>

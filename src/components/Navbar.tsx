@@ -11,7 +11,8 @@ import {
   Moon,
   Sun,
   SquareLibrary,
-  UserCog
+  UserCog,
+  LogOut
 } from "lucide-react";
 
 import {
@@ -37,15 +38,31 @@ import { Button } from "./ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export function Navbar() {
   const { setTheme } = useTheme();
-  const { user, profile } = useAuth();
+  const { user, profile, signOut } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("");
   const path = usePathname();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push("/");
+    } catch (error) {
+      toast({
+        title: "Error signing out",
+        description: "There was a problem signing you out.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const items = useMemo(
     () => [
@@ -110,9 +127,19 @@ export function Navbar() {
         icon: Settings,
       });
       
+      // Add sign out button for authenticated users
+      if (user) {
+        items.push({
+          title: "Sign Out",
+          href: "#",
+          icon: LogOut,
+          onClick: handleSignOut,
+        });
+      }
+      
       return items;
     },
-    [user, profile]
+    [user, profile, handleSignOut]
   );
 
   useEffect(() => {
@@ -218,19 +245,34 @@ export function Navbar() {
           </SidebarMenuItem>
           {footerItems.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <Link
+              {item.onClick ? (
+                <SidebarMenuButton
                   className={`flex hover:font-bold items-center gap-2 ${
                     activeTab === item.title ? "font-bold" : ""
                   }`}
-                  onClick={() => setActiveTab(item.title)}
-                  href={item.href}
-                  passHref
+                  onClick={() => {
+                    setActiveTab(item.title);
+                    item.onClick?.();
+                  }}
                 >
                   <item.icon />
                   <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+                </SidebarMenuButton>
+              ) : (
+                <SidebarMenuButton asChild>
+                  <Link
+                    className={`flex hover:font-bold items-center gap-2 ${
+                      activeTab === item.title ? "font-bold" : ""
+                    }`}
+                    onClick={() => setActiveTab(item.title)}
+                    href={item.href}
+                    passHref
+                  >
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

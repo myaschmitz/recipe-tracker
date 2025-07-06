@@ -80,10 +80,6 @@ export function AuthForm() {
         console.log('Attempting to sign in with:', formData.email);
         const result = await signIn(formData.email, formData.password);
         console.log('Sign in result:', result);
-        toast({
-          title: "Welcome back!",
-          description: "You've successfully signed in.",
-        });
         // Redirect to dashboard after successful sign in
         router.push('/dashboard');
       } else {
