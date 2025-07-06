@@ -43,20 +43,50 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 6000 }: AuthTimeoutWr
     console.warn('Skipping auth loading - proceeding without authentication');
   };
 
+  // Use exact theme colors to match the app perfectly
+  // Use direct HSL values to avoid white flash before CSS loads
+  // Single style object that uses CSS media queries for responsive theming
+  const loadingStyle = {
+    colorScheme: 'light dark' as const,
+    backgroundColor: 'hsl(199, 20%, 98%)', // Light: --neutral-50 (background)
+    color: 'hsl(199, 18%, 9%)',           // Light: --neutral-900 (foreground)
+  };
+
+  // CSS media query styles for dark mode
+  const darkModeStyles = `
+    @media (prefers-color-scheme: dark) {
+      .loading-container {
+        background-color: hsl(199, 18%, 9%) !important;
+        color: hsl(199, 18%, 96%) !important;
+      }
+      .loading-text {
+        color: hsl(199, 12%, 64%) !important;
+      }
+      .loading-spinner {
+        color: hsl(199, 41%, 42%) !important;
+      }
+      .loading-icon {
+        color: hsl(199, 12%, 64%) !important;
+      }
+    }
+  `;
+
   if (loading && timedOut) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="flex justify-center">
-            <AlertCircle className="h-16 w-16 text-muted-foreground" />
-          </div>
-          
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Loading Timeout</h1>
-            <p className="text-muted-foreground">
-              The app is taking longer than expected to load. This might be due to a slow network connection.
-            </p>
-          </div>
+      <>
+        <style dangerouslySetInnerHTML={{ __html: darkModeStyles }} />
+        <div className="loading-container min-h-screen flex items-center justify-center p-4" style={loadingStyle}>
+          <div className="max-w-md w-full text-center space-y-6">
+            <div className="flex justify-center">
+              <AlertCircle className="loading-icon h-16 w-16" style={{ color: 'hsl(199, 12%, 32%)' }} />
+            </div>
+            
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold" style={{ color: 'hsl(199, 18%, 9%)' }}>Loading Timeout</h1>
+              <p className="loading-text" style={{ color: 'hsl(199, 12%, 32%)' }}>
+                The app is taking longer than expected to load. This might be due to a slow network connection.
+              </p>
+            </div>
 
           <div className="space-y-3">
             <Button onClick={handleRetry} className="w-full">
@@ -84,12 +114,12 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 6000 }: AuthTimeoutWr
           </div>
 
           {retryCount > 0 && (
-            <p className="text-sm text-muted-foreground">
+            <p className="loading-text text-sm" style={{ color: 'hsl(199, 12%, 32%)' }}>
               Retry attempt: {retryCount}
             </p>
           )}
 
-          <div className="text-xs text-muted-foreground space-y-1">
+          <div className="loading-text text-xs space-y-1" style={{ color: 'hsl(199, 12%, 32%)' }}>
             <p>If this continues:</p>
             <ul className="text-left space-y-1">
               <li>• Check your internet connection</li>
@@ -99,19 +129,27 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 6000 }: AuthTimeoutWr
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center space-y-4">
-          <div className="flex justify-center">
-            <Loader2 className="h-8 w-8 text-primary animate-spin" />
+      <>
+        <style dangerouslySetInnerHTML={{ __html: darkModeStyles }} />
+        <div className="loading-container min-h-screen flex items-center justify-center p-4" style={loadingStyle}>
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              {/* Use the same primary color as the app's theme */}
+              <Loader2 
+                className="loading-spinner h-8 w-8 animate-spin" 
+                style={{ color: 'hsl(199, 41%, 33%)' }} 
+              />
+            </div>
+            <p className="loading-text" style={{ color: 'hsl(199, 12%, 32%)' }}>Loading Recipe Hub...</p>
           </div>
-          <p className="text-muted-foreground">Loading Recipe Hub...</p>
         </div>
-      </div>
+      </>
     );
   }
 
