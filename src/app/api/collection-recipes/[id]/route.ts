@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse } from "@/lib/api";
 
 export async function GET(
@@ -15,6 +15,8 @@ export async function GET(
         { status: 400 }
       );
     }
+
+    const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("collection_recipe")
@@ -43,7 +45,7 @@ export async function GET(
       throw error;
     }
 
-    const recipes = data.map(item => {
+    const recipes = data.map((item: any) => {
       if (!item.recipe) return null;
       
       const recipe = item.recipe as any;

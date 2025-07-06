@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createClient } from '@/lib/supabase/server';
 import type { UserRole } from '@/lib/schemas';
 
 export const handleApiError = (error: any, context: string) => {
@@ -28,25 +27,67 @@ export const validateRequired = (fields: Record<string, any>) => {
 // Role checking utilities
 export const getUserProfile = async () => {
   try {
-    const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient({ 
-      cookies: () => Promise.resolve(cookieStore) 
+    console.log('getUserProfile: Starting authentication check');
+    const supabase = await createClient();
+    console.log('getUserProfile: Supabase client created');
+
+    // Get the authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    console.log('getUserProfile: Auth result -', {
+      userExists: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      authError: authError?.message
     });
     
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    if (authError || !user) {
+      console.log('Authentication failed:', authError?.message || 'No user');
       return null;
     }
 
-    const { data: profile } = await supabase
+    console.log('getUserProfile: Starting profile fetch for user:', user.id);
+    
+    // Get the user profile with a timeout
+    const profilePromise = supabase
       .from('profile')
       .select('*')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
+    
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Profile fetch timeout in API')), 5000)
+    );
+    
+    const { data: profile, error: profileError } = await Promise.race([
+      profilePromise, 
+      timeoutPromise
+    ]) as any;
 
+    if (profileError) {
+      console.log('getUserProfile: Profile fetch error:', {
+        message: profileError.message,
+        code: profileError.code,
+        details: profileError.details
+      });
+      
+      // If profile doesn't exist (PGRST116), that might be normal for new users
+      if (profileError.code === 'PGRST116') {
+        console.log('getUserProfile: Profile not found for user, might need to be created');
+        return null;
+      }
+      
+      return null;
+    }
+
+    console.log('getUserProfile: Profile found successfully:', {
+      hasProfile: !!profile,
+      profileId: profile?.id,
+      profileRole: profile?.role
+    });
     return profile;
   } catch (error) {
-    console.error('Error getting user profile:', error);
+    console.error('getUserProfile: Unexpected error:', error);
     return null;
   }
 };

@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
 export default function CreateCollectionPage() {
     const [collectionName, setCollectionName] = useState("");
     const [collectionDescription, setCollectionDescription] = useState("");
+    const [isPublic, setIsPublic] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
@@ -35,6 +37,7 @@ export default function CreateCollectionPage() {
                 body: JSON.stringify({
                     name: collectionName.trim(),
                     description: collectionDescription.trim() || null,
+                    is_public: isPublic,
                 }),
             });
 
@@ -95,6 +98,18 @@ export default function CreateCollectionPage() {
                                     rows={4}
                                     disabled={isSubmitting}
                                 />
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="isPublic"
+                                    checked={isPublic}
+                                    onCheckedChange={(checked) => setIsPublic(checked as boolean)}
+                                    disabled={isSubmitting}
+                                />
+                                <Label htmlFor="isPublic" className="text-sm font-normal cursor-pointer">
+                                    Make this collection public
+                                </Label>
                             </div>
 
                             <div className="flex gap-4">

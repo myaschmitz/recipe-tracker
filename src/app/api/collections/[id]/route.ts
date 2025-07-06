@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse, requireAuth, checkUserRole } from "@/lib/api";
 
 export async function GET(
@@ -18,6 +18,8 @@ export async function GET(
 
     // Require authentication for viewing collections
     const profile = await requireAuth();
+
+    const supabase = await createClient();
 
     // Fetch collection with access control (user's own or public)
     const { data, error } = await supabase
@@ -59,6 +61,8 @@ export async function DELETE(
 
     // Require authentication
     const profile = await requireAuth();
+
+    const supabase = await createClient();
 
     // Check if user owns the collection or is admin/moderator
     const { data: collection } = await supabase
