@@ -57,8 +57,8 @@
 ## 📋 TODO TASKS
 
 ### User Management & Authentication
-- [ ] User registration and authentication system
-- [ ] User profile pages
+- [x] User registration and authentication system
+- [x] User profile pages
 - [ ] User-specific recipe collections
 - [ ] Account settings and preferences
 - [ ] User dashboard with personalized content
@@ -74,6 +74,10 @@
 - [ ] Recipe sharing capabilities
 - [ ] Recipe import from URLs
 - [ ] Recipe nutritional information
+- [ ] Attach user to whoever creates a recipe or collection
+- [ ] Create recipe option to be private or public, default to private
+- [ ] Ability to check off if you have made a recipe or not
+- [ ] Ability to add your own personal notes to a recipe
 
 ### Collections & Organization
 - [ ] Collection editing functionality
@@ -82,6 +86,8 @@
 - [ ] Collection sharing features
 - [ ] Featured/public collections
 - [ ] Collection templates
+- [ ] Add create collection tab to navbar
+- [ ] Ability to favorite an entire collection
 
 ### Advanced Search & Filtering
 - [ ] Advanced recipe search
@@ -91,6 +97,12 @@
 - [ ] Filter by available ingredients
 - [ ] Search by ingredient combinations
 - [ ] Saved search filters
+- [ ] Filter recipes by name, tag, collection, time to make, created by, created time, last updated time
+- [ ] Order recipes by different criteria (name, created by, created time, last updated time, total time to make)
+- [ ] Search recipes
+- [ ] Filter collections by name, created by, created time, last updated time, total time to make
+- [ ] Order collections by different criteria (name, created by, created time, last updated time, total time to make)
+- [ ] Search collections
 
 ### Media & Visual Features
 - [ ] Recipe image upload and management
@@ -98,6 +110,8 @@
 - [ ] Image gallery for collections
 - [ ] Recipe thumbnails on cards
 - [ ] Image optimization and storage
+- [ ] Ability to add pictures to recipes
+- [ ] Add profile pictures
 
 ### Data Management
 - [ ] Recipe table improvements
@@ -108,6 +122,8 @@
 - [ ] Recipe backup and restore
 - [ ] Recipe duplication feature
 - [ ] Recipe history/versioning
+- [ ] Add data management to settings (export all my recipes, all my collections, etc)
+- [ ] Ability to delete account, and add that to settings
 
 ### User Interface Improvements
 - [ ] Theme customization (dark/light mode)
@@ -126,6 +142,8 @@
   - [ ] Sort by number of ingredients
   - [ ] Clear all filters option
   - [ ] Save filter preferences
+- [ ] Add ability to see how many recipes, collections, etc. you have created. and add that info on the dashboard
+- [ ] Add private configuration info to account settings (ex. email, password, security/privacy configs, etc)
 
 ### Advanced Features
 - [ ] Recipe meal planning integration
@@ -135,6 +153,9 @@
 - [ ] Recipe conversion tools (metric/imperial)
 - [ ] Recipe recommendation engine
 - [ ] Social features (follow users, share recipes)
+- [ ] Ability to follow others and to be followed
+- [ ] Add followers and following counts to profile page
+- [ ] Account privacy (public or private account)
 
 ### Performance & Technical
 - [ ] Database query optimization
@@ -182,8 +203,8 @@
 - [x] Search and filtering
 
 ### Phase 2: User Management
-- [ ] Authentication system
-- [ ] User profiles and preferences
+- [x] Authentication system
+- [x] User profiles and preferences
 - [ ] Personal recipe collections
 
 ### Phase 3: Enhanced Features
@@ -208,7 +229,7 @@
 
 ---
 
-*Last updated: July 3, 2025*
+*Last updated: July 5, 2025*
 
 ## Notes
 - Tasks marked with ✅ are completed
