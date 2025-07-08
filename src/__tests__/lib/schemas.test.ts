@@ -1,13 +1,15 @@
 import { 
   recipeSchema, 
-  recipeIngredientSchema, 
+  recipeFormSchema,
+  recipeIngredientSchema,
+  recipeIngredientFormSchema,
   collectionSchema,
   tagSchema,
   unitSchema 
 } from '../../lib/schemas';
 
 describe('Schema Validation', () => {
-  describe('recipeIngredientSchema', () => {
+  describe('recipeIngredientFormSchema', () => {
     it('should validate a valid ingredient', () => {
       const validIngredient = {
         name: 'Sugar',
@@ -16,7 +18,7 @@ describe('Schema Validation', () => {
         note: 'white sugar'
       }
 
-      const result = recipeIngredientSchema.safeParse(validIngredient)
+      const result = recipeIngredientFormSchema.safeParse(validIngredient)
       expect(result.success).toBe(true)
     })
 
@@ -26,7 +28,7 @@ describe('Schema Validation', () => {
         unitId: 1,
       }
 
-      const result = recipeIngredientSchema.safeParse(invalidIngredient)
+      const result = recipeIngredientFormSchema.safeParse(invalidIngredient)
       expect(result.success).toBe(false)
     })
 
@@ -37,7 +39,7 @@ describe('Schema Validation', () => {
         unitId: 1,
       }
 
-      const result = recipeIngredientSchema.safeParse(invalidIngredient)
+      const result = recipeIngredientFormSchema.safeParse(invalidIngredient)
       expect(result.success).toBe(false)
     })
 
@@ -48,11 +50,46 @@ describe('Schema Validation', () => {
         unitId: 1,
       }
 
-      const result = recipeIngredientSchema.safeParse(ingredient)
+      const result = recipeIngredientFormSchema.safeParse(ingredient)
       expect(result.success).toBe(true)
       if (result.success) {
         expect(result.data.amount).toBe(2)
       }
+    })
+  })
+
+  describe('recipeIngredientSchema', () => {
+    it('should validate a valid ingredient with snake_case fields', () => {
+      const validIngredient = {
+        name: 'Sugar',
+        amount: 2,
+        unit_id: 1,
+        note: 'white sugar'
+      }
+
+      const result = recipeIngredientSchema.safeParse(validIngredient)
+      expect(result.success).toBe(true)
+    })
+
+    it('should reject ingredient without name', () => {
+      const invalidIngredient = {
+        amount: 2,
+        unit_id: 1,
+      }
+
+      const result = recipeIngredientSchema.safeParse(invalidIngredient)
+      expect(result.success).toBe(false)
+    })
+
+    it('should reject ingredient with negative amount', () => {
+      const invalidIngredient = {
+        name: 'Sugar',
+        amount: -1,
+        unit_id: 1,
+      }
+
+      const result = recipeIngredientSchema.safeParse(invalidIngredient)
+      expect(result.success).toBe(false)
     })
   })
 
@@ -76,7 +113,7 @@ describe('Schema Validation', () => {
         totalTime: 75,
       }
 
-      const result = recipeSchema.safeParse(validRecipe)
+      const result = recipeFormSchema.safeParse(validRecipe)
       expect(result.success).toBe(true)
     })
 
@@ -136,7 +173,7 @@ describe('Schema Validation', () => {
         ],
       }
 
-      const result = recipeSchema.safeParse(recipe)
+      const result = recipeFormSchema.safeParse(recipe)
       expect(result.success).toBe(true)
     })
   })

@@ -8,7 +8,7 @@ import {
   DEFAULT_RECIPE_LIMIT,
   requireAuth,
 } from "@/lib/api";
-import { recipeSchema } from "@/lib/schemas";
+import { recipeFormSchema, RecipeFormData } from "@/lib/schemas";
 
 export async function GET(request: Request) {
   try {
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Validate with Zod schema
-    const validatedData = recipeSchema.parse(body);
+    const validatedData = recipeFormSchema.parse(body);
 
     // Insert recipe into db
     const {
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
       const { error: ingredientError } = await supabase
         .from("recipe_ingredient")
         .insert(
-          validatedData.ingredients.map((ingredient) => ({
+          validatedData.ingredients.map((ingredient: any) => ({
             recipe_id: recipe.id,
             name: ingredient.name,
             amount: ingredient.amount,
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
     // Insert recipe-tag relationships
     if (validatedData.tags && validatedData.tags.length > 0) {
       const { error: tagError } = await supabase.from("recipe_tag").insert(
-        validatedData.tags.map((tagId) => ({
+        validatedData.tags.map((tagId: number) => ({
           recipe_id: recipe.id,
           tag_id: tagId,
         }))
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
     // Insert collection-recipe relationships
     if (validatedData.collections && validatedData.collections.length > 0) {
       const { error: collectionError } = await supabase.from("collection_recipe").insert(
-        validatedData.collections.map((collectionId) => ({
+        validatedData.collections.map((collectionId: number) => ({
           recipe_id: recipe.id,
           collection_id: collectionId,
         }))

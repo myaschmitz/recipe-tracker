@@ -11,7 +11,7 @@ export const unitSchema = z.object({
   symbol: z.string().optional(),
 });
 
-// Recipe ingredient schema based on database schema
+// Recipe ingredient schema based on database schema (snake_case)
 export const recipeIngredientSchema = z.object({
   id: z.number().int().optional(),
   recipe_id: z.number().int().optional(),
@@ -32,6 +32,33 @@ export const recipeIngredientSchema = z.object({
   unit_id: z.number().int().positive("Unit is required"),
   note: z.string().optional(),
 });
+
+// Recipe ingredient form schema for frontend (camelCase) with transformation
+export const recipeIngredientFormSchema = z.object({
+  id: z.number().int().optional(),
+  name: z.string().min(VALIDATION.MIN_INGREDIENT_NAME_LENGTH, "Ingredient name is required"),
+  amount: z
+    .number()
+    .positive("Amount must be positive")
+    .or(
+      z.string().transform((val) => {
+        if (!val) throw new Error("Amount is required");
+        const num = parseFloat(val);
+        if (isNaN(num) || num <= 0) {
+          throw new Error("Amount must be a positive number");
+        }
+        return num;
+      })
+    ),
+  unitId: z.number().int().positive("Unit is required"), // camelCase for frontend
+  note: z.string().optional(),
+}).transform((data) => ({
+  id: data.id,
+  name: data.name,
+  amount: data.amount,
+  unit_id: data.unitId, // Transform to snake_case for backend
+  note: data.note,
+}));
 
 // Recipe schema based on database schema
 export const recipeSchema = z.object({
@@ -163,13 +190,64 @@ export const profileSchema = z.object({
   updated_at: z.string().optional(),
 });
 
-// Form schemas for UI components
-export const recipeFormSchema = recipeSchema.omit({
-  id: true,
-  user_id: true,
-  created_at: true,
-  updated_at: true,
-});
+// Form schemas for UI components (with camelCase to snake_case transformation)
+export const recipeFormSchema = z.object({
+  id: z.number().int().optional(),
+  name: z.string().min(VALIDATION.MIN_RECIPE_NAME_LENGTH, "Recipe name is required"),
+  description: z.string().optional(),
+  instructions: z.string().min(VALIDATION.MIN_INSTRUCTIONS_LENGTH, "Instructions are required"),
+  prepTime: z
+    .number()
+    .int()
+    .min(VALIDATION.MIN_TIME)
+    .optional()
+    .or(
+      z
+        .string()
+        .transform((val) => (val ? parseInt(val) : undefined))
+        .optional()
+    ),
+  cookTime: z
+    .number()
+    .int()
+    .min(VALIDATION.MIN_TIME)
+    .optional()
+    .or(
+      z
+        .string()
+        .transform((val) => (val ? parseInt(val) : undefined))
+        .optional()
+    ),
+  totalTime: z
+    .number()
+    .int()
+    .min(VALIDATION.MIN_TIME)
+    .optional()
+    .or(
+      z
+        .string()
+        .transform((val) => (val ? parseInt(val) : undefined))
+        .optional()
+    ),
+  link: z.string().url().optional().or(z.literal("")),
+  ingredients: z
+    .array(recipeIngredientFormSchema)
+    .min(VALIDATION.MIN_INGREDIENTS_REQUIRED, "At least one ingredient is required"),
+  tags: z.array(z.number().int()).optional(),
+  collections: z.array(z.number().int()).optional(),
+}).transform((data) => ({
+  id: data.id,
+  name: data.name,
+  description: data.description,
+  instructions: data.instructions,
+  prep_time: data.prepTime, // Transform to snake_case
+  cook_time: data.cookTime, // Transform to snake_case
+  total_time: data.totalTime, // Transform to snake_case
+  link: data.link,
+  ingredients: data.ingredients,
+  tags: data.tags,
+  collections: data.collections,
+}));
 
 export const tagFormSchema = tagSchema.omit({ id: true });
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse, requireAuth, checkUserRole } from "@/lib/api";
+import { recipeFormSchema } from "@/lib/schemas";
 
 export async function GET(
   req: NextRequest,
@@ -95,30 +96,22 @@ export async function PUT(
       return NextResponse.json({ error: "Insufficient permissions to edit this recipe" }, { status: 403 });
     }
 
-    const {
-      name,
-      description,
-      instructions,
-      ingredients,
-      tags,
-      collections,
-      prep_time,
-      cook_time,
-      total_time,
-      link,
-    } = await req.json();
+    const body = await req.json();
+    
+    // Validate with Zod schema
+    const validatedData = recipeFormSchema.parse(body);
 
     // Update the recipe
     const { data: recipeData, error: recipeError } = await supabase
       .from("recipe")
       .update({
-        name,
-        description,
-        instructions,
-        prep_time,
-        cook_time,
-        total_time,
-        link,
+        name: validatedData.name,
+        description: validatedData.description,
+        instructions: validatedData.instructions,
+        prep_time: validatedData.prep_time,
+        cook_time: validatedData.cook_time,
+        total_time: validatedData.total_time,
+        link: validatedData.link,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
@@ -133,8 +126,8 @@ export async function PUT(
     await supabase.from("recipe_ingredient").delete().eq("recipe_id", id);
 
     // Insert new ingredients
-    if (ingredients && ingredients.length > 0) {
-      const ingredientInserts = ingredients.map((ingredient: any) => ({
+    if (validatedData.ingredients && validatedData.ingredients.length > 0) {
+      const ingredientInserts = validatedData.ingredients.map((ingredient: any) => ({
         recipe_id: parseInt(id),
         name: ingredient.name,
         amount: ingredient.amount,
@@ -155,8 +148,8 @@ export async function PUT(
     await supabase.from("recipe_tag").delete().eq("recipe_id", id);
 
     // Insert new recipe tags
-    if (tags && tags.length > 0) {
-      const tagInserts = tags.map((tagId: number) => ({
+    if (validatedData.tags && validatedData.tags.length > 0) {
+      const tagInserts = validatedData.tags.map((tagId: number) => ({
         recipe_id: parseInt(id),
         tag_id: tagId,
       }));
@@ -174,8 +167,8 @@ export async function PUT(
     await supabase.from("collection_recipe").delete().eq("recipe_id", id);
 
     // Insert new collection recipes
-    if (collections && collections.length > 0) {
-      const collectionInserts = collections.map((collectionId: number) => ({
+    if (validatedData.collections && validatedData.collections.length > 0) {
+      const collectionInserts = validatedData.collections.map((collectionId: number) => ({
         recipe_id: parseInt(id),
         collection_id: collectionId,
       }));
@@ -191,6 +184,24 @@ export async function PUT(
 
     return createSuccessResponse(recipeData);
   } catch (error: any) {
+    console.error("Recipe update error:", error);
+    
+    // Handle Zod validation errors specifically
+    if (
+      error &&
+      typeof error === "object" &&
+      "name" in error &&
+      error.name === "ZodError"
+    ) {
+      return NextResponse.json(
+        {
+          error: "Validation failed",
+          details: "errors" in error ? error.errors : [],
+        },
+        { status: 400 }
+      );
+    }
+    
     if (error.message.includes('Authentication required') || error.message.includes('permissions')) {
       return NextResponse.json({ error: error.message }, { status: error.message.includes('Authentication') ? 401 : 403 });
     }
