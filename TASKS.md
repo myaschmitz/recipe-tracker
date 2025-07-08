@@ -62,6 +62,7 @@
 - [ ] User-specific recipe collections
 - [ ] Account settings and preferences
 - [ ] User dashboard with personalized content
+- [ ] Add different auth providers (ex. Google, Apple, Facebook)
 
 ### Recipe Features Enhancement
 - [ ] Recipe scaling functionality (adjust servings)
