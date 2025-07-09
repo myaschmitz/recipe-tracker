@@ -82,6 +82,7 @@
 
 ### Collections & Organization
 - [ ] Collection editing functionality
+- [ ] Only show collections the user owns in the collections dropdown
 - [ ] Delete collections
 - [ ] Add/remove recipes from existing collections
 - [ ] Collection sharing features
