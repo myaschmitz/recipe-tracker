@@ -10,14 +10,7 @@ import { X } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import CollectionMultiSelect from "@/components/CollectionMultiSelect";
 import TagMultiSelect from "@/components/TagMultiSelect";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import UnitSelect from "@/components/UnitSelect";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -36,8 +29,8 @@ const CreateRecipe = () => {
   const [ingredients, setIngredients] = useState<RecipeIngredientForm[]>([
     {
       name: "",
-      amount: undefined,
-      unit: { id: 0, name: "" } as Unit,
+      amount: 0,
+      unit_id: 0,
       note: "",
     },
   ]);
@@ -46,6 +39,7 @@ const CreateRecipe = () => {
   const router = useRouter();
   const { toast } = useToast();
 
+  // Fetch units for the UnitSelect component to reference
   useEffect(() => {
     const fetchUnits = async () => {
       const response = await fetch(API_ENDPOINTS.UNITS);
@@ -79,8 +73,8 @@ const CreateRecipe = () => {
       ...ingredients,
       {
         name: "",
-        amount: undefined,
-        unit: { id: 0, name: "" } as Unit,
+        amount: 0,
+        unit_id: 0,
         note: "",
       },
     ]);
@@ -96,10 +90,8 @@ const CreateRecipe = () => {
       newIngredients[index].name = value as string;
     } else if (field === "amount") {
       newIngredients[index].amount = parseFloat(value as string) || 0;
-    } else if (field === "unit") {
-      newIngredients[index].unit = units.find(
-        (unit) => unit.name === value
-      ) || { id: 0, name: "" };
+    } else if (field === "unit_id") {
+      newIngredients[index].unit_id = value as number;
     } else if (field === "note") {
       newIngredients[index].note = value as string;
     }
@@ -131,9 +123,9 @@ const CreateRecipe = () => {
         ingredient.amount !== null &&
         ingredient.amount !== undefined &&
         !isNaN(ingredient.amount) &&
+        ingredient.amount > 0 &&
         ingredient.name.trim() !== "" &&
-        ingredient.unit.name.trim() !== "" &&
-        ingredient.unit.id !== null
+        ingredient.unit_id > 0
     );
 
     if (!areIngredientsValid) {
@@ -170,7 +162,7 @@ const CreateRecipe = () => {
         ingredients: ingredients.map((ingredient) => ({
           name: ingredient.name,
           amount: Number(ingredient.amount),
-          unitId: ingredient.unit.id,
+          unitId: ingredient.unit_id,
           note: ingredient.note,
         })),
         tags: selectedTags.map((tag) => tag.id),
@@ -349,34 +341,16 @@ const CreateRecipe = () => {
                       Unit
                     </Label>
                   )}
-                  <Select
-                    onValueChange={(value) =>
-                      handleIngredientChange(index, "unit", value)
+                  <UnitSelect
+                    selectedUnit={units.find(unit => unit.id === ingredient.unit_id) || null}
+                    onUnitChange={(unit) =>
+                      handleIngredientChange(index, "unit_id", unit?.id || 0)
                     }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {units.map((unit) => (
-                          <SelectItem key={unit.id} value={unit.name}>
-                            {unit.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  {/* <Input
-                    id={`ingredient-unit-${index}`}
-                    type="text"
-                    value={ingredient.unit}
-                    onChange={(e) =>
-                      handleIngredientChange(index, "unit", e.target.value)
-                    }
-                    className="w-24"
-                    required
-                  /> */}
+                    onUnitCreated={(newUnit) => {
+                      setUnits(prev => [...prev, newUnit]);
+                    }}
+                    placeholder="Select Unit"
+                  />
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">
                   {index < 1 && (

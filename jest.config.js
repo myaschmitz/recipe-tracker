@@ -10,8 +10,14 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
-  // Removed moduleNameMapper to avoid @/ alias issues with Turbopack
-  // Tests should use relative imports for maximum compatibility
+  // Add module name mapper back for tests that need it
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  // Transform lucide-react ESM modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(lucide-react)/)'
+  ],
   
   // Explicitly handle TS files
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
