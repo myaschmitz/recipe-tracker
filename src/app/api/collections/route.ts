@@ -4,18 +4,30 @@ import { handleApiError, createSuccessResponse, requireAuth } from "@/lib/api";
 import { collectionSchema } from "@/lib/schemas";
 import { ZodError } from "zod";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Require authentication
     const profile = await requireAuth();
     const supabase = await createClient();
 
-    // Fetch collections for the authenticated user and public collections
-    const { data, error } = await supabase
+    // Parse URL parameters
+    const { searchParams } = new URL(request.url);
+    const userOnly = searchParams.get('user_only') === 'true';
+
+    let query = supabase
       .from("collection")
       .select("*")
-      .or(`user_id.eq.${profile.id},is_public.eq.true`)
       .order("created_at", { ascending: false });
+
+    if (userOnly) {
+      // Only fetch collections owned by the current user
+      query = query.eq('user_id', profile.id);
+    } else {
+      // Fetch collections for the authenticated user and public collections
+      query = query.or(`user_id.eq.${profile.id},is_public.eq.true`);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error('Supabase error fetching collections:', error);

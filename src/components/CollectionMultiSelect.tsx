@@ -52,7 +52,8 @@ const CollectionMultiSelect = ({
       }
 
       try {
-        const response = await fetch(API_ENDPOINTS.COLLECTIONS);
+        // Fetch only user-owned collections since user can only add recipes to their own collections
+        const response = await fetch(`${API_ENDPOINTS.COLLECTIONS}?user_only=true`);
         
         if (!response.ok) {
           const errorData = await response.json();
