@@ -27,11 +27,15 @@ import { useAuth } from "@/contexts/AuthContext";
 interface CollectionMultiSelectProps {
   selectedCollections: Collection[];
   onCollectionChange: (collections: Collection[]) => void;
+  allowCreate?: boolean; // Whether to show "Create New Collection" option
+  userOnly?: boolean; // Whether to fetch only user-owned collections
 }
 
 const CollectionMultiSelect = ({
   selectedCollections,
   onCollectionChange,
+  allowCreate = true,
+  userOnly = true,
 }: CollectionMultiSelectProps) => {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [open, setOpen] = useState(false);
@@ -52,8 +56,11 @@ const CollectionMultiSelect = ({
       }
 
       try {
-        // Fetch only user-owned collections since user can only add recipes to their own collections
-        const response = await fetch(`${API_ENDPOINTS.COLLECTIONS}?user_only=true`);
+        // Fetch collections based on userOnly prop
+        const url = userOnly 
+          ? `${API_ENDPOINTS.COLLECTIONS}?user_only=true`
+          : API_ENDPOINTS.COLLECTIONS;
+        const response = await fetch(url);
         
         if (!response.ok) {
           const errorData = await response.json();
@@ -270,14 +277,16 @@ const CollectionMultiSelect = ({
                 </CommandGroup>
               ) : (
                 <CommandGroup>
-                  <CommandItem
-                    onSelect={() => setIsCreating(true)}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Plus className="h-4 w-4" />
-                      <span>Create New Collection</span>
-                    </div>
-                  </CommandItem>
+                  {allowCreate && (
+                    <CommandItem
+                      onSelect={() => setIsCreating(true)}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <Plus className="h-4 w-4" />
+                        <span>Create New Collection</span>
+                      </div>
+                    </CommandItem>
+                  )}
                   
                   {collections.map((collection) => {
                     const isSelected = selectedCollections.some(
