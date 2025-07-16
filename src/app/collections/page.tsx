@@ -2,6 +2,7 @@
 
 import CollectionCard from "@/components/CollectionCard";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { API_ENDPOINTS } from "@/config/constants";
 import { CollectionSchema } from "@/types/database/models";
 import { Collection } from "@/types/view/models";
@@ -84,7 +85,20 @@ const CollectionsPage = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-4 text-lg font-bold">Loading...</div>
+      <div className="container mx-auto p-4">
+        <Skeleton className="h-8 w-48 mb-4" />
+        <Skeleton className="h-10 w-40 mb-4" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="border rounded-lg p-4">
+              <Skeleton className="h-6 w-3/4 mb-2" />
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-4 w-2/3 mb-4" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 

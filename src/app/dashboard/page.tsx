@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Plus, ChefHat, BookOpen, Heart } from 'lucide-react';
+import { Loader2, Plus, BookOpen, Heart, CookingPot } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -24,7 +24,7 @@ export default function DashboardPage() {
       <div className="min-h-screen w-full flex items-center justify-center bg-background p-8">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="mx-auto mb-6 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <ChefHat className="h-8 w-8 text-primary" />
+            <CookingPot className="h-8 w-8 text-primary" />
           </div>
           
           <div className="space-y-3">
@@ -95,7 +95,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">My Recipes</CardTitle>
-            <ChefHat className="h-4 w-4 text-muted-foreground" />
+            <CookingPot className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-gray-500">
-            <ChefHat className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <CookingPot className="h-12 w-12 mx-auto mb-4 text-gray-300" />
             <p>No recent activity yet.</p>
             <p className="text-sm">Start by creating your first recipe!</p>
           </div>

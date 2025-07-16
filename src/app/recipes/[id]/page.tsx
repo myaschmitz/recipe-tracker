@@ -20,6 +20,7 @@ import {
 import parse from "html-react-parser";
 import { CollectionRecipeSchema } from "@/types/database/models";
 import { safeParseHtml } from "@/lib/htmlSanitizer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Utility function to convert decimal to fraction
 const decimalToFraction = (decimal: number): string => {
@@ -209,7 +210,67 @@ const RecipePage = () => {
 
   if (!recipe) {
     return (
-      <div className="container mx-auto p-4 text-lg font-bold">Loading...</div>
+      <div className="container mx-auto px-12">
+        {/* Back button skeleton */}
+        <div className="mb-4">
+          <Skeleton className="h-6 w-32" />
+        </div>
+        
+        {/* Title and action buttons skeleton */}
+        <div className="flex items-center gap-2 mb-4">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-6 w-6" />
+          <Skeleton className="h-4 w-4" />
+        </div>
+        
+        {/* Tags skeleton */}
+        <div className="my-4 flex flex-wrap gap-2">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} className="h-6 w-16" />
+          ))}
+        </div>
+        
+        {/* Collections skeleton */}
+        <div className="my-4">
+          <Skeleton className="h-4 w-20 mb-2" />
+          <div className="flex flex-wrap gap-2">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <Skeleton key={index} className="h-8 w-24" />
+            ))}
+          </div>
+        </div>
+        
+        {/* Description card skeleton */}
+        <Card className="mb-4">
+          <CardHeader>
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-3/4" />
+          </CardHeader>
+        </Card>
+        
+        {/* Ingredients section skeleton */}
+        <div className="my-4">
+          <div className="flex items-center justify-between mb-3">
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-8 w-28" />
+          </div>
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Skeleton key={index} className="h-4 w-full" />
+            ))}
+          </div>
+        </div>
+        
+        {/* Instructions section skeleton */}
+        <div className="my-4">
+          <Skeleton className="h-6 w-28 mb-4" />
+          <div className="space-y-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton key={index} className={`h-4 ${index % 3 === 0 ? 'w-full' : index % 3 === 1 ? 'w-5/6' : 'w-4/5'}`} />
+            ))}
+          </div>
+        </div>
+      </div>
     );
   }
 

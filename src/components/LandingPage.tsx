@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CookingPot, BookOpen, Users, Star, ChefHat, Search } from "lucide-react";
+import { CookingPot, BookOpen, Users, Search } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -94,7 +94,7 @@ export default function LandingPage() {
             <Card className="overflow-hidden">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <ChefHat className="h-5 w-5 text-primary" />
+                  <CookingPot className="h-5 w-5 text-primary" />
                   <CardTitle className="text-lg">Pasta Carbonara</CardTitle>
                 </div>
                 <CardDescription>
@@ -113,7 +113,7 @@ export default function LandingPage() {
             <Card className="overflow-hidden">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <ChefHat className="h-5 w-5 text-primary" />
+                  <CookingPot className="h-5 w-5 text-primary" />
                   <CardTitle className="text-lg">Chocolate Chip Cookies</CardTitle>
                 </div>
                 <CardDescription>
@@ -132,7 +132,7 @@ export default function LandingPage() {
             <Card className="overflow-hidden">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <ChefHat className="h-5 w-5 text-primary" />
+                  <CookingPot className="h-5 w-5 text-primary" />
                   <CardTitle className="text-lg">Caesar Salad</CardTitle>
                 </div>
                 <CardDescription>
