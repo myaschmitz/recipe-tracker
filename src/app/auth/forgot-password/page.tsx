@@ -6,9 +6,16 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { CookingPot, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 
 const ForgotPasswordPage = () => {
   const { user, loading } = useAuth();
@@ -19,15 +26,20 @@ const ForgotPasswordPage = () => {
   // Redirect logged-in users to dashboard
   useEffect(() => {
     if (!loading && user) {
-      router.push('/dashboard');
+      router.push("/dashboard");
       return;
     }
   }, [user, loading, router]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual password reset logic
-    console.log("Password reset requested for:", email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/api/auth/callback?next=/auth/update-password`,
+    });
+    if (error) {
+      console.error("Password reset error:", error.message);
+      return;
+    }
     setIsSubmitted(true);
   };
 
@@ -48,15 +60,16 @@ const ForgotPasswordPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
-            <Link href="/" className="flex items-center justify-center gap-2 hover:opacity-80 transition-opacity">
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
+            >
               <CookingPot className="h-8 w-8" />
               <span className="font-bold text-2xl">recipehub</span>
             </Link>
-            <h2 className="mt-6 text-3xl font-extrabold">
-              Check your email
-            </h2>
+            <h2 className="mt-6 text-3xl font-extrabold">Check your email</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              We've sent a password reset link to {email}
+              We&apos;ve sent a password reset link to {email}
             </p>
           </div>
 
@@ -64,7 +77,8 @@ const ForgotPasswordPage = () => {
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Didn't receive the email? Check your spam folder or try again.
+                  Didn&apos;t receive the email? Check your spam folder or try
+                  again.
                 </p>
                 <div className="flex flex-col space-y-2">
                   <Button
@@ -93,7 +107,10 @@ const ForgotPasswordPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <Link href="/" className="flex items-center justify-center gap-2 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
+          >
             <CookingPot className="h-8 w-8" />
             <span className="font-bold text-2xl">recipehub</span>
           </Link>
@@ -101,7 +118,8 @@ const ForgotPasswordPage = () => {
             Forgot your password?
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </p>
         </div>
 
@@ -135,7 +153,10 @@ const ForgotPasswordPage = () => {
 
             <div className="mt-6">
               <div className="text-center">
-                <Link href="/auth?mode=login" className="text-sm text-primary hover:underline">
+                <Link
+                  href="/auth?mode=login"
+                  className="text-sm text-primary hover:underline"
+                >
                   <ArrowLeft className="h-4 w-4 inline mr-1" />
                   Back to sign in
                 </Link>

@@ -1,7 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { CookingPot, BookOpen, Users, Search } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -16,7 +22,7 @@ export default function LandingPage() {
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
-      
+
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
@@ -28,7 +34,8 @@ export default function LandingPage() {
             Welcome to Recipe Hub!
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Organize, discover, and share your favorite recipes. Build your personal cookbook and never lose a recipe again.
+            Organize, discover, and share your favorite recipes. Build your
+            personal cookbook and never lose a recipe again.
           </p>
           <div className="flex gap-4 justify-center">
             {user ? (
@@ -61,7 +68,8 @@ export default function LandingPage() {
               <BookOpen className="h-12 w-12 text-primary mx-auto mb-4" />
               <CardTitle>Organize Recipes</CardTitle>
               <CardDescription>
-                Keep all your recipes in one place with tags, collections, and smart organization
+                Keep all your recipes in one place with tags, collections, and
+                smart organization
               </CardDescription>
             </CardHeader>
           </Card>
@@ -71,7 +79,8 @@ export default function LandingPage() {
               <Users className="h-12 w-12 text-primary mx-auto mb-4" />
               <CardTitle>Create Collections</CardTitle>
               <CardDescription>
-                Group recipes by cuisine, occasion, or dietary preferences for easy access
+                Group recipes by cuisine, occasion, or dietary preferences for
+                easy access
               </CardDescription>
             </CardHeader>
           </Card>
@@ -81,7 +90,8 @@ export default function LandingPage() {
               <Search className="h-12 w-12 text-primary mx-auto mb-4" />
               <CardTitle>Find Recipes Fast</CardTitle>
               <CardDescription>
-                Search by ingredients, tags, or recipe name to find exactly what you're looking for
+                Search by ingredients, tags, or recipe name to find exactly what
+                you&apos;re looking for
               </CardDescription>
             </CardHeader>
           </Card>
@@ -89,7 +99,9 @@ export default function LandingPage() {
 
         {/* Sample Recipes Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Featured Recipes</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">
+            Featured Recipes
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="overflow-hidden">
               <CardHeader className="pb-3">
@@ -98,15 +110,22 @@ export default function LandingPage() {
                   <CardTitle className="text-lg">Pasta Carbonara</CardTitle>
                 </div>
                 <CardDescription>
-                  Classic Italian comfort food with creamy eggs, cheese, and pancetta
+                  Classic Italian comfort food with creamy eggs, cheese, and
+                  pancetta
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2 mb-3">
-                  <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">Italian</span>
-                  <span className="bg-secondary px-2 py-1 rounded-full text-xs">Main Course</span>
+                  <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
+                    Italian
+                  </span>
+                  <span className="bg-secondary px-2 py-1 rounded-full text-xs">
+                    Main Course
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground">⏱️ 20 mins • 🍽️ 4 servings</p>
+                <p className="text-sm text-muted-foreground">
+                  ⏱️ 20 mins • 🍽️ 4 servings
+                </p>
               </CardContent>
             </Card>
 
@@ -114,18 +133,27 @@ export default function LandingPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
                   <CookingPot className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-lg">Chocolate Chip Cookies</CardTitle>
+                  <CardTitle className="text-lg">
+                    Chocolate Chip Cookies
+                  </CardTitle>
                 </div>
                 <CardDescription>
-                  Soft, chewy cookies with the perfect balance of chocolate and vanilla
+                  Soft, chewy cookies with the perfect balance of chocolate and
+                  vanilla
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2 mb-3">
-                  <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">Dessert</span>
-                  <span className="bg-secondary px-2 py-1 rounded-full text-xs">Baking</span>
+                  <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
+                    Dessert
+                  </span>
+                  <span className="bg-secondary px-2 py-1 rounded-full text-xs">
+                    Baking
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground">⏱️ 25 mins • 🍪 24 cookies</p>
+                <p className="text-sm text-muted-foreground">
+                  ⏱️ 25 mins • 🍪 24 cookies
+                </p>
               </CardContent>
             </Card>
 
@@ -141,10 +169,16 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2 mb-3">
-                  <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">Healthy</span>
-                  <span className="bg-secondary px-2 py-1 rounded-full text-xs">Salad</span>
+                  <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
+                    Healthy
+                  </span>
+                  <span className="bg-secondary px-2 py-1 rounded-full text-xs">
+                    Salad
+                  </span>
                 </div>
-                <p className="text-sm text-muted-foreground">⏱️ 15 mins • 🥗 2 servings</p>
+                <p className="text-sm text-muted-foreground">
+                  ⏱️ 15 mins • 🥗 2 servings
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -157,12 +191,6 @@ export default function LandingPage() {
               <CardTitle className="text-2xl">
                 {user ? "Welcome back!" : "Ready to start cooking?"}
               </CardTitle>
-              <CardDescription className="text-lg">
-                {user 
-                  ? "Continue organizing your culinary adventures with Recipe Hub."
-                  : "Join thousands of home cooks who trust Recipe Hub to organize their culinary adventures."
-                }
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex gap-4 justify-center">
@@ -187,11 +215,6 @@ export default function LandingPage() {
                   </>
                 )}
               </div>
-              {!user && (
-                <p className="text-sm text-muted-foreground mt-4">
-                  Free forever. No credit card required.
-                </p>
-              )}
             </CardContent>
           </Card>
         </div>

@@ -55,7 +55,8 @@ export async function middleware(req: NextRequest) {
   }
 
   // If user is authenticated and trying to access public auth routes
-  if (session && isPublicRoute) {
+  // Allow /auth/update-password so users can set a new password after reset
+  if (session && isPublicRoute && req.nextUrl.pathname !== '/auth/update-password') {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 

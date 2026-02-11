@@ -10,6 +10,7 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  // URL to redirect to after sign in process completes
-  return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Redirect to the `next` param if provided, otherwise dashboard
+  const next = requestUrl.searchParams.get('next') ?? '/dashboard';
+  return NextResponse.redirect(new URL(next, request.url));
 }
