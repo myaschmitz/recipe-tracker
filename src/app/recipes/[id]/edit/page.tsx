@@ -16,11 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { RecipeIngredientSchema, TagSchema } from "@/types/database/models";
 import {
   Recipe,
-  RecipeIngredient,
-  RecipeIngredientForm,
   Tag,
   Unit,
   Collection,
@@ -29,6 +26,16 @@ import { X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+
+// Edit page works with unit objects (from API), not unit_id numbers
+type EditIngredient = {
+  id?: number;
+  recipeId?: number;
+  name: string;
+  amount: number | null;
+  unit: Unit;
+  note?: string;
+};
 
 const EditRecipePage = () => {
   const { user } = useAuth();
@@ -43,7 +50,7 @@ const EditRecipePage = () => {
   const [cookTime, setCookTime] = useState<number | undefined>(undefined);
   const [totalTime, setTotalTime] = useState<number | undefined>(undefined);
   const [description, setDescription] = useState("");
-  const [ingredients, setIngredients] = useState<RecipeIngredientForm[]>([]);
+  const [ingredients, setIngredients] = useState<EditIngredient[]>([]);
   const [instructions, setInstructions] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -104,7 +111,7 @@ const EditRecipePage = () => {
           })) : [
             {
               name: "",
-              amount: undefined,
+              amount: null,
               unit: { id: 0, name: "" } as Unit,
               note: "",
             },
@@ -219,7 +226,7 @@ const EditRecipePage = () => {
       ...ingredients,
       {
         name: "",
-        amount: undefined,
+        amount: null,
         unit: { id: 0, name: "" } as Unit,
         note: "",
       },
@@ -235,7 +242,8 @@ const EditRecipePage = () => {
     if (field === "name") {
       newIngredients[index].name = value as string;
     } else if (field === "amount") {
-      newIngredients[index].amount = parseFloat(value as string) || 0;
+      const str = value as string;
+      newIngredients[index].amount = str === "" ? null : (parseFloat(str) || 0);
     } else if (field === "unit") {
       newIngredients[index].unit = units.find(
         (unit) => unit.name === value
@@ -265,12 +273,10 @@ const EditRecipePage = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // validate ingredients
+    // validate ingredients (amount is optional for "salt to taste" style entries)
     const areIngredientsValid = ingredients.every(
       (ingredient) =>
-        ingredient.amount !== null &&
-        ingredient.amount !== undefined &&
-        !isNaN(ingredient.amount) &&
+        (ingredient.amount === null || ingredient.amount === undefined || (typeof ingredient.amount === "number" && !isNaN(ingredient.amount) && ingredient.amount > 0)) &&
         ingredient.name.trim() !== "" &&
         ingredient.unit.name.trim() !== "" &&
         ingredient.unit.id !== null
@@ -307,11 +313,12 @@ const EditRecipePage = () => {
         name,
         description,
         instructions,
-        ingredients: ingredients.map((ingredient) => ({
+        ingredients: ingredients.map((ingredient, index) => ({
           name: ingredient.name,
-          amount: Number(ingredient.amount),
+          amount: ingredient.amount !== null && ingredient.amount !== undefined ? Number(ingredient.amount) : null,
           unitId: ingredient.unit.id,
           note: ingredient.note,
+          position: index,
         })),
         tags: selectedTags.map((tag) => tag.id),
         collections: selectedCollections.map((collection) => collection.id),
@@ -479,7 +486,6 @@ const EditRecipePage = () => {
                     min="0"
                     step="any"
                     className="w-20"
-                    required
                   />
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">

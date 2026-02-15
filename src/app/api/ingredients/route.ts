@@ -12,7 +12,7 @@ export async function GET() {
           id, name, symbol
         )
       `)
-      .order("name", { ascending: true });
+      .order("position", { ascending: true });
 
     if (error) {
       throw error;

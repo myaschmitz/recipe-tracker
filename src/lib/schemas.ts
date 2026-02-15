@@ -19,9 +19,10 @@ export const recipeIngredientSchema = z.object({
   amount: z
     .number()
     .positive("Amount must be positive")
+    .nullable()
     .or(
       z.string().transform((val) => {
-        if (!val) throw new Error("Amount is required");
+        if (!val || val.trim() === "") return null;
         const num = parseFloat(val);
         if (isNaN(num) || num <= 0) {
           throw new Error("Amount must be a positive number");
@@ -31,6 +32,7 @@ export const recipeIngredientSchema = z.object({
     ),
   unit_id: z.number().int().positive("Unit is required"),
   note: z.string().optional(),
+  position: z.number().int().optional(),
 });
 
 // Recipe ingredient form schema for frontend (camelCase) with transformation
@@ -40,9 +42,10 @@ export const recipeIngredientFormSchema = z.object({
   amount: z
     .number()
     .positive("Amount must be positive")
+    .nullable()
     .or(
       z.string().transform((val) => {
-        if (!val) throw new Error("Amount is required");
+        if (!val || val.trim() === "") return null;
         const num = parseFloat(val);
         if (isNaN(num) || num <= 0) {
           throw new Error("Amount must be a positive number");
@@ -52,12 +55,14 @@ export const recipeIngredientFormSchema = z.object({
     ),
   unitId: z.number().int().positive("Unit is required"), // camelCase for frontend
   note: z.string().optional(),
+  position: z.number().int().optional(),
 }).transform((data) => ({
   id: data.id,
   name: data.name,
   amount: data.amount,
   unit_id: data.unitId, // Transform to snake_case for backend
   note: data.note,
+  position: data.position,
 }));
 
 // Recipe schema based on database schema

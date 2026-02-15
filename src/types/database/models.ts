@@ -21,9 +21,10 @@ export type RecipeIngredientSchema = {
   id: number;
   recipe_id: number;
   name: string;
-  amount: number;
+  amount: number | null;
   unit_id: number;
   note?: string;
+  position: number;
 };
 
 export type UnitSchema = {

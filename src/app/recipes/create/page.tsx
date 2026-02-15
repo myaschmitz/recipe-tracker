@@ -29,7 +29,7 @@ const CreateRecipe = () => {
   const [ingredients, setIngredients] = useState<RecipeIngredientForm[]>([
     {
       name: "",
-      amount: 0,
+      amount: null,
       unit_id: 0,
       note: "",
     },
@@ -73,7 +73,7 @@ const CreateRecipe = () => {
       ...ingredients,
       {
         name: "",
-        amount: 0,
+        amount: null,
         unit_id: 0,
         note: "",
       },
@@ -89,7 +89,8 @@ const CreateRecipe = () => {
     if (field === "name") {
       newIngredients[index].name = value as string;
     } else if (field === "amount") {
-      newIngredients[index].amount = parseFloat(value as string) || 0;
+      const str = value as string;
+      newIngredients[index].amount = str === "" ? null : (parseFloat(str) || 0);
     } else if (field === "unit_id") {
       newIngredients[index].unit_id = value as number;
     } else if (field === "note") {
@@ -117,13 +118,10 @@ const CreateRecipe = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // validate ingredients
+    // validate ingredients (amount is optional for "salt to taste" style entries)
     const areIngredientsValid = ingredients.every(
       (ingredient) =>
-        ingredient.amount !== null &&
-        ingredient.amount !== undefined &&
-        !isNaN(ingredient.amount) &&
-        ingredient.amount > 0 &&
+        (ingredient.amount === null || (typeof ingredient.amount === "number" && !isNaN(ingredient.amount) && ingredient.amount > 0)) &&
         ingredient.name.trim() !== "" &&
         ingredient.unit_id > 0
     );
@@ -159,11 +157,12 @@ const CreateRecipe = () => {
         name,
         description,
         instructions,
-        ingredients: ingredients.map((ingredient) => ({
+        ingredients: ingredients.map((ingredient, index) => ({
           name: ingredient.name,
-          amount: Number(ingredient.amount),
+          amount: ingredient.amount !== null ? Number(ingredient.amount) : null,
           unitId: ingredient.unit_id,
           note: ingredient.note,
+          position: index,
         })),
         tags: selectedTags.map((tag) => tag.id),
         collections: selectedCollections.map((collection) => collection.id),
@@ -329,7 +328,6 @@ const CreateRecipe = () => {
                     min="0"
                     step="any"
                     className="w-20"
-                    required
                   />
                 </div>
                 <div className="flex flex-col mr-2 mb-2 sm:mb-0">

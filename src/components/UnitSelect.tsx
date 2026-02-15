@@ -84,6 +84,25 @@ const UnitSelect = ({
       return;
     }
 
+    // Check for existing unit with same name (case-insensitive)
+    const existingUnit = units.find(
+      u => u.name.toLowerCase() === newUnitName.trim().toLowerCase()
+    );
+
+    if (existingUnit) {
+      // Auto-select the existing unit instead of creating a duplicate
+      onUnitChange(existingUnit);
+      setNewUnitName("");
+      setNewUnitSymbol("");
+      setIsCreating(false);
+      setOpen(false);
+      toast({
+        title: "Unit already exists",
+        description: `Selected existing unit "${existingUnit.name}"`,
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -102,27 +121,41 @@ const UnitSelect = ({
 
       if (response.ok) {
         const newUnit = Array.isArray(data) ? data[0] : data;
-        
+
         // Update units list
         setUnits(prev => [...prev, newUnit]);
-        
+
         // Notify parent component
         if (onUnitCreated) {
           onUnitCreated(newUnit);
         }
-        
+
         // Auto-select the newly created unit
         onUnitChange(newUnit);
-        
+
         // Reset form
         setNewUnitName("");
         setNewUnitSymbol("");
         setIsCreating(false);
         setOpen(false);
-        
+
         toast({
           title: "Unit created successfully",
           description: `"${newUnit.name}" has been added to your units`,
+        });
+      } else if (response.status === 409) {
+        // Unit already exists server-side — select it
+        const existing = data.unit;
+        if (existing) {
+          onUnitChange(existing);
+          setNewUnitName("");
+          setNewUnitSymbol("");
+          setIsCreating(false);
+          setOpen(false);
+        }
+        toast({
+          title: "Unit already exists",
+          description: data.error || "A unit with this name already exists",
         });
       } else {
         toast({

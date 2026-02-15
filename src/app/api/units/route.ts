@@ -31,9 +31,23 @@ export async function POST(request: Request) {
     const { name, symbol } = body;
     validateRequired({ name });
 
+    // Check for existing unit with same name (case-insensitive)
+    const { data: existingUnit } = await supabase
+      .from("unit")
+      .select("id, name, symbol")
+      .ilike("name", name.trim())
+      .single();
+
+    if (existingUnit) {
+      return NextResponse.json(
+        { error: "A unit with this name already exists", unit: existingUnit },
+        { status: 409 }
+      );
+    }
+
     const { data, error } = await supabase
       .from("unit")
-      .insert([{ name, symbol }])
+      .insert([{ name: name.trim(), symbol: symbol?.trim() || null }])
       .select("*");
 
     if (error) {

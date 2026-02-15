@@ -17,8 +17,9 @@ export async function GET(
     // First, fetch ingredients
     const { data: ingredientsData, error: ingredientsError } = await supabase
       .from("recipe_ingredient")
-      .select("id, recipe_id, name, amount, unit_id, note")
-      .eq("recipe_id", recipeId);
+      .select("id, recipe_id, name, amount, unit_id, note, position")
+      .eq("recipe_id", recipeId)
+      .order("position", { ascending: true });
 
     if (ingredientsError) {
       throw ingredientsError;

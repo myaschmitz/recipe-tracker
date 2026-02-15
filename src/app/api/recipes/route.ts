@@ -125,12 +125,13 @@ export async function POST(request: Request) {
       const { error: ingredientError } = await supabase
         .from("recipe_ingredient")
         .insert(
-          validatedData.ingredients.map((ingredient: any) => ({
+          validatedData.ingredients.map((ingredient: any, index: number) => ({
             recipe_id: recipe.id,
             name: ingredient.name,
             amount: ingredient.amount,
             unit_id: ingredient.unit_id,
             note: ingredient.note,
+            position: ingredient.position ?? index,
           }))
         );
 

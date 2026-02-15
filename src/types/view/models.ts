@@ -24,7 +24,7 @@ export type Ingredient = {
   id: number;
   recipeId: number; // mapped from recipe_id
   name: string;
-  amount: number;
+  amount: number | null;
   unit: Unit;
   note?: string;
 };
@@ -117,7 +117,7 @@ export type RecipeForm = Omit<Recipe, "id" | "createdAt" | "updatedAt" | "userId
 
 export type IngredientForm = {
   name: string;
-  amount: number;
+  amount: number | null;
   unit_id: number;
   note?: string;
 };
