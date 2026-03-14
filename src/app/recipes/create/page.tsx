@@ -11,6 +11,7 @@ import RichTextEditor from "@/components/RichTextEditor";
 import CollectionMultiSelect from "@/components/CollectionMultiSelect";
 import TagMultiSelect from "@/components/TagMultiSelect";
 import UnitSelect from "@/components/UnitSelect";
+import IngredientCombobox from "@/components/IngredientCombobox";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +32,7 @@ const CreateRecipe = () => {
       name: "",
       amount: null,
       unit_id: 0,
+      ingredient_id: null,
       note: "",
     },
   ]);
@@ -75,6 +77,7 @@ const CreateRecipe = () => {
         name: "",
         amount: null,
         unit_id: 0,
+        ingredient_id: null,
         note: "",
       },
     ]);
@@ -83,7 +86,7 @@ const CreateRecipe = () => {
   const handleIngredientChange = (
     index: number,
     field: string,
-    value: string | number
+    value: string | number | null
   ) => {
     const newIngredients = [...ingredients];
     if (field === "name") {
@@ -93,6 +96,8 @@ const CreateRecipe = () => {
       newIngredients[index].amount = str === "" ? null : (parseFloat(str) || 0);
     } else if (field === "unit_id") {
       newIngredients[index].unit_id = value as number;
+    } else if (field === "ingredient_id") {
+      newIngredients[index].ingredient_id = value as number | null;
     } else if (field === "note") {
       newIngredients[index].note = value as string;
     }
@@ -161,6 +166,7 @@ const CreateRecipe = () => {
           name: ingredient.name,
           amount: ingredient.amount !== null ? Number(ingredient.amount) : null,
           unitId: ingredient.unit_id,
+          ingredientId: ingredient.ingredient_id || null,
           note: ingredient.note,
           position: index,
         })),
@@ -359,13 +365,14 @@ const CreateRecipe = () => {
                       Name
                     </Label>
                   )}
-                  <Input
+                  <IngredientCombobox
                     id={`ingredient-name-${index}`}
-                    type="text"
                     value={ingredient.name}
-                    onChange={(e) =>
-                      handleIngredientChange(index, "name", e.target.value)
-                    }
+                    ingredientId={ingredient.ingredient_id}
+                    onValueChange={(name, ingredientId) => {
+                      handleIngredientChange(index, "name", name);
+                      handleIngredientChange(index, "ingredient_id", ingredientId);
+                    }}
                     onKeyDown={handleKeyDown}
                     className="w-48"
                     required

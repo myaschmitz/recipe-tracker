@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   COLLECTIONS: '/api/collections',
   TAGS: '/api/tags',
   UNITS: '/api/units',
+  CANONICAL_INGREDIENTS: '/api/canonical-ingredients',
   
   // Relationship Endpoints
   RECIPE_TAGS: '/api/recipe-tags',
@@ -137,6 +138,7 @@ export const TABLES = {
   COLLECTION_RECIPE: 'collection_recipe',
   TAG: 'tag',
   UNIT: 'unit',
+  INGREDIENT: 'ingredient',
   PROFILE: 'profile',
   USER_RECIPE_FAVORITE: 'user_recipe_favorite',
   USER_COLLECTION_FAVORITE: 'user_collection_favorite',

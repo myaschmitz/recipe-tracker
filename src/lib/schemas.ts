@@ -11,6 +11,13 @@ export const unitSchema = z.object({
   symbol: z.string().optional(),
 });
 
+// Canonical ingredient schema
+export const canonicalIngredientSchema = z.object({
+  id: z.number().int(),
+  name: z.string().min(VALIDATION.MIN_INGREDIENT_NAME_LENGTH, "Ingredient name is required"),
+  category: z.string().optional(),
+});
+
 // Recipe ingredient schema based on database schema (snake_case)
 export const recipeIngredientSchema = z.object({
   id: z.number().int().optional(),
@@ -31,6 +38,7 @@ export const recipeIngredientSchema = z.object({
       })
     ),
   unit_id: z.number().int().positive("Unit is required"),
+  ingredient_id: z.number().int().positive().nullable().optional(),
   note: z.string().optional(),
   position: z.number().int().optional(),
 });
@@ -54,6 +62,7 @@ export const recipeIngredientFormSchema = z.object({
       })
     ),
   unitId: z.number().int().positive("Unit is required"), // camelCase for frontend
+  ingredientId: z.number().int().positive().nullable().optional(), // camelCase for frontend
   note: z.string().optional(),
   position: z.number().int().optional(),
 }).transform((data) => ({
@@ -61,6 +70,7 @@ export const recipeIngredientFormSchema = z.object({
   name: data.name,
   amount: data.amount,
   unit_id: data.unitId, // Transform to snake_case for backend
+  ingredient_id: data.ingredientId ?? null, // Transform to snake_case for backend
   note: data.note,
   position: data.position,
 }));

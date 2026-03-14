@@ -21,7 +21,7 @@ export async function GET(
       .select(`
         id, name, description, instructions, prep_time, cook_time, total_time, link, created_at, updated_at, user_id,
         recipe_ingredient (
-          id, name, amount, unit_id, note, position,
+          id, name, amount, unit_id, ingredient_id, note, position,
           unit (
             id, name, symbol
           )
@@ -132,6 +132,7 @@ export async function PUT(
         name: ingredient.name,
         amount: ingredient.amount,
         unit_id: ingredient.unit_id,
+        ingredient_id: ingredient.ingredient_id || null,
         note: ingredient.note,
         position: ingredient.position ?? index,
       }));

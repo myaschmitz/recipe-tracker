@@ -7,7 +7,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("recipe_ingredient")
       .select(`
-        *,
+        id, recipe_id, name, amount, unit_id, ingredient_id, note, position,
         unit (
           id, name, symbol
         )

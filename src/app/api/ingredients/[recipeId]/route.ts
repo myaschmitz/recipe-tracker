@@ -17,7 +17,7 @@ export async function GET(
     // First, fetch ingredients
     const { data: ingredientsData, error: ingredientsError } = await supabase
       .from("recipe_ingredient")
-      .select("id, recipe_id, name, amount, unit_id, note, position")
+      .select("id, recipe_id, name, amount, unit_id, ingredient_id, note, position")
       .eq("recipe_id", recipeId)
       .order("position", { ascending: true });
 
@@ -52,6 +52,7 @@ export async function GET(
       name: ingredient.name,
       amount: ingredient.amount,
       unit: unitsMap.get(ingredient.unit_id) || { id: ingredient.unit_id, name: "unknown", symbol: "" },
+      ingredientId: ingredient.ingredient_id || null,
       note: ingredient.note,
     }));
 

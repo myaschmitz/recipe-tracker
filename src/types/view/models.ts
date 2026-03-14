@@ -26,6 +26,7 @@ export type Ingredient = {
   name: string;
   amount: number | null;
   unit: Unit;
+  ingredientId?: number | null; // mapped from ingredient_id
   note?: string;
 };
 
@@ -33,6 +34,12 @@ export type Unit = {
   id: number;
   name: string;
   symbol?: string;
+};
+
+export type CanonicalIngredient = {
+  id: number;
+  name: string;
+  category?: string;
 };
 
 export type Tag = {
@@ -119,6 +126,7 @@ export type IngredientForm = {
   name: string;
   amount: number | null;
   unit_id: number;
+  ingredient_id?: number | null;
   note?: string;
 };
 

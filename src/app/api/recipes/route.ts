@@ -130,6 +130,7 @@ export async function POST(request: Request) {
             name: ingredient.name,
             amount: ingredient.amount,
             unit_id: ingredient.unit_id,
+            ingredient_id: ingredient.ingredient_id || null,
             note: ingredient.note,
             position: ingredient.position ?? index,
           }))

@@ -26,6 +26,7 @@ import { X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import IngredientCombobox from "@/components/IngredientCombobox";
 
 // Edit page works with unit objects (from API), not unit_id numbers
 type EditIngredient = {
@@ -34,6 +35,7 @@ type EditIngredient = {
   name: string;
   amount: number | null;
   unit: Unit;
+  ingredientId?: number | null;
   note?: string;
 };
 
@@ -107,12 +109,14 @@ const EditRecipePage = () => {
             name: i.name,
             amount: i.amount,
             unit: i.unit, // This already contains {id, name, symbol}
+            ingredientId: i.ingredientId || null,
             note: i.note || "",
           })) : [
             {
               name: "",
               amount: null,
               unit: { id: 0, name: "" } as Unit,
+              ingredientId: null,
               note: "",
             },
           ]);
@@ -228,6 +232,7 @@ const EditRecipePage = () => {
         name: "",
         amount: null,
         unit: { id: 0, name: "" } as Unit,
+        ingredientId: null,
         note: "",
       },
     ]);
@@ -236,7 +241,7 @@ const EditRecipePage = () => {
   const handleIngredientChange = (
     index: number,
     field: string,
-    value: string | number
+    value: string | number | null
   ) => {
     const newIngredients = [...ingredients];
     if (field === "name") {
@@ -248,6 +253,8 @@ const EditRecipePage = () => {
       newIngredients[index].unit = units.find(
         (unit) => unit.name === value
       ) || { id: 0, name: "" };
+    } else if (field === "ingredientId") {
+      newIngredients[index].ingredientId = value as number | null;
     } else if (field === "note") {
       newIngredients[index].note = value as string;
     }
@@ -317,6 +324,7 @@ const EditRecipePage = () => {
           name: ingredient.name,
           amount: ingredient.amount !== null && ingredient.amount !== undefined ? Number(ingredient.amount) : null,
           unitId: ingredient.unit.id,
+          ingredientId: ingredient.ingredientId || null,
           note: ingredient.note,
           position: index,
         })),
@@ -526,13 +534,14 @@ const EditRecipePage = () => {
                       Name
                     </Label>
                   )}
-                  <Input
+                  <IngredientCombobox
                     id={`ingredient-name-${index}`}
-                    type="text"
                     value={ingredient.name}
-                    onChange={(e) =>
-                      handleIngredientChange(index, "name", e.target.value)
-                    }
+                    ingredientId={ingredient.ingredientId}
+                    onValueChange={(name, ingredientId) => {
+                      handleIngredientChange(index, "name", name);
+                      handleIngredientChange(index, "ingredientId", ingredientId);
+                    }}
                     onKeyDown={handleKeyDown}
                     className="w-48"
                     required

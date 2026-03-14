@@ -23,6 +23,7 @@ export type RecipeIngredientSchema = {
   name: string;
   amount: number | null;
   unit_id: number;
+  ingredient_id?: number | null;
   note?: string;
   position: number;
 };
@@ -31,6 +32,12 @@ export type UnitSchema = {
   id: number;
   name: string;
   symbol?: string;
+};
+
+export type IngredientSchema = {
+  id: number;
+  name: string;
+  category?: string;
 };
 
 export type TagSchema = {
