@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { API_ENDPOINTS } from "@/config/constants";
-import { CanonicalIngredient } from "@/types/view/models";
+import { Ingredient } from "@/types/view/models";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ const IngredientCombobox = ({
   id,
   required,
 }: IngredientComboboxProps) => {
-  const [suggestions, setSuggestions] = useState<CanonicalIngredient[]>([]);
+  const [suggestions, setSuggestions] = useState<Ingredient[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -72,7 +72,7 @@ const IngredientCombobox = ({
   };
 
   // Select a suggestion
-  const handleSelect = (ingredient: CanonicalIngredient) => {
+  const handleSelect = (ingredient: Ingredient) => {
     onValueChange(ingredient.name, ingredient.id);
     setIsOpen(false);
     setHighlightedIndex(-1);

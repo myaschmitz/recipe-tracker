@@ -11,8 +11,8 @@ export const unitSchema = z.object({
   symbol: z.string().optional(),
 });
 
-// Canonical ingredient schema
-export const canonicalIngredientSchema = z.object({
+// Ingredient schema
+export const ingredientSchema = z.object({
   id: z.number().int(),
   name: z.string().min(VALIDATION.MIN_INGREDIENT_NAME_LENGTH, "Ingredient name is required"),
   category: z.string().optional(),
@@ -322,6 +322,5 @@ export type UserCollectionFavoriteSchema = z.infer<typeof userCollectionFavorite
 export type UserWantToMakeSchema = z.infer<typeof userWantToMakeSchema>;
 
 // Legacy exports for backward compatibility
-export const ingredientSchema = recipeIngredientSchema;
 export type IngredientFormData = RecipeIngredientFormData;
 export type TagData = TagFormData;

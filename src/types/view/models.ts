@@ -15,12 +15,18 @@ export type Recipe = {
   createdAt: string; // mapped from created_at
   updatedAt: string; // mapped from updated_at
   userId?: string; // mapped from user_id
-  ingredients: Ingredient[];
+  ingredients: RecipeIngredient[];
   tags: Tag[];
   collections?: Collection[];
 };
 
 export type Ingredient = {
+  id: number;
+  name: string;
+  category?: string;
+};
+
+export type RecipeIngredient = {
   id: number;
   recipeId: number; // mapped from recipe_id
   name: string;
@@ -34,12 +40,6 @@ export type Unit = {
   id: number;
   name: string;
   symbol?: string;
-};
-
-export type CanonicalIngredient = {
-  id: number;
-  name: string;
-  category?: string;
 };
 
 export type Tag = {
@@ -140,5 +140,4 @@ export type UserWantToMakeForm = Omit<UserWantToMake, "id" | "userId" | "created
 export type RecipeCard = Omit<Recipe, "instructions" | "ingredients">;
 
 // Legacy types for backward compatibility
-export type RecipeIngredient = Ingredient;
 export type RecipeIngredientForm = IngredientForm;
