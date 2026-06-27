@@ -27,7 +27,14 @@ export async function GET(request: Request) {
 
     // Apply filters
     if (search) {
-      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+      // Sanitize user input before interpolating into the PostgREST .or() filter.
+      // Characters like commas, parentheses and backslashes are structurally
+      // significant in PostgREST filter strings, and %/_ are LIKE wildcards.
+      // Replace them with spaces so user input can't alter the filter logic.
+      const safe = search.replace(/[\\%_,()"]/g, ' ').trim();
+      if (safe) {
+        query = query.or(`name.ilike.%${safe}%,description.ilike.%${safe}%`);
+      }
     }
 
     if (userId) {

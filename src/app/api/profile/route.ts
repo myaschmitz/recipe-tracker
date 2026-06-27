@@ -5,17 +5,17 @@ export async function GET() {
   const supabase = await createClient();
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
   const { data: profile, error } = await supabase
     .from('profile')
     .select('*')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .single();
 
   if (error) {
@@ -29,10 +29,10 @@ export async function PUT(request: Request) {
   const supabase = await createClient();
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
@@ -63,7 +63,7 @@ export async function PUT(request: Request) {
     const { data: currentProfile } = await supabase
       .from('profile')
       .select('role')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
     
     if (currentProfile?.role !== 'admin') {
@@ -99,7 +99,7 @@ export async function PUT(request: Request) {
   const { data: profile, error } = await supabase
     .from('profile')
     .update(updateData)
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .select()
     .single();
 

@@ -30,10 +30,11 @@ export async function middleware(req: NextRequest) {
     }
   );
 
-  // Refresh session if expired - required for Server Components
+  // Validate the auth token against the Supabase Auth server.
+  // getUser() verifies the JWT server-side, unlike getSession() which trusts cookies.
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Protected routes that require authentication
   const protectedRoutes = ['/dashboard', '/profile', '/recipes', '/collections'];
@@ -50,13 +51,13 @@ export async function middleware(req: NextRequest) {
   );
 
   // If user is not authenticated and trying to access protected route
-  if (!session && isProtectedRoute) {
+  if (!user && isProtectedRoute) {
     return NextResponse.redirect(new URL('/auth?mode=login', req.url));
   }
 
   // If user is authenticated and trying to access public auth routes
   // Allow /auth/update-password so users can set a new password after reset
-  if (session && isPublicRoute && req.nextUrl.pathname !== '/auth/update-password') {
+  if (user && isPublicRoute && req.nextUrl.pathname !== '/auth/update-password') {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
