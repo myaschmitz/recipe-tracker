@@ -18,13 +18,13 @@ export async function GET() {
       }, { status: 500 });
     }
 
-    // Test auth session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    // Test auth via validated user lookup (getUser verifies the token server-side)
+    const { data: { user }, error: sessionError } = await supabase.auth.getUser();
 
     return NextResponse.json({
       status: 'ok',
       message: 'Auth service is working',
-      hasSession: !!session,
+      hasUser: !!user,
       sessionError: sessionError?.message || null,
       timestamp: new Date().toISOString()
     });
