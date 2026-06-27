@@ -70,16 +70,19 @@ export async function GET(request: Request) {
 
     if (error) {
       console.error('Supabase error fetching recipes:', error);
-      // Return empty array on database error to prevent frontend crashes
-      return createSuccessResponse([]);
+      // A genuine database error is a real failure: surface it as a 500 so the
+      // outage is visible and debuggable, rather than masquerading as "no recipes".
+      return handleApiError(error, 'fetching recipes');
     }
 
-    // Ensure we always return an array
+    // Query succeeded. A successful-but-empty result is a valid state and must
+    // still return a 200 with an empty array so the frontend doesn't crash.
     return createSuccessResponse(data || []);
   } catch (error) {
     console.error('Recipes API error:', error);
-    // Return empty array instead of error response to prevent frontend crashes
-    return createSuccessResponse([]);
+    // An unexpected/thrown error is a real failure: surface it as a 500 instead
+    // of hiding it behind a fake 200 + [].
+    return handleApiError(error, 'fetching recipes');
   }
 }
 

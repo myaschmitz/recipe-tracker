@@ -136,6 +136,28 @@ describe('Recipes API Logic', () => {
       }
 
       expect(mockHandleApiError).toHaveBeenCalledWith(mockError, 'fetching recipes')
+      // A real DB error must surface as an error response, never a fake empty list.
+      expect(mockCreateSuccessResponse).not.toHaveBeenCalled()
+    })
+
+    it('should return an empty array for a successful query with no rows', async () => {
+      mockLimit.mockResolvedValue({
+        data: [],
+        error: null,
+      })
+
+      // Simulate the success path: query resolved without an error.
+      const result = await mockLimit()
+
+      if (result.error) {
+        mockHandleApiError(result.error, 'fetching recipes')
+      } else {
+        mockCreateSuccessResponse(result.data || [])
+      }
+
+      // Empty-but-successful results stay a 200 + [] so the frontend doesn't crash.
+      expect(mockCreateSuccessResponse).toHaveBeenCalledWith([])
+      expect(mockHandleApiError).not.toHaveBeenCalled()
     })
   })
 
