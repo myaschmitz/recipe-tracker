@@ -9,11 +9,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx jest src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx",
-    "test:all": "npx jest",
-    "test:working": "npx jest src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx",
-    "test:watch": "npx jest --watch src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx",
-    "test:coverage": "npx jest --coverage src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx"
+    "test": "jest src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx",
+    "test:all": "jest",
+    "test:working": "jest src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx",
+    "test:watch": "jest --watch src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx",
+    "test:coverage": "jest --coverage src/__tests__/lib/ src/__tests__/api/recipes-unit.test.ts src/__tests__/api/collections-unit.test.ts src/__tests__/comprehensive.test.ts src/__tests__/advanced.test.ts src/__tests__/basic.test.js src/__tests__/typescript-basic.test.ts src/__tests__/module-resolution.test.ts src/__tests__/pages/recipe-collections.test.tsx src/__tests__/components/RecipeCard-enhanced.test.tsx"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -77,7 +77,8 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
-    "jest-environment-jsdom": "^30.0.4",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
