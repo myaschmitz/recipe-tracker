@@ -1,0 +1,9 @@
+# Code owners for recipe-tracker
+#
+# These owners are requested for review on every pull request and, when
+# "Require review from Code Owners" branch protection is enabled, a PR cannot
+# be merged until one of them approves it.
+#
+# The last matching pattern wins. `*` matches every file in the repo.
+
+* @myaschmitz
