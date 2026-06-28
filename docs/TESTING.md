@@ -1,5 +1,12 @@
 # 🎯 Recipe Tracker Test Framework - Final Status
 
+> **Note on current test counts:** The curated suite run by `npm test` currently
+> reports **115 passing tests**. The full suite (`npm test:all` / `npx jest`) has
+> **known failures** and is not green. The historical numbers below (e.g. "80"/"97"
+> tests) describe an earlier snapshot and are kept for context; treat `npm test` as
+> the source of truth for what is expected to pass.
+
+
 ## ✅ **RESOLVED: Next.js Turbopack Compatibility Issue**
 
 **Problem**: Next.js dev server was failing due to Babel configuration conflict with Turbopack.

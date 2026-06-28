@@ -47,7 +47,7 @@ Recipe Tracker is a full-stack web application built with Next.js that allows us
 ## Technology Stack
 
 ### Frontend
-- **Next.js 14**: React framework with App Router
+- **Next.js 15**: React framework with App Router
 - **TypeScript**: Type-safe JavaScript development
 - **Tailwind CSS**: Utility-first CSS framework
 - **Shadcn/ui**: Modern React component library

@@ -37,8 +37,10 @@ recipe-tracker/
 │       ├── database/          # Database schema types
 │       └── view/              # UI component types
 ├── public/                    # Static assets
-├── PROJECT.md                 # Project overview
-└── TECHNICAL.md              # This file
+├── README.md                  # Project README and entry point
+└── docs/                      # Project documentation
+    ├── PROJECT.md             # Project overview
+    └── TECHNICAL.md           # This file
 ```
 
 ## Database Schema
