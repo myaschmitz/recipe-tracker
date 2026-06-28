@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST() {
   try {
     const supabase = await createClient();
-    console.log("Attempting to fix sequences...");
 
     // Try to create a collection with a high ID to advance the sequence
     // This will fail, but should advance the internal sequence
@@ -12,8 +11,7 @@ export async function POST() {
       await supabase
         .from('collection')
         .insert([{ name: 'TEMP_FOR_SEQUENCE' }]);
-    } catch (error: any) {
-      console.log("Expected error creating temp collection:", error.message);
+    } catch {
     }
 
     // Now try to create a collection normally
@@ -23,7 +21,6 @@ export async function POST() {
       .select();
 
     if (testError) {
-      console.log("Test collection creation failed:", testError.message);
       return NextResponse.json({ 
         success: false, 
         error: testError.message 
@@ -37,7 +34,6 @@ export async function POST() {
         .delete()
         .eq('id', testCollection[0].id);
       
-      console.log("Sequence fix successful, test collection created and deleted");
     }
 
     return NextResponse.json({ 

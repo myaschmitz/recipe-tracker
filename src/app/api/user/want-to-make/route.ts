@@ -48,19 +48,15 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    console.log('POST /api/user/want-to-make - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
     const body = await request.json();
-    console.log('Request body:', body);
 
     // Validate with Zod schema
     const validatedData = userWantToMakeFormSchema.parse(body);
-    console.log('Data validated:', validatedData);
 
     // Check if already marked as want-to-make
     const { data: existing } = await supabase
@@ -76,12 +72,6 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-
-    console.log('Creating want-to-make recipe with data:', {
-      user_id: profile.id,
-      recipe_id: validatedData.recipe_id,
-      notes: validatedData.notes
-    });
 
     const { data, error } = await supabase
       .from("user_want_to_make")
@@ -99,7 +89,6 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    console.log('Want-to-make recipe created successfully:', data);
     return createSuccessResponse(data, 201);
   } catch (error: any) {
     console.error('POST /api/user/want-to-make - Error:', error);

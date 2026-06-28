@@ -7,11 +7,9 @@ export async function DELETE(
   { params }: { params: { collectionId: string } }
 ) {
   try {
-    console.log('DELETE /api/user/collection-favorites/[collectionId] - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
     const { collectionId } = params;
@@ -22,11 +20,6 @@ export async function DELETE(
         { status: 400 }
       );
     }
-
-    console.log('Removing collection favorite for:', {
-      user_id: profile.id,
-      collection_id: collectionId
-    });
 
     const { data, error } = await supabase
       .from("user_collection_favorite")
@@ -47,7 +40,6 @@ export async function DELETE(
       );
     }
 
-    console.log('Collection favorite removed successfully:', data);
     return createSuccessResponse(data);
   } catch (error: any) {
     console.error('DELETE /api/user/collection-favorites/[collectionId] - Error:', error);

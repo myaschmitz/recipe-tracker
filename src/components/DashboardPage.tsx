@@ -4,12 +4,11 @@ import RecipeCard from "@/components/RecipeCard";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { API_ENDPOINTS, LIMITS } from "@/config/constants";
-import { RecipeSchema, CollectionRecipeSchema } from "@/types/database/models";
+import { CollectionRecipeSchema } from "@/types/database/models";
 import { Recipe, RecipeCard as RecipeCardType, Collection } from "@/types/view/models";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -105,7 +104,7 @@ export default function DashboardPage() {
     <div className="container mx-auto p-4">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
-        <p className="text-muted-foreground">Here's what's cooking in your kitchen</p>
+        <p className="text-muted-foreground">Here&apos;s what&apos;s cooking in your kitchen</p>
       </div>
       
       <div className="mb-8">

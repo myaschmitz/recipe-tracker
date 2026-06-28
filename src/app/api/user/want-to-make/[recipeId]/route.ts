@@ -9,16 +9,13 @@ export async function PUT(
   { params }: { params: { recipeId: string } }
 ) {
   try {
-    console.log('PUT /api/user/want-to-make/[recipeId] - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
     const { recipeId } = params;
     const body = await request.json();
-    console.log('Request body:', body);
 
     if (!recipeId) {
       return NextResponse.json(
@@ -29,7 +26,6 @@ export async function PUT(
 
     // Validate with Zod schema (only notes field is updatable)
     const validatedData = userWantToMakeFormSchema.pick({ notes: true }).parse(body);
-    console.log('Data validated:', validatedData);
 
     // Check if the record exists for this user
     const { data: existing } = await supabase
@@ -46,12 +42,6 @@ export async function PUT(
       );
     }
 
-    console.log('Updating want-to-make recipe with data:', {
-      user_id: profile.id,
-      recipe_id: recipeId,
-      notes: validatedData.notes
-    });
-
     const { data, error } = await supabase
       .from("user_want_to_make")
       .update({
@@ -66,7 +56,6 @@ export async function PUT(
       throw error;
     }
 
-    console.log('Want-to-make recipe updated successfully:', data);
     return createSuccessResponse(data);
   } catch (error: any) {
     console.error('PUT /api/user/want-to-make/[recipeId] - Error:', error);
@@ -88,11 +77,9 @@ export async function DELETE(
   { params }: { params: { recipeId: string } }
 ) {
   try {
-    console.log('DELETE /api/user/want-to-make/[recipeId] - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
     const { recipeId } = params;
@@ -103,11 +90,6 @@ export async function DELETE(
         { status: 400 }
       );
     }
-
-    console.log('Removing want-to-make recipe for:', {
-      user_id: profile.id,
-      recipe_id: recipeId
-    });
 
     const { data, error } = await supabase
       .from("user_want_to_make")
@@ -128,7 +110,6 @@ export async function DELETE(
       );
     }
 
-    console.log('Want-to-make recipe removed successfully:', data);
     return createSuccessResponse(data);
   } catch (error: any) {
     console.error('DELETE /api/user/want-to-make/[recipeId] - Error:', error);

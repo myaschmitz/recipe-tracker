@@ -52,28 +52,16 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    console.log('POST /api/collections - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id, role: profile.role });
 
     const supabase = await createClient();
-    console.log('Supabase client created');
 
     const body = await request.json();
-    console.log('Request body:', body);
 
     // Validate with Zod schema
     const validatedData = collectionSchema.parse(body);
-    console.log('Data validated:', validatedData);
-
-    console.log('Creating collection with data:', {
-      name: validatedData.name,
-      description: validatedData.description,
-      user_id: profile.id,
-      is_public: validatedData.is_public || false
-    });
 
     const { data, error } = await supabase
       .from("collection")
@@ -92,7 +80,6 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    console.log('Collection created successfully:', data);
     return createSuccessResponse(data, 201);
   } catch (error: any) {
     console.error('POST /api/collections - Error:', error);

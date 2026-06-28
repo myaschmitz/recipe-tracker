@@ -7,9 +7,7 @@ export async function DELETE() {
     const supabase = await createClient();
     // Require admin role
     await requireRole('admin');
-    
-    console.log("Starting database cleanup...");
-    
+
     // Check environment variables
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
       throw new Error("Supabase URL is not configured. Please set NEXT_PUBLIC_SUPABASE_URL in your .env.local file.");
@@ -18,9 +16,6 @@ export async function DELETE() {
     if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       throw new Error("Supabase anonymous key is not configured. Please set NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file.");
     }
-    
-    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "Present" : "Missing");
-    console.log("Supabase Key:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Present" : "Missing");
 
     // Delete all data in reverse dependency order
     const deletionSteps = [
@@ -36,7 +31,6 @@ export async function DELETE() {
     let deletedCounts: Record<string, number> = {};
 
     for (const step of deletionSteps) {
-      console.log(`Deleting ${step.description}...`);
       
       // First count the records
       const { count: beforeCount } = await supabase
@@ -55,7 +49,6 @@ export async function DELETE() {
       }
 
       deletedCounts[step.table] = beforeCount || 0;
-      console.log(`Deleted ${beforeCount || 0} ${step.description}`);
     }
 
     // Reset sequences to start from 1 for new records
@@ -64,13 +57,10 @@ export async function DELETE() {
       if (error) {
         console.warn('Failed to reset sequences:', error);
       } else {
-        console.log("Reset auto-increment sequences");
       }
     } catch (err) {
       console.warn('Could not execute sequence reset:', err);
     }
-
-    console.log("Database cleanup completed successfully!");
 
     return NextResponse.json({
       success: true,

@@ -57,7 +57,7 @@ const PrivacySettings = () => {
                 </Label>
                 <p className="text-sm text-muted-foreground">
                   When enabled, your profile and recipes will only be visible to you. 
-                  Other users won't be able to see your content in public listings.
+                  Other users won&apos;t be able to see your content in public listings.
                 </p>
               </div>
               <Switch
@@ -71,9 +71,9 @@ const PrivacySettings = () => {
           <div className="p-4 bg-muted rounded-lg">
             <h4 className="text-sm font-medium mb-2">What does this mean?</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Your recipes won't appear in public recipe listings</li>
-              <li>• Other users can't search for your recipes</li>
-              <li>• Your profile won't be visible to other users</li>
+              <li>• Your recipes won&apos;t appear in public recipe listings</li>
+              <li>• Other users can&apos;t search for your recipes</li>
+              <li>• Your profile won&apos;t be visible to other users</li>
               <li>• You can still share direct links to your recipes if needed</li>
             </ul>
           </div>

@@ -15,7 +15,7 @@ export const createSuccessResponse = (data: any, status: number = 200) => {
 export const validateRequired = (fields: Record<string, any>) => {
   const missing = Object.entries(fields)
     .filter(
-      ([key, value]) =>
+      ([, value]) =>
         !value || (typeof value === "string" && value.trim() === "")
     )
     .map(([key]) => key);
@@ -28,27 +28,15 @@ export const validateRequired = (fields: Record<string, any>) => {
 // Role checking utilities
 export const getUserProfile = async () => {
   try {
-    console.log('getUserProfile: Starting authentication check');
     const supabase = await createClient();
-    console.log('getUserProfile: Supabase client created');
 
     // Get the authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    console.log('getUserProfile: Auth result -', {
-      userExists: !!user,
-      userId: user?.id,
-      userEmail: user?.email,
-      authError: authError?.message
-    });
-    
+
     if (authError || !user) {
-      console.log('Authentication failed:', authError?.message || 'No user');
       return null;
     }
 
-    console.log('getUserProfile: Starting profile fetch for user:', user.id);
-    
     // Get the user profile with a timeout
     const profilePromise = supabase
       .from('profile')
@@ -66,26 +54,15 @@ export const getUserProfile = async () => {
     ]) as any;
 
     if (profileError) {
-      console.log('getUserProfile: Profile fetch error:', {
-        message: profileError.message,
-        code: profileError.code,
-        details: profileError.details
-      });
       
       // If profile doesn't exist (PGRST116), that might be normal for new users
       if (profileError.code === 'PGRST116') {
-        console.log('getUserProfile: Profile not found for user, might need to be created');
         return null;
       }
       
       return null;
     }
 
-    console.log('getUserProfile: Profile found successfully:', {
-      hasProfile: !!profile,
-      profileId: profile?.id,
-      profileRole: profile?.role
-    });
     return profile;
   } catch (error) {
     console.error('getUserProfile: Unexpected error:', error);

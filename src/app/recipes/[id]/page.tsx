@@ -4,8 +4,8 @@ import { Recipe } from "@/types/view/models";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RecipeIngredient, Tag, Collection } from "@/types/view/models";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Link, Pencil, ArrowLeft, Trash2 } from "lucide-react";
+import { Card, CardHeader } from "@/components/ui/card";
+import { Pencil, ArrowLeft, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import parse from "html-react-parser";
 import { CollectionRecipeSchema } from "@/types/database/models";
 import { safeParseHtml } from "@/lib/htmlSanitizer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -306,7 +305,7 @@ const RecipePage = () => {
             <DialogHeader>
               <DialogTitle>Delete Recipe</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete "{recipe.name}"? This action cannot be undone.
+                Are you sure you want to delete &quot;{recipe.name}&quot;? This action cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

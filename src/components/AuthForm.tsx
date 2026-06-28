@@ -70,21 +70,17 @@ export function AuthForm() {
 
     // Safety timeout to ensure loading state is reset
     const timeoutId = setTimeout(() => {
-      console.log('Auth timeout - resetting loading state');
       setFormLoading(false);
     }, 10000); // 10 second timeout
 
     try {
       if (isLogin) {
         // Sign in logic
-        console.log('Attempting to sign in with:', formData.email);
-        const result = await signIn(formData.email, formData.password);
-        console.log('Sign in result:', result);
+        await signIn(formData.email, formData.password);
         // Redirect to dashboard after successful sign in
         router.push('/dashboard');
       } else {
         // Sign up logic
-        console.log('Attempting to sign up with:', formData.email);
         // Validation
         if (formData.password !== formData.confirmPassword) {
           toast({
@@ -122,8 +118,7 @@ export function AuthForm() {
         // Create username from first/last name
         const username = `${formData.firstName.toLowerCase()}_${formData.lastName.toLowerCase()}`;
         
-        const result = await signUp(formData.email, formData.password, username, formData.firstName, formData.lastName);
-        console.log('Sign up result:', result);
+        await signUp(formData.email, formData.password, username, formData.firstName, formData.lastName);
         toast({
           title: "Account created!",
           description: "Please check your email to confirm your account.",
@@ -138,7 +133,6 @@ export function AuthForm() {
       });
     } finally {
       clearTimeout(timeoutId);
-      console.log('Setting loading to false');
       setFormLoading(false);
     }
   };

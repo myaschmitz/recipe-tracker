@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireRole, handleApiError } from "@/lib/api";
+import { requireRole } from "@/lib/api";
 import testData from "../../../../../test-data.json";
 
 export async function POST() {
@@ -8,9 +8,7 @@ export async function POST() {
     const supabase = await createClient();
     // Require admin role
     await requireRole('admin');
-    
-    console.log("Starting test data generation...");
-    
+
     // Check environment variables
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
       throw new Error("Supabase URL is not configured. Please set NEXT_PUBLIC_SUPABASE_URL in your .env.local file.");
@@ -19,11 +17,6 @@ export async function POST() {
     if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       throw new Error("Supabase anonymous key is not configured. Please set NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file.");
     }
-    
-    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "Present" : "Missing");
-    console.log("Supabase Key:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "Present" : "Missing");
-    console.log("Test data loaded:", !!testData);
-    console.log("Test data units count:", testData?.units?.length || 0);
 
     // Clear existing data in reverse dependency order
     await supabase.from("collection_recipe").delete().neq("collection_id", 0);
@@ -35,8 +28,6 @@ export async function POST() {
     await supabase.from("unit").delete().neq("id", 0);
     // Note: Skipping profiles as they're linked to Supabase auth users
 
-    console.log("Cleared existing data");
-
     // Insert units
     const { error: unitsError } = await supabase
       .from("unit")
@@ -45,7 +36,6 @@ export async function POST() {
     if (unitsError) {
       throw new Error(`Error inserting units: ${unitsError.message}`);
     }
-    console.log("Inserted units");
 
     // Insert tags
     const { error: tagsError } = await supabase
@@ -55,7 +45,6 @@ export async function POST() {
     if (tagsError) {
       throw new Error(`Error inserting tags: ${tagsError.message}`);
     }
-    console.log("Inserted tags");
 
     // Note: Skipping profiles insertion as they're managed by Supabase auth
 
@@ -67,7 +56,6 @@ export async function POST() {
     if (collectionsError) {
       throw new Error(`Error inserting collections: ${collectionsError.message}`);
     }
-    console.log("Inserted collections");
 
     // Insert recipes
     const { error: recipesError } = await supabase
@@ -77,7 +65,6 @@ export async function POST() {
     if (recipesError) {
       throw new Error(`Error inserting recipes: ${recipesError.message}`);
     }
-    console.log("Inserted recipes");
 
     // Insert recipe ingredients
     const { error: ingredientsError } = await supabase
@@ -87,7 +74,6 @@ export async function POST() {
     if (ingredientsError) {
       throw new Error(`Error inserting recipe ingredients: ${ingredientsError.message}`);
     }
-    console.log("Inserted recipe ingredients");
 
     // Insert recipe tags
     const { error: recipeTagsError } = await supabase
@@ -97,7 +83,6 @@ export async function POST() {
     if (recipeTagsError) {
       throw new Error(`Error inserting recipe tags: ${recipeTagsError.message}`);
     }
-    console.log("Inserted recipe tags");
 
     // Insert collection recipes
     const { error: collectionRecipesError } = await supabase
@@ -107,7 +92,6 @@ export async function POST() {
     if (collectionRecipesError) {
       throw new Error(`Error inserting collection recipes: ${collectionRecipesError.message}`);
     }
-    console.log("Inserted collection recipes");
 
     // Reset sequences to avoid primary key conflicts when creating new records
     try {
@@ -115,13 +99,10 @@ export async function POST() {
       if (error) {
         console.warn('Failed to reset sequences:', error);
       } else {
-        console.log("Reset auto-increment sequences");
       }
     } catch (err) {
       console.warn('Could not execute sequence reset:', err);
     }
-
-    console.log("Test data generation completed successfully!");
 
     return NextResponse.json({
       success: true,

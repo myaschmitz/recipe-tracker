@@ -9,7 +9,6 @@ export function useAuthWithTimeout(timeoutMs = TIMEOUTS.AUTH_TIMEOUT) {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (auth.loading) {
-        console.warn('Auth loading has timed out');
         setTimedOut(true);
       }
     }, timeoutMs);
