@@ -27,11 +27,8 @@ jobs:
         run: npm test
 
   lint:
-    name: Lint (informational)
+    name: Lint
     runs-on: ubuntu-latest
-    # Lint currently reports pre-existing errors, so it is non-blocking for now.
-    # Remove continue-on-error once the lint issues are resolved to make it a gate.
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4

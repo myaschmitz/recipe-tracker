@@ -28,7 +28,7 @@ export async function DELETE() {
       { table: "unit", description: "units" }
     ];
 
-    let deletedCounts: Record<string, number> = {};
+    const deletedCounts: Record<string, number> = {};
 
     for (const step of deletionSteps) {
       
