@@ -17,8 +17,6 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`Starting database backup in ${format.toUpperCase()} format...`);
-    
     // Check environment variables
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
       throw new Error("Supabase URL is not configured.");
@@ -44,7 +42,6 @@ export async function POST(request: Request) {
 
     // Fetch data from each table
     for (const table of tables) {
-      console.log(`Backing up ${table}...`);
       
       const { data, error } = await supabase
         .from(table)
@@ -57,7 +54,6 @@ export async function POST(request: Request) {
 
       backupData[table] = data || [];
       totalRecords += (data || []).length;
-      console.log(`Backed up ${(data || []).length} records from ${table}`);
     }
 
     // Add metadata

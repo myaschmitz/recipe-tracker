@@ -1,7 +1,7 @@
 "use client";
 
 import { API_ENDPOINTS } from "@/config/constants";
-import { Recipe, RecipeTag, Tag, Collection } from "@/types/view/models";
+import { Recipe, Tag, Collection } from "@/types/view/models";
 import { RecipeSchema, RecipeTagSchema, CollectionRecipeSchema } from "@/types/database/models";
 import React, { useState, useEffect } from "react";
 import RecipeCard from "@/components/RecipeCard";
@@ -17,7 +17,6 @@ const Recipes = () => {
   const [allCollections, setAllCollections] = useState<Collection[]>([]);
   const [recipeQuery, setRecipeQuery] = useState<string>('');
   const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]);
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [filtersInitialized, setFiltersInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 

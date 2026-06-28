@@ -59,7 +59,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const setLoadingTimeout = () => {
       loadingTimeout = setTimeout(() => {
         if (mounted) {
-          console.warn('Auth loading timeout reached');
           setLoading(false);
         }
       }, 5000); // Reduced from 15 to 5 seconds
@@ -77,7 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session with timeout
     const initAuth = async () => {
       try {
-        console.log('initAuth: Starting authentication check...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -89,18 +87,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        console.log('initAuth: Session check complete, session exists:', !!session);
-        
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
           
           if (session?.user) {
-            console.log('initAuth: User found, fetching profile...');
             await fetchProfile(session.user.id);
             clearLoadingTimeout(); // Clear timeout when profile fetch completes
           } else {
-            console.log('initAuth: No user session, setting loading to false immediately');
             setProfile(null);
             clearLoadingTimeout();
             setLoading(false);
@@ -120,7 +114,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: any, session: Session | null) => {
-        console.log('Auth state change:', event, session?.user?.id);
         
         if (mounted) {
           setSession(session);
@@ -155,13 +148,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchProfile = async (userId: string) => {
     // Prevent multiple simultaneous profile fetches
     if (isProfileFetching) {
-      console.log('Profile fetch already in progress, skipping...');
       return;
     }
 
     try {
       setIsProfileFetching(true);
-      console.log('Fetching profile for user:', userId);
       
       // Increase timeout to 10 seconds and use the SSR API route
       const profilePromise = fetch(`/api/profile`, {
@@ -181,7 +172,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Error fetching profile:', result.error);
         // If profile doesn't exist, create one
         if (result.error.includes('No rows found') || result.error.includes('PGRST116')) {
-          console.log('Profile not found, creating initial profile');
           await createInitialProfile(userId);
         } else {
           console.error('Profile fetch error:', result.error);
@@ -189,12 +179,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else if (result && typeof result === 'object' && result.id) {
         // Handle direct profile data response
-        console.log('Profile fetched successfully:', result);
         setProfile(result);
         setLoading(false);
       } else {
         // Handle case where no profile data is returned
-        console.log('No profile data returned, creating basic profile');
         await createBasicProfile(userId);
       }
     } catch (error: any) {
@@ -241,7 +229,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const createInitialProfile = async (userId: string, firstName?: string, lastName?: string, username?: string) => {
     try {
-      console.log('Creating initial profile for user:', userId);
       
       const profileData = {
         id: userId,
@@ -305,7 +292,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         setLoading(false);
       } else {
-        console.log('Profile created successfully:', data);
         setProfile(data);
         setLoading(false);
       }

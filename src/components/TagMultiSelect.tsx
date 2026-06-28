@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { X, Check, Plus } from "lucide-react";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,

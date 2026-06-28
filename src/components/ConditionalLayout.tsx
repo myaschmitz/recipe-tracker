@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -11,8 +10,7 @@ interface ConditionalLayoutProps {
 
 export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
-  
+
   // Check if current path is an auth page
   const isAuthPage = pathname?.startsWith('/auth');
   

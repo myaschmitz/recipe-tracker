@@ -7,11 +7,9 @@ export async function DELETE(
   { params }: { params: { recipeId: string } }
 ) {
   try {
-    console.log('DELETE /api/user/recipe-favorites/[recipeId] - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
     const { recipeId } = params;
@@ -22,11 +20,6 @@ export async function DELETE(
         { status: 400 }
       );
     }
-
-    console.log('Removing recipe favorite for:', {
-      user_id: profile.id,
-      recipe_id: recipeId
-    });
 
     const { data, error } = await supabase
       .from("user_recipe_favorite")
@@ -47,7 +40,6 @@ export async function DELETE(
       );
     }
 
-    console.log('Recipe favorite removed successfully:', data);
     return createSuccessResponse(data);
   } catch (error: any) {
     console.error('DELETE /api/user/recipe-favorites/[recipeId] - Error:', error);

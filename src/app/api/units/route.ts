@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { handleApiError, createSuccessResponse, validateRequired } from "@/lib/api";
-import { unitSchema } from "@/lib/schemas";
 import { NextResponse } from "next/server";
-import { ZodError } from "zod";
 
 export async function GET() {
   try {

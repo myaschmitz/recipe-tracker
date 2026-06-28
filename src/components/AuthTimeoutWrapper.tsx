@@ -28,7 +28,6 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 6000 }: AuthTimeoutWr
     }
 
     const timer = setTimeout(() => {
-      console.warn('Auth loading timeout reached');
       setTimedOut(true);
     }, timeoutMs);
 
@@ -45,7 +44,6 @@ export function AuthTimeoutWrapper({ children, timeoutMs = 6000 }: AuthTimeoutWr
   const handleSkipAuth = () => {
     // For development - allow proceeding without auth
     setTimedOut(false);
-    console.warn('Skipping auth loading - proceeding without authentication');
   };
 
   // Render a consistent loading state on server and client to avoid hydration mismatch

@@ -43,7 +43,7 @@ const EditRecipePage = () => {
   const { user } = useAuth();
   const params = useParams();
   const id = params.id?.toString();
-  const [recipe, setRecipe] = useState<Recipe>();
+  const [, setRecipe] = useState<Recipe>();
   const [units, setUnits] = useState<Unit[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [selectedCollections, setSelectedCollections] = useState<Collection[]>([]);
@@ -339,18 +339,14 @@ const EditRecipePage = () => {
     const result = await response.json();
 
     if (response.ok) {
-      console.log("Recipe updated successfully");
       toast({
         title: "Recipe updated successfully",
       });
       router.push(`/recipes/${id}`);
     } else {
-      console.log(`Error updating recipe: ${result.error}`);
       toast({ title: "Error updating recipe", description: result.error });
     }
   };
-
-  console.log(recipe);
 
   if (!user) {
     return (

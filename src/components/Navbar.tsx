@@ -5,7 +5,6 @@ import {
   CookingPot,
   Home,
   Inbox,
-  Search,
   Settings,
   CircleUser,
   Moon,
@@ -27,16 +26,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Separator } from "./ui/separator";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
 import { useEffect, useMemo, useState } from "react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -44,7 +34,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 export function Navbar() {
-  const { setTheme } = useTheme();
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
@@ -55,7 +44,7 @@ export function Navbar() {
     try {
       await signOut();
       router.push("/");
-    } catch (error) {
+    } catch {
       toast({
         title: "Error signing out",
         description: "There was a problem signing you out.",

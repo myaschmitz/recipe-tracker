@@ -48,7 +48,6 @@ const CollectionsPage = () => {
             }))
           );
         } else {
-          console.warn("Collections API returned non-array data:", data);
           setCollections([]);
         }
       } catch (error: any) {

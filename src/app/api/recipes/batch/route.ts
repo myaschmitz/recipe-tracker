@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { handleApiError, createSuccessResponse } from "@/lib/api";
+import { createSuccessResponse } from "@/lib/api";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   
   const ids = idsParam.split(',').map(id => id.trim()).filter(Boolean);
   
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("recipe")
     .select("*")
     .in("id", ids);

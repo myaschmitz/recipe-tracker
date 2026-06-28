@@ -48,19 +48,15 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    console.log('POST /api/user/recipe-favorites - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
     const body = await request.json();
-    console.log('Request body:', body);
 
     // Validate with Zod schema
     const validatedData = userRecipeFavoriteFormSchema.parse(body);
-    console.log('Data validated:', validatedData);
 
     // Check if already favorited
     const { data: existing } = await supabase
@@ -77,11 +73,6 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Creating recipe favorite with data:', {
-      user_id: profile.id,
-      recipe_id: validatedData.recipe_id
-    });
-
     const { data, error } = await supabase
       .from("user_recipe_favorite")
       .insert([
@@ -97,7 +88,6 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    console.log('Recipe favorite created successfully:', data);
     return createSuccessResponse(data, 201);
   } catch (error: any) {
     console.error('POST /api/user/recipe-favorites - Error:', error);
@@ -113,5 +103,4 @@ export async function POST(request: Request) {
     return handleApiError(error, "creating recipe favorite");
   }
 }
-
 

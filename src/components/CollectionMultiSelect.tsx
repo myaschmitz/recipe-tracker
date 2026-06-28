@@ -73,7 +73,6 @@ const CollectionMultiSelect = ({
         if (Array.isArray(data)) {
           setCollections(data);
         } else {
-          console.warn("Collections API returned non-array data:", data);
           setCollections([]);
         }
       } catch (error: any) {

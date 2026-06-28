@@ -45,19 +45,15 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    console.log('POST /api/user/collection-favorites - Starting...');
     
     // Require authentication
     const profile = await requireAuth();
-    console.log('Authentication successful, profile:', { id: profile.id });
 
     const supabase = await createClient();
     const body = await request.json();
-    console.log('Request body:', body);
 
     // Validate with Zod schema
     const validatedData = userCollectionFavoriteFormSchema.parse(body);
-    console.log('Data validated:', validatedData);
 
     // Check if already favorited
     const { data: existing } = await supabase
@@ -74,11 +70,6 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Creating collection favorite with data:', {
-      user_id: profile.id,
-      collection_id: validatedData.collection_id
-    });
-
     const { data, error } = await supabase
       .from("user_collection_favorite")
       .insert([
@@ -94,7 +85,6 @@ export async function POST(request: Request) {
       throw error;
     }
 
-    console.log('Collection favorite created successfully:', data);
     return createSuccessResponse(data, 201);
   } catch (error: any) {
     console.error('POST /api/user/collection-favorites - Error:', error);
@@ -110,5 +100,4 @@ export async function POST(request: Request) {
     return handleApiError(error, "creating collection favorite");
   }
 }
-
 

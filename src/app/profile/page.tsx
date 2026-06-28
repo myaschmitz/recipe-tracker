@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { User, Mail, Calendar, MapPin, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
-import ProfileErrorBoundary from "@/components/ProfileErrorBoundary";
 
 const ProfilePage = () => {
     const { user, profile, loading } = useAuth();

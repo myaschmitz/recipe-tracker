@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, Shield, Users, Settings } from "lucide-react";
+import { ChevronDown, Shield, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Admin() {
@@ -33,33 +33,19 @@ export default function Admin() {
   const { profile, loading, user, refreshProfile } = useAuth();
   const router = useRouter();
 
-  // Add debug logging
-  useEffect(() => {
-    console.log('Admin page auth state:', { 
-      loading, 
-      hasUser: !!user, 
-      hasProfile: !!profile, 
-      profileRole: profile?.role,
-      profileData: profile 
-    });
-  }, [loading, user, profile]);
-
   // Try to refresh profile when component mounts
   useEffect(() => {
     if (user && !loading && refreshProfile) {
-      console.log('Attempting to refresh profile...');
       refreshProfile();
     }
   }, [user, loading, refreshProfile]);
 
   // Check if user is admin (with delay to allow profile to load)
   useEffect(() => {
-    console.log('Admin page auth check:', { loading, profile, role: profile?.role });
     
     // Don't redirect immediately, give some time for profile to load
     const timeoutId = setTimeout(() => {
       if (!loading && (!profile || profile.role !== 'admin')) {
-        console.log('Access denied - redirecting to dashboard');
         toast({
           title: "Access Denied",
           description: "You need administrator privileges to access this page.",
@@ -102,7 +88,7 @@ export default function Admin() {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load users.",
@@ -136,7 +122,7 @@ export default function Admin() {
       } else {
         throw new Error('Failed to update role');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update user role.",
@@ -156,7 +142,6 @@ export default function Admin() {
     });
     
     try {
-      console.log("Making API request to generate test data...");
       
       const response = await fetch("/api/admin/generate-test-data", {
         method: "POST",
@@ -165,14 +150,10 @@ export default function Admin() {
         },
       });
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-
       if (!response.ok) {
         let errorData;
         try {
           errorData = await response.json();
-          console.log("Error response data:", errorData);
         } catch (parseError) {
           console.error("Failed to parse error response:", parseError);
           errorData = {};
@@ -183,7 +164,6 @@ export default function Admin() {
       }
 
       const result = await response.json();
-      console.log("Success response:", result);
       
       // Enhanced success toast with detailed breakdown
       toast({
@@ -218,7 +198,6 @@ export default function Admin() {
     });
     
     try {
-      console.log("Making API request to delete all data...");
       
       const response = await fetch("/api/admin/delete-all-data", {
         method: "DELETE",
@@ -227,13 +206,10 @@ export default function Admin() {
         },
       });
 
-      console.log("Response status:", response.status);
-
       if (!response.ok) {
         let errorData;
         try {
           errorData = await response.json();
-          console.log("Error response data:", errorData);
         } catch (parseError) {
           console.error("Failed to parse error response:", parseError);
           errorData = {};
@@ -244,7 +220,6 @@ export default function Admin() {
       }
 
       const result = await response.json();
-      console.log("Success response:", result);
       
       const totalDeleted = Object.values(result.deletedCounts || {}).reduce((sum: number, count: any) => sum + (count || 0), 0);
       
@@ -281,7 +256,6 @@ export default function Admin() {
     });
     
     try {
-      console.log(`Creating ${format.toUpperCase()} backup...`);
       
       const response = await fetch("/api/admin/backup-database", {
         method: "POST",

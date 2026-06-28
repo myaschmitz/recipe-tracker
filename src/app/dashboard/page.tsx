@@ -4,7 +4,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Loader2, Plus, BookOpen, Heart, CookingPot } from 'lucide-react';
 import Link from 'next/link';
 
@@ -41,7 +40,7 @@ export default function DashboardPage() {
               </Button>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/auth?mode=signup" className="text-primary hover:underline font-medium">
                 Sign up here
               </Link>
