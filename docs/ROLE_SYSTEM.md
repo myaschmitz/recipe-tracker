@@ -159,7 +159,7 @@ const { authorized } = await checkUserRole('moderator');
 
 ## Next Steps
 
-1. **Database Setup**: Run the SQL commands from TECHNICAL.md to set up the role system in Supabase
+1. **Database Setup**: Run the SQL commands from [TECHNICAL.md](./TECHNICAL.md) to set up the role system in Supabase
 2. **First Admin**: Use `SELECT public.promote_first_user_to_admin();` to create initial admin
 3. **Testing**: Test all role-based features with different user roles
 4. **Documentation**: Update user documentation with role descriptions
